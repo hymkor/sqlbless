@@ -24,14 +24,14 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
 	item := make([]any, len(columns))
-	for i, c := range columns {
+	for i, name := range columns {
 		item[i] = new(any)
 		if i > 0 {
-			io.WriteString(w,fs)
+			io.WriteString(w, fs)
 		}
-		fmt.Fprint(w, c)
+		io.WriteString(w, name)
 	}
-	io.WriteString(w,rs)
+	io.WriteString(w, rs)
 
 	for rows.Next() {
 		select {
@@ -98,7 +98,7 @@ func loop(ctx context.Context, conn *sql.DB) error {
 	editor.Prompt = func(w io.Writer, i int) (int, error) {
 		io.WriteString(w, "\x1B[0m")
 		if i <= 0 {
-			return fmt.Fprint(w, "SQL> ")
+			return io.WriteString(w, "SQL> ")
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	}

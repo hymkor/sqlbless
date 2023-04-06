@@ -9,9 +9,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hymkor/go-multiline-ny"
-	"github.com/nyaosorg/go-readline-ny/simplehistory"
+	"github.com/mattn/go-colorable"
 	_ "github.com/sijms/go-ora/v2"
+
+	"github.com/nyaosorg/go-readline-ny"
+	"github.com/nyaosorg/go-readline-ny/simplehistory"
+
+	"github.com/hymkor/go-multiline-ny"
 )
 
 type Container struct {
@@ -58,12 +62,45 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 	return nil
 }
 
+type Coloring struct {
+	bits int
+}
+
+func (c *Coloring) Init() int {
+	c.bits = 0
+	return readline.SGR3(22, 49, 39)
+}
+
+func (c *Coloring) Next(r rune) int {
+	const (
+		_QUOTED = 1
+	)
+	newbits := c.bits
+	if r == '\'' {
+		newbits ^= _QUOTED
+	}
+	defer func() {
+		c.bits = newbits
+	}()
+	if (c.bits&_QUOTED) != 0 || (newbits&_QUOTED) != 0 {
+		return readline.SGR3(1, 49, 31) // red
+	}
+	return readline.SGR3(1, 49, 36) // cyan
+}
+
 func loop(ctx context.Context, conn *sql.DB) error {
+	disabler := colorable.EnableColorsStdout(nil)
+	defer disabler()
+
 	var editor multiline.Editor
 	history := simplehistory.New()
 	editor.LineEditor.History = history
+	editor.LineEditor.Writer = colorable.NewColorableStdout()
+
+	editor.LineEditor.Coloring = &Coloring{}
 
 	editor.Prompt = func(w io.Writer, i int) (int, error) {
+		io.WriteString(w, "\x1B[0m")
 		if i <= 0 {
 			return fmt.Fprint(w, "SQL> ")
 		}

@@ -76,15 +76,37 @@ func loop(ctx context.Context, conn *sql.DB) error {
 		}
 		sql := strings.Join(lines, "\n")
 		history.Add(sql)
-		rows, err := conn.QueryContext(ctx, sql)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Query: %s\n", err.Error())
+		fields := strings.Fields(sql)
+		if len(fields) <= 0 {
 			continue
 		}
-		if err := dumpRows(ctx, rows, ",", "\n", os.Stdout); err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
+		switch strings.ToUpper(fields[0]) {
+		case "SELECT":
+			rows, err := conn.QueryContext(ctx, sql)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Query: %s\n", err.Error())
+				continue
+			}
+			if err := dumpRows(ctx, rows, ",", "\n", os.Stdout); err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+			}
+			rows.Close()
+		case "DELETE", "INSERT", "UPDATE":
+			result, err := conn.ExecContext(ctx, sql)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Exec: %s\n", err.Error())
+				continue
+			}
+			if count, err := result.RowsAffected(); err == nil {
+				fmt.Fprintf(os.Stderr, "%d record(s) updated.\n", count)
+			}
+		default:
+			_, err := conn.ExecContext(ctx, sql)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Exec: %s\n", err.Error())
+			}
+			fmt.Fprintln(os.Stderr, "OK")
 		}
-		rows.Close()
 	}
 }
 

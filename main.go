@@ -137,6 +137,8 @@ func loop(ctx context.Context, conn *sql.DB) error {
 			if count, err := result.RowsAffected(); err == nil {
 				fmt.Fprintf(os.Stderr, "%d record(s) updated.\n", count)
 			}
+		case "EXIT", "QUIT":
+			return io.EOF
 		default:
 			_, err := conn.ExecContext(ctx, sql)
 			if err != nil {

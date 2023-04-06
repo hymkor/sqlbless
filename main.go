@@ -18,25 +18,21 @@ import (
 	"github.com/hymkor/go-multiline-ny"
 )
 
-type Container struct {
-	Value any
-}
-
-func (s *Container) Scan(val any) error {
-	s.Value = val
-	return nil
-}
-
 func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
-	fmt.Fprintln(w, strings.Join(columns, fs))
-	item := make([]interface{}, len(columns))
-	for i := 0; i < len(item); i++ {
-		item[i] = &Container{}
+	item := make([]any, len(columns))
+	for i, c := range columns {
+		item[i] = new(any)
+		if i > 0 {
+			io.WriteString(w,fs)
+		}
+		fmt.Fprint(w, c)
 	}
+	io.WriteString(w,rs)
+
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
@@ -50,8 +46,8 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 			if i > 0 {
 				io.WriteString(w, fs)
 			}
-			if sc, ok := item1.(*Container); ok {
-				fmt.Fprint(w, sc.Value)
+			if p, ok := item1.(*any); ok {
+				fmt.Fprint(w, *p)
 			}
 		}
 		io.WriteString(w, rs)

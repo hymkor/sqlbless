@@ -32,7 +32,7 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
-	fmt.Fprintln(w, strings.Join(columns, ","))
+	fmt.Fprintln(w, strings.Join(columns, fs))
 	item := make([]interface{}, len(columns))
 	for i := 0; i < len(item); i++ {
 		item[i] = &Container{}
@@ -51,7 +51,7 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 				io.WriteString(w, fs)
 			}
 			if sc, ok := item1.(*Container); ok {
-				fmt.Fprintf(w, "%#v", sc.Value)
+				fmt.Fprint(w, sc.Value)
 			}
 		}
 		io.WriteString(w, rs)
@@ -129,7 +129,7 @@ func loop(ctx context.Context, conn *sql.DB) error {
 				fmt.Fprintf(os.Stderr, "Query: %s\n", err.Error())
 				continue
 			}
-			if err := dumpRows(ctx, rows, ",", "\n", os.Stdout); err != nil {
+			if err := dumpRows(ctx, rows, "\t", "\n", os.Stdout); err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 			}
 			rows.Close()

@@ -112,6 +112,11 @@ func loop(ctx context.Context, conn *sql.DB) error {
 			return err
 		}
 		sql := strings.Join(lines, "\n")
+		sql = strings.TrimSpace(sql)
+		if sql[len(sql)-1] == ';' {
+			sql = sql[:len(sql)-1]
+			sql = strings.TrimSpace(sql)
+		}
 		history.Add(sql)
 		fields := strings.Fields(sql)
 		if len(fields) <= 0 {

@@ -153,6 +153,10 @@ func mains(args []string) error {
 	if len(args) <= 0 {
 		return errors.New("Usage: sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE")
 	}
+	fmt.Println("SQL*Bless")
+	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
+	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
+	fmt.Println()
 	conn, err := sql.Open("oracle", args[0])
 	if err != nil {
 		return fmt.Errorf("sql.Open: %w", err)

@@ -62,9 +62,15 @@ type Coloring struct {
 	bits int
 }
 
+var (
+	red   = readline.SGR3(1, 49, 31)
+	cyan  = readline.SGR3(1, 49, 36)
+	reset = readline.SGR3(22, 49, 39)
+)
+
 func (c *Coloring) Init() int {
 	c.bits = 0
-	return readline.SGR3(22, 49, 39)
+	return reset
 }
 
 func (c *Coloring) Next(r rune) int {
@@ -79,9 +85,50 @@ func (c *Coloring) Next(r rune) int {
 		c.bits = newbits
 	}()
 	if (c.bits&_QUOTED) != 0 || (newbits&_QUOTED) != 0 {
-		return readline.SGR3(1, 49, 31) // red
+		return red
 	}
-	return readline.SGR3(1, 49, 36) // cyan
+	return cyan
+}
+
+func firstWord(s string) string {
+	for len(s) > 0 && (s[0] == ' ' || s[0] == '\n' || s[0] == '\r' || s[0] == '\t' || s[0] == '\v') {
+		s = s[1:]
+	}
+	i := 0
+	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
+		i++
+	}
+	return s[:i]
+}
+
+func trimSemicolon(s string) string {
+	if len(s) >= 1 && s[len(s)-1] == ';' {
+		s = s[:len(s)-1]
+		s = strings.TrimSpace(s)
+	}
+	return s
+}
+
+func doSelect(ctx context.Context, conn *sql.DB, query string, w io.Writer) error {
+	rows, err := conn.QueryContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("Query: %w", err)
+	}
+	defer rows.Close()
+	return dumpRows(ctx, rows, "\t", "\n", w)
+}
+
+func doDML(ctx context.Context, conn *sql.DB, query string, w io.Writer) error {
+	result, err := conn.ExecContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("Exec: %w", err)
+	}
+	count, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("RowsAffected: %w", err)
+	}
+	fmt.Fprintf(w, "%d record(s) updated.\n", count)
+	return nil
 }
 
 func loop(ctx context.Context, conn *sql.DB) error {
@@ -107,45 +154,20 @@ func loop(ctx context.Context, conn *sql.DB) error {
 		if err != nil {
 			return err
 		}
-		sql := strings.Join(lines, "\n")
-		sql = strings.TrimSpace(sql)
-		if sql[len(sql)-1] == ';' {
-			sql = sql[:len(sql)-1]
-			sql = strings.TrimSpace(sql)
-		}
-		history.Add(sql)
-		fields := strings.Fields(sql)
-		if len(fields) <= 0 {
-			continue
-		}
-		switch strings.ToUpper(fields[0]) {
+		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
+		history.Add(query)
+		switch strings.ToUpper(firstWord(query)) {
 		case "SELECT":
-			rows, err := conn.QueryContext(ctx, sql)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Query: %s\n", err.Error())
-				continue
-			}
-			if err := dumpRows(ctx, rows, "\t", "\n", os.Stdout); err != nil {
-				fmt.Fprintln(os.Stderr, err.Error())
-			}
-			rows.Close()
+			err = doSelect(ctx, conn, query, os.Stdout)
 		case "DELETE", "INSERT", "UPDATE":
-			result, err := conn.ExecContext(ctx, sql)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Exec: %s\n", err.Error())
-				continue
-			}
-			if count, err := result.RowsAffected(); err == nil {
-				fmt.Fprintf(os.Stderr, "%d record(s) updated.\n", count)
-			}
+			err = doDML(ctx, conn, query, os.Stdout)
 		case "EXIT", "QUIT":
 			return io.EOF
 		default:
-			_, err := conn.ExecContext(ctx, sql)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Exec: %s\n", err.Error())
-			}
-			fmt.Fprintln(os.Stderr, "OK")
+			_, err = conn.ExecContext(ctx, query)
+		}
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
 	}
 }

@@ -109,7 +109,11 @@ func trimSemicolon(s string) string {
 	return s
 }
 
-func doSelect(ctx context.Context, conn *sql.DB, query string, w io.Writer) error {
+type canQuery interface {
+	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+}
+
+func doSelect(ctx context.Context, conn canQuery, query string, w io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("Query: %w", err)
@@ -118,7 +122,11 @@ func doSelect(ctx context.Context, conn *sql.DB, query string, w io.Writer) erro
 	return dumpRows(ctx, rows, "\t", "\n", w)
 }
 
-func doDML(ctx context.Context, conn *sql.DB, query string, w io.Writer) error {
+type canExec interface {
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+}
+
+func doDML(ctx context.Context, conn canExec, query string, w io.Writer) error {
 	result, err := conn.ExecContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("Exec: %w", err)
@@ -128,6 +136,42 @@ func doDML(ctx context.Context, conn *sql.DB, query string, w io.Writer) error {
 		return fmt.Errorf("RowsAffected: %w", err)
 	}
 	fmt.Fprintf(w, "%d record(s) updated.\n", count)
+	return nil
+}
+
+func txCommit(tx **sql.Tx, w io.Writer) error {
+	var err error
+	if *tx != nil {
+		err = (*tx).Commit()
+		*tx = nil
+	}
+	if err == nil {
+		fmt.Fprintln(w, "Commit complete.")
+	}
+	return err
+}
+
+func txRollback(tx **sql.Tx, w io.Writer) error {
+	var err error
+	if *tx != nil {
+		err = (*tx).Rollback()
+		*tx = nil
+	}
+	if err == nil {
+		fmt.Fprintln(os.Stderr, "Rollback complete.")
+	}
+	return err
+}
+
+func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx) error {
+	if *tx != nil {
+		return nil
+	}
+	var err error
+	*tx, err = conn.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("BeginTx: %w", err)
+	}
 	return nil
 }
 
@@ -149,21 +193,42 @@ func loop(ctx context.Context, conn *sql.DB) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	}
+	var tx *sql.Tx = nil
 	for {
 		lines, err := editor.Read(ctx)
 		if err != nil {
+			txCommit(&tx, os.Stderr)
 			return err
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
 		history.Add(query)
 		switch strings.ToUpper(firstWord(query)) {
 		case "SELECT":
-			err = doSelect(ctx, conn, query, os.Stdout)
+			if tx == nil {
+				err = doSelect(ctx, conn, query, os.Stdout)
+			} else {
+				err = doSelect(ctx, tx, query, os.Stdout)
+			}
 		case "DELETE", "INSERT", "UPDATE":
-			err = doDML(ctx, conn, query, os.Stdout)
+			err = txBegin(ctx, conn, &tx)
+			if err == nil {
+				err = doDML(ctx, tx, query, os.Stdout)
+			}
+		case "COMMIT":
+			err = txCommit(&tx, os.Stderr)
+		case "ROLLBACK":
+			err = txRollback(&tx, os.Stderr)
 		case "EXIT", "QUIT":
+			err = txCommit(&tx, os.Stderr)
+			if err != nil {
+				return err
+			}
 			return io.EOF
 		default:
+			if tx != nil {
+				fmt.Fprintln(os.Stderr, "Transaction is not closed. Please Commit or Rollback.")
+				continue
+			}
 			_, err = conn.ExecContext(ctx, query)
 		}
 		if err != nil {

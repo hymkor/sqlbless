@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
+	_ "github.com/lib/pq"
 	"github.com/mattn/go-colorable"
 	_ "github.com/sijms/go-ora/v2"
 
@@ -238,14 +238,17 @@ func loop(ctx context.Context, conn *sql.DB) error {
 }
 
 func mains(args []string) error {
-	if len(args) <= 0 {
-		return errors.New("Usage: sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE")
+	if len(args) < 2 {
+		fmt.Fprintln(os.Stderr, "Usage:")
+		fmt.Fprintln(os.Stderr, `  sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE`)
+		fmt.Fprintln(os.Stderr, `  sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"`)
+		return nil
 	}
 	fmt.Println("SQL*Bless")
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()
-	conn, err := sql.Open("oracle", args[0])
+	conn, err := sql.Open(args[0], args[1])
 	if err != nil {
 		return fmt.Errorf("sql.Open: %w", err)
 	}

@@ -163,10 +163,11 @@ func txRollback(tx **sql.Tx, w io.Writer) error {
 	return err
 }
 
-func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx) error {
+func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error {
 	if *tx != nil {
 		return nil
 	}
+	fmt.Fprintln(w, "Starts a transaction")
 	var err error
 	*tx, err = conn.BeginTx(ctx, nil)
 	if err != nil {
@@ -210,7 +211,7 @@ func loop(ctx context.Context, conn *sql.DB) error {
 				err = doSelect(ctx, tx, query, os.Stdout)
 			}
 		case "DELETE", "INSERT", "UPDATE":
-			err = txBegin(ctx, conn, &tx)
+			err = txBegin(ctx, conn, &tx, os.Stderr)
 			if err == nil {
 				err = doDML(ctx, tx, query, os.Stdout)
 			}

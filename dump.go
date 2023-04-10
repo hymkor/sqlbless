@@ -3,24 +3,32 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/csv"
 	"fmt"
 	"io"
 )
 
-func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) error {
+func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w io.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
-	item := make([]any, len(columns))
-	for i, name := range columns {
-		item[i] = new(any)
-		if i > 0 {
-			io.WriteString(w, fs)
-		}
-		io.WriteString(w, name)
+
+	csvWriter := csv.NewWriter(w)
+	defer csvWriter.Flush()
+
+	csvWriter.Comma = comma
+	csvWriter.UseCRLF = useCRLF
+
+	if err := csvWriter.Write(columns); err != nil {
+		return err
 	}
-	io.WriteString(w, rs)
+
+	itemAny := make([]any, len(columns))
+	itemStr := make([]string, len(columns))
+	for i := range itemAny {
+		itemAny[i] = new(any)
+	}
 
 	for rows.Next() {
 		select {
@@ -28,18 +36,17 @@ func dumpRows(ctx context.Context, rows *sql.Rows, fs, rs string, w io.Writer) e
 			return ctx.Err()
 		default:
 		}
-		if err := rows.Scan(item...); err != nil {
+		if err := rows.Scan(itemAny...); err != nil {
 			return fmt.Errorf("(sql.Rows) Scan: %w", err)
 		}
-		for i, item1 := range item {
-			if i > 0 {
-				io.WriteString(w, fs)
-			}
-			if p, ok := item1.(*any); ok {
-				fmt.Fprint(w, *p)
+		for i, a := range itemAny {
+			if p, ok := a.(*any); ok {
+				itemStr[i] = fmt.Sprint(*p)
 			}
 		}
-		io.WriteString(w, rs)
+		if err := csvWriter.Write(itemStr); err != nil {
+			return fmt.Errorf("(csv.Writer).Write: %w", err)
+		}
 	}
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("(sql.Rows) Err: %w", err)

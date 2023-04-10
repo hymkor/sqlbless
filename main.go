@@ -80,7 +80,7 @@ func doSelect(ctx context.Context, conn canQuery, query string, w io.Writer) err
 		return fmt.Errorf("Query: %w", err)
 	}
 	defer rows.Close()
-	return dumpRows(ctx, rows, "\t", "\n", w)
+	return dumpRows(ctx, rows, ',', false, w)
 }
 
 type canExec interface {

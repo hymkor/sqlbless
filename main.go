@@ -104,6 +104,20 @@ func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error 
 	return nil
 }
 
+func tee(console, spool *os.File) io.Writer {
+	if spool != nil {
+		return io.MultiWriter(console, spool)
+	} else {
+		return console
+	}
+}
+
+func echo(spool *os.File, query string) {
+	if spool != nil {
+		fmt.Fprintf(spool, "SQL> %s\n", query)
+	}
+}
+
 func loop(ctx context.Context, conn *sql.DB) error {
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()
@@ -122,6 +136,13 @@ func loop(ctx context.Context, conn *sql.DB) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	}
+	var spool *os.File = nil
+	defer func() {
+		if spool != nil {
+			spool.Close()
+			spool = nil
+		}
+	}()
 	var tx *sql.Tx = nil
 	for {
 		lines, err := editor.Read(ctx)
@@ -136,28 +157,46 @@ func loop(ctx context.Context, conn *sql.DB) error {
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
 		history.Add(query)
 		switch strings.ToUpper(firstWord(query)) {
+		case "SPOOL":
+			if spool != nil {
+				spool.Close()
+				fmt.Fprintln(os.Stderr, "Spool closed.")
+				spool = nil
+			}
+			fname := firstWord(query[5:])
+			if fname != "" && !strings.EqualFold(fname, "off") {
+				if fd, err := os.Create(fname); err == nil {
+					spool = fd
+					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
+				}
+			}
 		case "SELECT":
+			echo(spool, query)
 			if tx == nil {
-				err = doSelect(ctx, conn, query, os.Stdout)
+				err = doSelect(ctx, conn, query, tee(os.Stdout, spool))
 			} else {
-				err = doSelect(ctx, tx, query, os.Stdout)
+				err = doSelect(ctx, tx, query, tee(os.Stdout, spool))
 			}
 		case "DELETE", "INSERT", "UPDATE":
-			err = txBegin(ctx, conn, &tx, os.Stderr)
+			echo(spool, query)
+			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
 			if err == nil {
-				err = doDML(ctx, tx, query, os.Stdout)
+				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
 			}
 		case "COMMIT":
-			err = txCommit(&tx, os.Stderr)
+			echo(spool, query)
+			err = txCommit(&tx, tee(os.Stderr, spool))
 		case "ROLLBACK":
-			err = txRollback(&tx, os.Stderr)
+			echo(spool, query)
+			err = txRollback(&tx, tee(os.Stderr, spool))
 		case "EXIT", "QUIT":
-			err = txCommit(&tx, os.Stderr)
+			err = txCommit(&tx, tee(os.Stderr, spool))
 			if err != nil {
 				return err
 			}
 			return io.EOF
 		default:
+			echo(spool, query)
 			if tx != nil {
 				fmt.Fprintln(os.Stderr, "Transaction is not closed. Please Commit or Rollback.")
 				continue
@@ -165,7 +204,7 @@ func loop(ctx context.Context, conn *sql.DB) error {
 			_, err = conn.ExecContext(ctx, query)
 		}
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
+			fmt.Fprintln(tee(os.Stderr, spool), err.Error())
 		}
 	}
 }

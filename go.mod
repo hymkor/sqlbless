@@ -3,11 +3,11 @@ module github.com/hymkor/sqlbless
 go 1.20
 
 require (
-	github.com/hymkor/go-multiline-ny v0.6.2
+	github.com/hymkor/go-multiline-ny v0.6.3
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-colorable v0.1.13
-	github.com/nyaosorg/go-readline-ny v0.8.5
-	github.com/sijms/go-ora/v2 v2.6.14
+	github.com/nyaosorg/go-readline-ny v0.9.1
+	github.com/sijms/go-ora/v2 v2.6.15
 )
 
 require (

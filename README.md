@@ -27,17 +27,37 @@ Supported commands:
 
 Semicolon `;` can be omitted.
 
-Oracle
--------
+Supporting DB
+-------------
+
+### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - On error, your transaction is not rolled back.
 
-PostgreSQL
-----------
+### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
 
 - Autocommit is disabled.  With INSERT, UPDATE, or DELETE, a transaction starts.
 - On error, the transaction is rolled back automatically because it aborted.
+
+
+Install
+-------
+
+Download the binary package from [Releases](https://github.com/hymkor/sqlbless/releases) and extract the executable.
+
+### for scoop-installer
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/sqlbless/master/sqlbless.json
+```
+
+or
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install sqlbless
+```

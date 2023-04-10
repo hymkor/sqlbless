@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -198,7 +199,11 @@ func loop(ctx context.Context, conn *sql.DB) error {
 	for {
 		lines, err := editor.Read(ctx)
 		if err != nil {
-			txCommit(&tx, os.Stderr)
+			if errors.Is(err, io.EOF) {
+				txCommit(&tx, os.Stderr)
+			} else {
+				txRollback(&tx, os.Stderr)
+			}
 			return err
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))

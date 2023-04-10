@@ -86,7 +86,7 @@ func txRollback(tx **sql.Tx, w io.Writer) error {
 		*tx = nil
 	}
 	if err == nil {
-		fmt.Fprintln(os.Stderr, "Rollback complete.")
+		fmt.Fprintln(w, "Rollback complete.")
 	}
 	return err
 }
@@ -118,7 +118,11 @@ func echo(spool *os.File, query string) {
 	}
 }
 
-func loop(ctx context.Context, conn *sql.DB) error {
+type Options struct {
+	RollbackOnFail bool
+}
+
+func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()
 
@@ -182,6 +186,11 @@ func loop(ctx context.Context, conn *sql.DB) error {
 			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
 			if err == nil {
 				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
+				if err != nil && options.RollbackOnFail {
+					fmt.Fprintln(tee(os.Stderr, spool), err.Error())
+					echo(spool, "rollback (automatically)")
+					err = txRollback(&tx, tee(os.Stderr, spool))
+				}
 			}
 		case "COMMIT":
 			echo(spool, query)
@@ -226,7 +235,12 @@ func mains(args []string) error {
 	}
 	defer conn.Close()
 
-	return loop(context.Background(), conn)
+	var options Options
+	switch strings.ToUpper(args[0]) {
+	case "POSTGRES":
+		options.RollbackOnFail = true
+	}
+	return loop(context.Background(), &options, conn)
 }
 
 func main() {

@@ -1,14 +1,17 @@
 SQL\*Bless
 ===========
 
-The Command-line Database Client
+The SQL\*Bless is a command-line database client like SQL*Plus or psql.
+
+- Emacs-like keybindings for inline editing of multiple lines of SQL
+- Save the result of SELECT in CSV format
 
 ![image](./demo.gif)
 
 | Key | Binding |
 |-----|---------|
-| `Enter`, `Ctrl`-`M` | Insert a linefeed |
-| `Ctrl`-`Enter`/`J` | Execute text as SQL |
+| `Enter`, `Ctrl`-`M` | **Insert a linefeed** |
+| `Ctrl`-`Enter`/`J` | **Execute text as SQL** |
 | `Ctrl`-`F`/`B`/`N`/`P` | Editing like Emacs |
 | `Ctrl`-`D` | Exit with commit |
 | `Ctrl`-`C` | Exit with rollback |

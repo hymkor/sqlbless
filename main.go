@@ -114,7 +114,12 @@ func tee(console, spool *os.File) io.Writer {
 
 func echo(spool *os.File, query string) {
 	if spool != nil {
-		fmt.Fprintf(spool, "SQL> %s\n", query)
+		next := true
+		for next {
+			var line string
+			line, query, next = strings.Cut(query, "\n")
+			fmt.Fprintf(spool, "# %s\n", line)
+		}
 	}
 }
 
@@ -188,7 +193,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
 				if err != nil && options.RollbackOnFail {
 					fmt.Fprintln(tee(os.Stderr, spool), err.Error())
-					echo(spool, "rollback (automatically)")
+					echo(spool, "( rollback automatically )")
 					err = txRollback(&tx, tee(os.Stderr, spool))
 				}
 			}

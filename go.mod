@@ -6,7 +6,7 @@ require (
 	github.com/hymkor/go-multiline-ny v0.6.4
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-colorable v0.1.13
-	github.com/nyaosorg/go-readline-ny v0.10.0
+	github.com/nyaosorg/go-readline-ny v0.10.1
 	github.com/sijms/go-ora/v2 v2.6.16
 )
 

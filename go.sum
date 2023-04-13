@@ -11,8 +11,8 @@ github.com/mattn/go-isatty v0.0.18 h1:DOKFKCQ7FNG2L1rbrmstDN4QVRdS89Nkh85u68Uwp9
 github.com/mattn/go-isatty v0.0.18/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/mattn/go-runewidth v0.0.14 h1:+xnbZSEeDbOIg5/mE6JF0w6n9duR1l3/WmbinWVwUuU=
 github.com/mattn/go-runewidth v0.0.14/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
-github.com/nyaosorg/go-readline-ny v0.10.0 h1:m2xW6v/8fE5SCX/vH/cOwoCOkGpqCd5/xH05x25fZrI=
-github.com/nyaosorg/go-readline-ny v0.10.0/go.mod h1:aoTnObwqS04NL0T9zwUvIO8h7v8fcKawdzJXRnV97T4=
+github.com/nyaosorg/go-readline-ny v0.10.1 h1:M/vmsVWT9M2Jq5Ad26k0i1aYcFj3YEcheBR2f26odyg=
+github.com/nyaosorg/go-readline-ny v0.10.1/go.mod h1:aoTnObwqS04NL0T9zwUvIO8h7v8fcKawdzJXRnV97T4=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
 github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=

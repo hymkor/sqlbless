@@ -14,12 +14,12 @@ var (
 	reset = readline.SGR3(22, 49, 39)
 )
 
-func (c *Coloring) Init() int {
+func (c *Coloring) Init() readline.ColorSequence {
 	c.bits = 0
 	return reset
 }
 
-func (c *Coloring) Next(r rune) int {
+func (c *Coloring) Next(r rune) readline.ColorSequence {
 	const (
 		_QUOTED = 1
 	)

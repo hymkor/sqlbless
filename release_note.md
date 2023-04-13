@@ -1,5 +1,5 @@
 - Insert `#` at the beginning of each line of spooled SQL
-- Fix for go-readline-ny v0.10.0
+- Fix for go-readline-ny v0.10.1
 
 v0.1.0
 ======

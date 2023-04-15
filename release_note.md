@@ -2,6 +2,7 @@
 - Fix for go-readline-ny v0.10.1
 - Enabled automatic rollback by default on errors except for Oracle
 - On error, contain "(%T)" (type of type) into error message
+- Implemented automatic rollback of a transaction on 'exit', 'quit', or EOF
 
 v0.1.0
 ======

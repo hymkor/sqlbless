@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -146,21 +145,19 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	}
 	var spool *os.File = nil
+	var tx *sql.Tx = nil
 	defer func() {
+		if tx != nil {
+			txRollback(&tx, tee(os.Stderr, spool))
+		}
 		if spool != nil {
 			spool.Close()
 			spool = nil
 		}
 	}()
-	var tx *sql.Tx = nil
 	for {
 		lines, err := editor.Read(ctx)
 		if err != nil {
-			if errors.Is(err, io.EOF) {
-				txCommit(&tx, os.Stderr)
-			} else {
-				txRollback(&tx, os.Stderr)
-			}
 			return err
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
@@ -204,10 +201,6 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			echo(spool, query)
 			err = txRollback(&tx, tee(os.Stderr, spool))
 		case "EXIT", "QUIT":
-			err = txCommit(&tx, tee(os.Stderr, spool))
-			if err != nil {
-				return err
-			}
 			return io.EOF
 		default:
 			echo(spool, query)

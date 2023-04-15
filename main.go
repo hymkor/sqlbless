@@ -15,7 +15,6 @@ import (
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
-	"github.com/nyaosorg/go-readline-ny/simplehistory"
 )
 
 func cutField(s string) (string, string) {
@@ -142,8 +141,8 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 	defer disabler()
 
 	var editor multiline.Editor
-	history := simplehistory.New()
-	editor.LineEditor.History = history
+	var history History
+	editor.LineEditor.History = &history
 	editor.LineEditor.Writer = colorable.NewColorableStdout()
 
 	editor.LineEditor.Coloring = &Coloring{}
@@ -221,7 +220,11 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			echo(spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, spool))
 			for i, end := 0, history.Len(); i < end; i++ {
-				csvw.Write([]string{strconv.Itoa(i), history.At(i)})
+				text, stamp := history.textAndStamp(i)
+				csvw.Write([]string{
+					strconv.Itoa(i),
+					stamp.Local().Format(time.DateTime),
+					text})
 			}
 			csvw.Flush()
 		default:

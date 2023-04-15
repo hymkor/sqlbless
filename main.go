@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mattn/go-colorable"
 
@@ -114,6 +115,7 @@ func tee(console, spool *os.File) io.Writer {
 func echo(spool *os.File, query string) {
 	if spool != nil {
 		next := true
+		fmt.Fprintf(spool, "# (%s)\n", time.Now().Local().Format(time.DateTime))
 		for next {
 			var line string
 			line, query, next = strings.Cut(query, "\n")

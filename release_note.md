@@ -1,3 +1,6 @@
+v0.2.0
+======
+
 - Insert `#` at the beginning of each line of spooled SQL
 - Fix for go-readline-ny v0.10.1
 - Enabled automatic rollback by default on errors except for Oracle

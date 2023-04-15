@@ -44,7 +44,7 @@ type canQuery interface {
 func doSelect(ctx context.Context, conn canQuery, query string, w io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("Query: %w", err)
+		return fmt.Errorf("Query: %[1]w (%[1]T)", err)
 	}
 	defer rows.Close()
 	return dumpRows(ctx, rows, ',', false, w)
@@ -57,11 +57,11 @@ type canExec interface {
 func doDML(ctx context.Context, conn canExec, query string, w io.Writer) error {
 	result, err := conn.ExecContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("Exec: %w", err)
+		return fmt.Errorf("Exec: %[1]w (%[1]T)", err)
 	}
 	count, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("RowsAffected: %w", err)
+		return fmt.Errorf("RowsAffected: %[1]w (%[1]T)", err)
 	}
 	fmt.Fprintf(w, "%d record(s) updated.\n", count)
 	return nil
@@ -99,7 +99,7 @@ func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error 
 	var err error
 	*tx, err = conn.BeginTx(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("BeginTx: %w", err)
+		return fmt.Errorf("BeginTx: %[1]w (%[1]T)", err)
 	}
 	return nil
 }
@@ -236,7 +236,7 @@ func mains(args []string) error {
 	fmt.Println()
 	conn, err := sql.Open(args[0], args[1])
 	if err != nil {
-		return fmt.Errorf("sql.Open: %w", err)
+		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
 	}
 	defer conn.Close()
 

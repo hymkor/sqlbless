@@ -129,6 +129,7 @@ func desc(ctx context.Context, conn canQuery, options *Options, table string, w 
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 	return dumpRows(ctx, rows, ',', false, w)
 }
 

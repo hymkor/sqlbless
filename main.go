@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -15,7 +17,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/simplehistory"
 )
 
-func firstWord(s string) string {
+func cutField(s string) (string, string) {
 	for len(s) > 0 && (s[0] == ' ' || s[0] == '\n' || s[0] == '\r' || s[0] == '\t' || s[0] == '\v') {
 		s = s[1:]
 	}
@@ -23,7 +25,7 @@ func firstWord(s string) string {
 	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
 		i++
 	}
-	return s[:i]
+	return s[:i], s[i:]
 }
 
 func trimSemicolon(s string) string {
@@ -169,14 +171,15 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
 		history.Add(query)
-		switch strings.ToUpper(firstWord(query)) {
+		cmd, arg := cutField(query)
+		switch strings.ToUpper(cmd) {
 		case "SPOOL":
 			if spool != nil {
 				spool.Close()
 				fmt.Fprintln(os.Stderr, "Spool closed.")
 				spool = nil
 			}
-			fname := firstWord(query[5:])
+			fname, _ := cutField(arg)
 			if fname != "" && !strings.EqualFold(fname, "off") {
 				if fd, err := os.Create(fname); err == nil {
 					spool = fd
@@ -211,7 +214,14 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			return io.EOF
 		case "DESC":
 			echo(spool, query)
-			err = desc(ctx, conn, options, query[4:], tee(os.Stdout, spool))
+			err = desc(ctx, conn, options, arg, tee(os.Stdout, spool))
+		case "HISTORY":
+			echo(spool, query)
+			csvw := csv.NewWriter(tee(os.Stdout, spool))
+			for i, end := 0, history.Len(); i < end; i++ {
+				csvw.Write([]string{strconv.Itoa(i), history.At(i)})
+			}
+			csvw.Flush()
 		default:
 			echo(spool, query)
 			if tx != nil {

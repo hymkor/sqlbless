@@ -6,6 +6,8 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+
+	"unicode/utf8"
 )
 
 func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w io.Writer) error {
@@ -41,6 +43,10 @@ func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w i
 		}
 		for i, a := range itemAny {
 			if p, ok := a.(*any); ok {
+				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {
+					itemStr[i] = string(b)
+					continue
+				}
 				itemStr[i] = fmt.Sprint(*p)
 			}
 		}

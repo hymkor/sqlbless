@@ -124,7 +124,7 @@ func echo(spool *os.File, query string) {
 }
 
 type Options struct {
-	RollbackOnFail bool
+	DontRollbackOnFail bool
 }
 
 func loop(ctx context.Context, options *Options, conn *sql.DB) error {
@@ -191,7 +191,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
 			if err == nil {
 				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
-				if err != nil && options.RollbackOnFail {
+				if err != nil && !options.DontRollbackOnFail {
 					fmt.Fprintln(tee(os.Stderr, spool), err.Error())
 					echo(spool, "( rollback automatically )")
 					err = txRollback(&tx, tee(os.Stderr, spool))
@@ -242,8 +242,8 @@ func mains(args []string) error {
 
 	var options Options
 	switch strings.ToUpper(args[0]) {
-	case "POSTGRES":
-		options.RollbackOnFail = true
+	case "ORACLE":
+		options.DontRollbackOnFail = true
 	}
 	return loop(context.Background(), &options, conn)
 }

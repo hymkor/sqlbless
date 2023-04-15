@@ -1,5 +1,10 @@
+- select: when data is []byte and valis as utf8, print it as string
+- Implement `desc` command to display specifications for the table given as parameter
+- Print text enclosed with double quotations with magenta
+
 v0.2.0
 ======
+Apr 16, 2023
 
 - Insert `#` at the beginning of each line of spooled SQL
 - Fix for go-readline-ny v0.10.1

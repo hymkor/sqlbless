@@ -175,13 +175,21 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
 		case "SPOOL":
+			fname, _ := cutField(arg)
+			if fname == "" {
+				if spool != nil {
+					fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", spool.Name())
+				} else {
+					fmt.Fprintln(os.Stderr, "Not Spooling")
+				}
+				continue
+			}
 			if spool != nil {
 				spool.Close()
 				fmt.Fprintln(os.Stderr, "Spool closed.")
 				spool = nil
 			}
-			fname, _ := cutField(arg)
-			if fname != "" && !strings.EqualFold(fname, "off") {
+			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 					spool = fd
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)

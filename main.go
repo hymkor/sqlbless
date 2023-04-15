@@ -182,7 +182,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			}
 			fname, _ := cutField(arg)
 			if fname != "" && !strings.EqualFold(fname, "off") {
-				if fd, err := os.Create(fname); err == nil {
+				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 					spool = fd
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
 				}

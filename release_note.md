@@ -1,6 +1,12 @@
 - select: when data is []byte and valis as utf8, print it as string
 - Implement `desc` command to display specifications for the table given as parameter
 - Print text enclosed with double quotations with magenta
+- Implement `history` command to print command-line histories
+- On `spool` command:
+    - With no arguments show the current status instead of stopping spooling
+    - Output timestamp into the spooling file for each command
+    - Show the current spooling filename on prompt
+    - Open as append-mode. Do not truncate existing spooled file.
 
 v0.2.0
 ======

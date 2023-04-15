@@ -166,6 +166,9 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		}
 	}()
 	for {
+		if spool != nil {
+			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", spool.Name())
+		}
 		lines, err := editor.Read(ctx)
 		if err != nil {
 			return err

@@ -12,7 +12,7 @@ type Coloring struct {
 
 func (c *Coloring) Init() readline.ColorSequence {
 	c.bits = 0
-	return readline.DefaultForeGroundColor
+	return readline.SGR1(0)
 }
 
 func (c *Coloring) Next(r rune) readline.ColorSequence {

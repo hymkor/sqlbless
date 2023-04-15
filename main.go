@@ -3,18 +3,16 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
-	_ "github.com/lib/pq"
 	"github.com/mattn/go-colorable"
-	_ "github.com/sijms/go-ora/v2"
-
-	"github.com/nyaosorg/go-readline-ny/simplehistory"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/nyaosorg/go-readline-ny/simplehistory"
 )
 
 func firstWord(s string) string {
@@ -122,8 +120,16 @@ func echo(spool *os.File, query string) {
 	}
 }
 
-type Options struct {
-	DontRollbackOnFail bool
+func desc(ctx context.Context, conn canQuery, options *Options, table string, w io.Writer) error {
+	if options.SqlForDesc == "" {
+		return errors.New("DESC: not supported")
+	}
+	// fmt.Fprintln(os.Stderr, options.SqlForDesc)
+	rows, err := conn.QueryContext(ctx, options.SqlForDesc, strings.TrimSpace(table))
+	if err != nil {
+		return err
+	}
+	return dumpRows(ctx, rows, ',', false, w)
 }
 
 func loop(ctx context.Context, options *Options, conn *sql.DB) error {
@@ -202,6 +208,9 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			err = txRollback(&tx, tee(os.Stderr, spool))
 		case "EXIT", "QUIT":
 			return io.EOF
+		case "DESC":
+			echo(spool, query)
+			err = desc(ctx, conn, options, query[4:], tee(os.Stdout, spool))
 		default:
 			echo(spool, query)
 			if tx != nil {
@@ -233,12 +242,12 @@ func mains(args []string) error {
 	}
 	defer conn.Close()
 
-	var options Options
-	switch strings.ToUpper(args[0]) {
-	case "ORACLE":
-		options.DontRollbackOnFail = true
+	var options *Options
+	options, ok := dbDependent[strings.ToUpper(args[0])]
+	if !ok {
+		options = &Options{}
 	}
-	return loop(context.Background(), &options, conn)
+	return loop(context.Background(), options, conn)
 }
 
 func main() {

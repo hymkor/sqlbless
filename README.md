@@ -13,8 +13,8 @@ The SQL\*Bless is a command-line database client like SQL*Plus or psql.
 | `Enter`, `Ctrl`-`M` | **Insert a linefeed** |
 | `Ctrl`-`Enter`/`J` | **Execute text as SQL** |
 | `Ctrl`-`F`/`B`/`N`/`P` | Editing like Emacs |
-| `Ctrl`-`D` | Exit with commit |
 | `Ctrl`-`C` | Exit with rollback |
+| `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
 | `ALT`-`P`, `Ctrl`-`Up` | Insert the previous SQL (history)|
 | `ALT`-`N`, `Ctrl`-`Down` | Insert the next SQL (history) |
 

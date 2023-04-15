@@ -8,30 +8,32 @@ type Coloring struct {
 	bits int
 }
 
-var (
-	red   = readline.SGR3(1, 49, 31)
-	cyan  = readline.SGR3(1, 49, 36)
-	reset = readline.SGR3(22, 49, 39)
-)
-
 func (c *Coloring) Init() readline.ColorSequence {
 	c.bits = 0
-	return reset
+	return readline.DefaultForeGroundColor
 }
 
 func (c *Coloring) Next(r rune) readline.ColorSequence {
 	const (
-		_QUOTED = 1
+		_SINGLE_QUOTED = 1
+		_DOUBLE_QUOTED = 2
 	)
 	newbits := c.bits
 	if r == '\'' {
-		newbits ^= _QUOTED
+		newbits ^= _SINGLE_QUOTED
+	} else if r == '"' {
+		newbits ^= _DOUBLE_QUOTED
 	}
 	defer func() {
 		c.bits = newbits
 	}()
-	if (c.bits&_QUOTED) != 0 || (newbits&_QUOTED) != 0 {
-		return red
+
+	or := c.bits | newbits
+
+	if (or & _SINGLE_QUOTED) != 0 {
+		return readline.Red
+	} else if (or & _DOUBLE_QUOTED) != 0 {
+		return readline.Magenta
 	}
-	return cyan
+	return readline.Cyan
 }

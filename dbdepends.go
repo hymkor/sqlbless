@@ -11,6 +11,7 @@ import (
 type Options struct {
 	DontRollbackOnFail bool
 	SqlForDesc         string
+	SqlForTab          string
 }
 
 var dbDependent = map[string]*Options{
@@ -34,6 +35,9 @@ var dbDependent = map[string]*Options{
           and t.oid = a.atttypid
           and a.attisdropped is false
         order by a.attnum`,
+		SqlForTab: `
+      select schemaname,tablename,tableowner
+        from pg_tables`,
 	},
 	"ORACLE": &Options{
 		DontRollbackOnFail: false,
@@ -51,6 +55,7 @@ var dbDependent = map[string]*Options{
         from all_tab_columns
         where table_name = UPPER(:1)
         order by column_id`,
+		SqlForTab: `select * from tab`,
 	},
 }
 

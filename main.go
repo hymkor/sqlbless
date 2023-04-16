@@ -128,7 +128,14 @@ func desc(ctx context.Context, conn canQuery, options *Options, table string, w 
 		return errors.New("DESC: not supported")
 	}
 	// fmt.Fprintln(os.Stderr, options.SqlForDesc)
-	rows, err := conn.QueryContext(ctx, options.SqlForDesc, strings.TrimSpace(table))
+	tableName := strings.TrimSpace(table)
+	var rows *sql.Rows
+	var err error
+	if tableName == "" {
+		rows, err = conn.QueryContext(ctx, options.SqlForTab)
+	} else {
+		rows, err = conn.QueryContext(ctx, options.SqlForDesc, tableName)
+	}
 	if err != nil {
 		return err
 	}

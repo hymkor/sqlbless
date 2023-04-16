@@ -1,9 +1,9 @@
 github.com/atotto/clipboard v0.1.4 h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z4=
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
-github.com/hymkor/go-multiline-ny v0.6.5 h1:0uqJBbZJh2JLcE4qrnMHD8l14idYnbknOd9BKiKGPcc=
-github.com/hymkor/go-multiline-ny v0.6.5/go.mod h1:qPLN+TMrab1wXmWunQYo43TIcFfaiyPZxFGQqtoncQ0=
-github.com/lib/pq v1.10.7 h1:p7ZhMD+KsSRozJr34udlUrhboJwWAgCg34+/ZZNvZZw=
-github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/hymkor/go-multiline-ny v0.6.6 h1:nJ0lT+Ug785Je5190S4s8QG032Zi52TsIxfPHRuZ/QA=
+github.com/hymkor/go-multiline-ny v0.6.6/go.mod h1:qPLN+TMrab1wXmWunQYo43TIcFfaiyPZxFGQqtoncQ0=
+github.com/lib/pq v1.10.8 h1:3fdt97i/cwSU83+E0hZTC/Xpc9mTZxc6UWSCRcSbxiE=
+github.com/lib/pq v1.10.8/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
 github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovkB8vQcUbaXHg=
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
@@ -16,8 +16,8 @@ github.com/nyaosorg/go-readline-ny v0.10.1/go.mod h1:aoTnObwqS04NL0T9zwUvIO8h7v8
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
 github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
-github.com/sijms/go-ora/v2 v2.6.16 h1:71I4BrIgukXMtnRQD+sWC1FC7y4vMQBV4zkogE/7zgc=
-github.com/sijms/go-ora/v2 v2.6.16/go.mod h1:EHxlY6x7y9HAsdfumurRfTd+v8NrEOTR3Xl4FWlH6xk=
+github.com/sijms/go-ora/v2 v2.6.17 h1:REqjWNQmCd/7CsI1GeuvWOEWqv2c66Gj2X42MrIRgQo=
+github.com/sijms/go-ora/v2 v2.6.17/go.mod h1:EHxlY6x7y9HAsdfumurRfTd+v8NrEOTR3Xl4FWlH6xk=
 golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.7.0 h1:3jlCCIQZPdOYu1h8BkNvLz8Kgwtae2cagcG/VamtZRU=

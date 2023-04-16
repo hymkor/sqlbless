@@ -1,4 +1,8 @@
-- select: when data is []byte and valis as utf8, print it as string
+v0.3.0
+======
+Apr 16, 2023
+
+- select: when data is []byte and valid as utf8, print it as string
 - Implement `desc` and `\d` command to display specifications for the table given as parameter
 - Print text enclosed with double quotations with magenta
 - Implement `history` command to print command-line histories

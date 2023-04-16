@@ -1,5 +1,5 @@
 - select: when data is []byte and valis as utf8, print it as string
-- Implement `desc` command to display specifications for the table given as parameter
+- Implement `desc` and `\d` command to display specifications for the table given as parameter
 - Print text enclosed with double quotations with magenta
 - Implement `history` command to print command-line histories
 - On `spool` command:

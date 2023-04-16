@@ -1,7 +1,7 @@
 SQL-Bless
 ===========
 
-The SQL-Bless is a command-line database client like SQL*Plus or psql.
+The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 
 - Emacs-like keybindings for inline editing of multiple lines of SQL
 - Save the result of SELECT in CSV format
@@ -18,7 +18,8 @@ The SQL-Bless is a command-line database client like SQL*Plus or psql.
 | `ALT`-`P`, `Ctrl`-`Up` | Insert the previous SQL (history)|
 | `ALT`-`N`, `Ctrl`-`Down` | Insert the next SQL (history) |
 
-Supported commands:
+Supported commands
+------------------
 
 - SELECT / INSERT / UPDATE / DELETE
     - INSERT, UPDATE and DELETE begin the transaction automatically.
@@ -30,6 +31,27 @@ Supported commands:
     - Rollback a transaction and exit SQL-Bless.
 
 Semicolon `;` can be omitted.
+
+Example of a spooled file
+--------------------------
+
+```csv
+# (2023-04-16 08:54:28)
+# select * from tab where rownum < 3
+TNAME,TABTYPE,CLUSTERID
+AQ$_INTERNET_AGENTS,TABLE,<nil>
+AQ$_INTERNET_AGENT_PRIVS,TABLE,<nil>
+# (2023-04-16 08:54:33)
+# history
+0,2023-04-16 08:54:14,spool hoge
+1,2023-04-16 08:54:28,select * from tab where rownum < 3
+2,2023-04-16 08:54:33,history
+# (2023-04-16 09:01:29)
+# select * from tab where rownum < 3
+TNAME,TABTYPE,CLUSTERID
+AQ$_INTERNET_AGENTS,TABLE,<nil>
+AQ$_INTERNET_AGENT_PRIVS,TABLE,<nil>
+```
 
 Supporting DB
 -------------

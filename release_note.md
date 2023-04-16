@@ -1,3 +1,5 @@
+- On start, print version, GOOS, GOARCH, and runtime-version.
+
 v0.3.0
 ======
 Apr 16, 2023

@@ -25,7 +25,7 @@ Supported commands:
 - COMMIT / ROLLBACK
 - SPOOL
     - `spool FILENAME` .. open FILENAME and write log and output.
-    - `spool off` or `spool` .. stop spooling and close.
+    - `spool off` .. stop spooling and close.
 - EXIT / QUIT
     - Rollback a transaction and exit Sql\*Bless.
 

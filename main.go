@@ -254,9 +254,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 
 func mains(args []string) error {
 	if len(args) < 2 {
-		fmt.Fprintln(os.Stderr, "Usage:")
-		fmt.Fprintln(os.Stderr, `  sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE`)
-		fmt.Fprintln(os.Stderr, `  sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"`)
+		usage(os.Stderr)
 		return nil
 	}
 	fmt.Println("SQL-Bless")

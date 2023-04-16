@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io"
+
 	_ "github.com/lib/pq"
 	_ "github.com/sijms/go-ora/v2"
 )
@@ -49,4 +52,10 @@ var dbDependent = map[string]*Options{
         where table_name = UPPER(:1)
         order by column_id`,
 	},
+}
+
+func usage(w io.Writer) {
+	fmt.Fprintln(w, "Usage:")
+	fmt.Fprintln(w, `  sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE`)
+	fmt.Fprintln(w, `  sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"`)
 }

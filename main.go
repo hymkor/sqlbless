@@ -278,7 +278,6 @@ func mains(args []string) error {
 	}
 	defer conn.Close()
 
-	var options *Options
 	options, ok := dbDependent[strings.ToUpper(args[0])]
 	if !ok {
 		options = &Options{}

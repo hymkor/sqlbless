@@ -259,7 +259,7 @@ func mains(args []string) error {
 		fmt.Fprintln(os.Stderr, `  sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"`)
 		return nil
 	}
-	fmt.Println("SQL*Bless")
+	fmt.Println("SQL-Bless")
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()

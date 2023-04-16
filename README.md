@@ -1,7 +1,7 @@
-SQL\*Bless
+SQL-Bless
 ===========
 
-The SQL\*Bless is a command-line database client like SQL*Plus or psql.
+The SQL-Bless is a command-line database client like SQL*Plus or psql.
 
 - Emacs-like keybindings for inline editing of multiple lines of SQL
 - Save the result of SELECT in CSV format

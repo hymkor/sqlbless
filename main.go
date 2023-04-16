@@ -224,7 +224,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			err = txRollback(&tx, tee(os.Stderr, spool))
 		case "EXIT", "QUIT":
 			return io.EOF
-		case "DESC":
+		case "DESC", "\\D":
 			echo(spool, query)
 			err = desc(ctx, conn, options, arg, tee(os.Stdout, spool))
 		case "HISTORY":

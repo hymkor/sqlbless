@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -259,12 +260,15 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 	}
 }
 
+var version string
+
 func mains(args []string) error {
+	fmt.Printf("SQL-Bless %s-%s-%s by %s\n",
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 	if len(args) < 2 {
-		usage(os.Stderr)
+		usage(os.Stdout)
 		return nil
 	}
-	fmt.Println("SQL-Bless")
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()

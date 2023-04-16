@@ -150,18 +150,18 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 
 	var editor multiline.Editor
 	var history History
-	editor.LineEditor.History = &history
-	editor.LineEditor.Writer = colorable.NewColorableStdout()
 
-	editor.LineEditor.Coloring = &Coloring{}
-
-	editor.Prompt = func(w io.Writer, i int) (int, error) {
+	editor.SetHistory(&history)
+	editor.SetWriter(colorable.NewColorableStdout())
+	editor.SetColoring(&Coloring{})
+	editor.SetPrompt(func(w io.Writer, i int) (int, error) {
 		io.WriteString(w, "\x1B[0m")
 		if i <= 0 {
 			return io.WriteString(w, "SQL> ")
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
-	}
+	})
+
 	var spool *os.File = nil
 	var tx *sql.Tx = nil
 	defer func() {

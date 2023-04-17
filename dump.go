@@ -4,11 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 
 	"unicode/utf8"
 )
+
+var flagNullString = flag.String("null", "<NULL>", "Set a string representing NULL")
 
 func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w io.Writer) error {
 	columns, err := rows.Columns()
@@ -43,6 +46,10 @@ func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w i
 		}
 		for i, a := range itemAny {
 			if p, ok := a.(*any); ok {
+				if *p == nil {
+					itemStr[i] = *flagNullString
+					continue
+				}
 				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {
 					itemStr[i] = string(b)
 					continue

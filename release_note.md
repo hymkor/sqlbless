@@ -1,4 +1,5 @@
 - On start, print version, GOOS, GOARCH, and runtime-version.
+- Add the option -null: set a string represeting NULL
 
 v0.3.0
 ======

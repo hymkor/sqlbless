@@ -182,24 +182,11 @@ func newFilter(fd *os.File) *Filter {
 
 var flagCrLf = flag.Bool("crlf", false, "use CRLF")
 
-func loop(ctx context.Context, options *Options, conn *sql.DB) error {
-	disabler := colorable.EnableColorsStdout(nil)
-	defer disabler()
+type CommandIn interface {
+	Read(context.Context) ([]string, error)
+}
 
-	var editor multiline.Editor
-	var history History
-
-	editor.SetHistory(&history)
-	editor.SetWriter(colorable.NewColorableStdout())
-	editor.SetColoring(&Coloring{})
-	editor.SetPrompt(func(w io.Writer, i int) (int, error) {
-		io.WriteString(w, "\x1B[0m")
-		if i <= 0 {
-			return io.WriteString(w, "SQL> ")
-		}
-		return fmt.Fprintf(w, "%3d> ", i+1)
-	})
-
+func loop(ctx context.Context, options *Options, conn *sql.DB, commandIn CommandIn, history *History) error {
 	var spool interface {
 		io.Writer
 		io.Closer
@@ -220,7 +207,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		if spool != nil {
 			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", spool.Name())
 		}
-		lines, err := editor.Read(ctx)
+		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			return err
 		}
@@ -329,7 +316,24 @@ func mains(args []string) error {
 	if !ok {
 		options = &Options{}
 	}
-	return loop(context.Background(), options, conn)
+
+	disabler := colorable.EnableColorsStdout(nil)
+	defer disabler()
+
+	var editor multiline.Editor
+	var history History
+
+	editor.SetHistory(&history)
+	editor.SetWriter(colorable.NewColorableStdout())
+	editor.SetColoring(&Coloring{})
+	editor.SetPrompt(func(w io.Writer, i int) (int, error) {
+		io.WriteString(w, "\x1B[0m")
+		if i <= 0 {
+			return io.WriteString(w, "SQL> ")
+		}
+		return fmt.Fprintf(w, "%3d> ", i+1)
+	})
+	return loop(context.Background(), options, conn, &editor, &history)
 }
 
 func main() {

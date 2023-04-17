@@ -44,26 +44,6 @@ func (f lfToCrlf) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err er
 	return nDst, nSrc, nil
 }
 
-type writeMultiCloser struct {
-	io.Writer
-	c []io.Closer
-}
-
-func (m *writeMultiCloser) Close() error {
-	for _, p := range m.c {
-		p.Close()
-	}
-	return nil
-}
-
-func lfToCrlfWriter(src io.WriteCloser) io.WriteCloser {
-	w := transform.NewWriter(src, lfToCrlf{})
-	return &writeMultiCloser{
-		Writer: w,
-		c:      []io.Closer{w, src},
-	}
-}
-
 func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {

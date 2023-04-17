@@ -186,78 +186,85 @@ type CommandIn interface {
 	Read(context.Context) ([]string, error)
 }
 
-func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn, history *History, onErrorAbort bool) error {
-	var spool interface {
+type Session struct {
+	dbSpec       *DBSpec
+	conn         *sql.DB
+	history      *History
+	onErrorAbort bool
+	tx           *sql.Tx
+	spool        interface {
 		io.Writer
 		io.Closer
 		Name() string
-	} = nil
+	}
+}
 
-	var tx *sql.Tx = nil
-	defer func() {
-		if tx != nil {
-			txRollback(&tx, tee(os.Stderr, spool))
-		}
-		if spool != nil {
-			spool.Close()
-			spool = nil
-		}
-	}()
+func (ss *Session) Close() {
+	if ss.tx != nil {
+		txRollback(&ss.tx, tee(os.Stderr, ss.spool))
+	}
+	if ss.spool != nil {
+		ss.spool.Close()
+		ss.spool = nil
+	}
+}
+
+func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 	for {
-		if spool != nil {
-			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", spool.Name())
+		if ss.spool != nil {
+			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
 		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			return err
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
-		history.Add(query)
+		ss.history.Add(query)
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
 		case "SPOOL":
 			fname, _ := cutField(arg)
 			if fname == "" {
-				if spool != nil {
-					fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", spool.Name())
+				if ss.spool != nil {
+					fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
 				} else {
 					fmt.Fprintln(os.Stderr, "Not Spooling")
 				}
 				continue
 			}
-			if spool != nil {
-				spool.Close()
+			if ss.spool != nil {
+				ss.spool.Close()
 				fmt.Fprintln(os.Stderr, "Spool closed.")
-				spool = nil
+				ss.spool = nil
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 					if *flagCrLf {
-						spool = newFilter(fd)
+						ss.spool = newFilter(fd)
 					} else {
-						spool = fd
+						ss.spool = fd
 					}
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
 				}
 			}
 		case "SELECT":
-			echo(spool, query)
-			if tx == nil {
-				err = doSelect(ctx, conn, query, tee(os.Stdout, spool))
+			echo(ss.spool, query)
+			if ss.tx == nil {
+				err = doSelect(ctx, ss.conn, query, tee(os.Stdout, ss.spool))
 			} else {
-				err = doSelect(ctx, tx, query, tee(os.Stdout, spool))
+				err = doSelect(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
 			}
 		case "DELETE", "INSERT", "UPDATE":
-			echo(spool, query)
-			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
+			echo(ss.spool, query)
+			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
 			if err == nil {
-				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
+				err = doDML(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
 				if err != nil {
-					if onErrorAbort || !dbSpec.DontRollbackOnFail {
-						fmt.Fprintln(tee(os.Stderr, spool), err.Error())
-						echo(spool, "( rollback automatically )")
-						errRollback := txRollback(&tx, tee(os.Stderr, spool))
-						if onErrorAbort {
+					if ss.onErrorAbort || !ss.dbSpec.DontRollbackOnFail {
+						fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
+						echo(ss.spool, "( rollback automatically )")
+						errRollback := txRollback(&ss.tx, tee(os.Stderr, ss.spool))
+						if ss.onErrorAbort {
 							return err
 						}
 						err = errRollback
@@ -265,21 +272,21 @@ func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn
 				}
 			}
 		case "COMMIT":
-			echo(spool, query)
-			err = txCommit(&tx, tee(os.Stderr, spool))
+			echo(ss.spool, query)
+			err = txCommit(&ss.tx, tee(os.Stderr, ss.spool))
 		case "ROLLBACK":
-			echo(spool, query)
-			err = txRollback(&tx, tee(os.Stderr, spool))
+			echo(ss.spool, query)
+			err = txRollback(&ss.tx, tee(os.Stderr, ss.spool))
 		case "EXIT", "QUIT":
 			return io.EOF
 		case "DESC", "\\D":
-			echo(spool, query)
-			err = desc(ctx, conn, dbSpec, arg, tee(os.Stdout, spool))
+			echo(ss.spool, query)
+			err = desc(ctx, ss.conn, ss.dbSpec, arg, tee(os.Stdout, ss.spool))
 		case "HISTORY":
-			echo(spool, query)
-			csvw := csv.NewWriter(tee(os.Stdout, spool))
-			for i, end := 0, history.Len(); i < end; i++ {
-				text, stamp := history.textAndStamp(i)
+			echo(ss.spool, query)
+			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))
+			for i, end := 0, ss.history.Len(); i < end; i++ {
+				text, stamp := ss.history.textAndStamp(i)
 				csvw.Write([]string{
 					strconv.Itoa(i),
 					stamp.Local().Format(time.DateTime),
@@ -287,34 +294,27 @@ func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn
 			}
 			csvw.Flush()
 		default:
-			echo(spool, query)
-			if tx != nil {
+			echo(ss.spool, query)
+			if ss.tx != nil {
 				fmt.Fprintln(os.Stderr, "Transaction is not closed. Please Commit or Rollback.")
 				continue
 			}
-			_, err = conn.ExecContext(ctx, query)
+			_, err = ss.conn.ExecContext(ctx, query)
 		}
 		if err != nil {
-			fmt.Fprintln(tee(os.Stderr, spool), err.Error())
-			if onErrorAbort {
+			fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
+			if ss.onErrorAbort {
 				return err
 			}
 		}
 	}
 }
 
-var version string
-
 func mains(args []string) error {
-	fmt.Printf("SQL-Bless %s-%s-%s by %s\n",
-		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 	if len(args) < 2 {
 		usage(os.Stdout)
 		return nil
 	}
-	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
-	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
-	fmt.Println()
 	conn, err := sql.Open(args[0], args[1])
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
@@ -326,11 +326,26 @@ func mains(args []string) error {
 		dbSpec = &DBSpec{}
 	}
 
+	var history History
+
+	session := &Session{
+		dbSpec:       dbSpec,
+		conn:         conn,
+		history:      &history,
+		onErrorAbort: false,
+	}
+	defer session.Close()
+
+	// interactive mode
+
+	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
+	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
+	fmt.Println()
+
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()
 
 	var editor multiline.Editor
-	var history History
 
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
@@ -342,10 +357,16 @@ func mains(args []string) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
-	return loop(context.Background(), dbSpec, conn, &editor, &history, false)
+
+	return session.Loop(context.Background(), &editor)
 }
 
+var version string
+
 func main() {
+	fmt.Printf("SQL-Bless %s-%s-%s by %s\n",
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
 	flag.Parse()
 	if err := mains(flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())

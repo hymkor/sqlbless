@@ -1,7 +1,12 @@
+v0.4.0
+=======
+Apr 17, 2023
+
 - On start, print version, GOOS, GOARCH, and runtime-version.
-- Add the option -null "NULL" : set a string represeting NULL
-- Add the option -fs "FS" : set field seperator character instead of comma
+- Add the option -null "string" : set a string represeting NULL
+- Add the option -fs "string" : set field separator character instead of comma
 - Add the option -crlf: use CRLF for newline
+- Add the option -tsv: use TAB as field separator
 
 v0.3.0
 ======

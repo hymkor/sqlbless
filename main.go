@@ -48,7 +48,7 @@ func doSelect(ctx context.Context, conn canQuery, query string, w io.Writer) err
 		return fmt.Errorf("Query: %[1]w (%[1]T)", err)
 	}
 	defer rows.Close()
-	return dumpRows(ctx, rows, ',', false, w)
+	return dumpRows(ctx, rows, w)
 }
 
 type canExec interface {
@@ -142,7 +142,7 @@ func desc(ctx context.Context, conn canQuery, options *Options, table string, w 
 		return err
 	}
 	defer rows.Close()
-	return dumpRows(ctx, rows, ',', false, w)
+	return dumpRows(ctx, rows, w)
 }
 
 func loop(ctx context.Context, options *Options, conn *sql.DB) error {

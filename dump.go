@@ -7,13 +7,15 @@ import (
 	"flag"
 	"fmt"
 	"io"
-
 	"unicode/utf8"
 )
 
-var flagNullString = flag.String("null", "<NULL>", "Set a string representing NULL")
+var (
+	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
+	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
+)
 
-func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w io.Writer) error {
+func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
@@ -22,8 +24,8 @@ func dumpRows(ctx context.Context, rows *sql.Rows, comma rune, useCRLF bool, w i
 	csvWriter := csv.NewWriter(w)
 	defer csvWriter.Flush()
 
-	csvWriter.Comma = comma
-	csvWriter.UseCRLF = useCRLF
+	csvWriter.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
+	csvWriter.UseCRLF = false
 
 	if err := csvWriter.Write(columns); err != nil {
 		return err

@@ -3,8 +3,13 @@ SQL-Bless
 
 The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 
-- Emacs-like keybindings for inline editing of multiple lines of SQL
+- Emacs-like keybindings for inline editing of multiple lines of SQL.
+    - The action of `Enter` key will only insert a line feed code.
+    - Press `Ctrl`-`Enter` to execute the input.
 - Save the result of SELECT in CSV format
+- Oracle and PostgreSQL are supported.
+    - Any database supported by Go's "database/sql" can be used with a
+small amount of extra code in `dbdepends.go`
 
 ![image](./demo.gif)
 
@@ -15,8 +20,8 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 | `Ctrl`-`F`/`B`/`N`/`P` | Editing like Emacs |
 | `Ctrl`-`C` | Exit with rollback |
 | `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
-| `ALT`-`P`, `Ctrl`-`Up` | Insert the previous SQL (history)|
-| `ALT`-`N`, `Ctrl`-`Down` | Insert the next SQL (history) |
+| `ALT`-`P`, `Ctrl`-`Up`, `PageUp` | Insert the previous SQL (history)|
+| `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | Insert the next SQL (history) |
 
 Supported commands
 ------------------
@@ -35,40 +40,24 @@ Semicolon `;` can be omitted.
 Example of a spooled file
 --------------------------
 
-```csv
-# (2023-04-16 08:54:28)
-# select * from tab where rownum < 3
+``` CSV
+# (2023-04-17 22:52:16)
+# select *
+#   from tab
+#  where rownum < 5
 TNAME,TABTYPE,CLUSTERID
-AQ$_INTERNET_AGENTS,TABLE,<nil>
-AQ$_INTERNET_AGENT_PRIVS,TABLE,<nil>
-# (2023-04-16 08:54:33)
+AQ$_INTERNET_AGENTS,TABLE,<NULL>
+AQ$_INTERNET_AGENT_PRIVS,TABLE,<NULL>
+AQ$_KEY_SHARD_MAP,TABLE,<NULL>
+AQ$_QUEUES,TABLE,<NULL>
+# (2023-04-17 22:52:20)
 # history
-0,2023-04-16 08:54:14,spool hoge
-1,2023-04-16 08:54:28,select * from tab where rownum < 3
-2,2023-04-16 08:54:33,history
-# (2023-04-16 09:01:29)
-# select * from tab where rownum < 3
-TNAME,TABTYPE,CLUSTERID
-AQ$_INTERNET_AGENTS,TABLE,<nil>
-AQ$_INTERNET_AGENT_PRIVS,TABLE,<nil>
+0,2023-04-17 22:52:05,spool hoge
+1,2023-04-17 22:52:16,"select *
+  from tab
+ where rownum < 5"
+2,2023-04-17 22:52:20,history
 ```
-
-Supporting DB
--------------
-
-### Oracle
-
-    $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
-
-- On error, your transaction is not rolled back.
-
-### PostgreSQL
-
-    $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
-
-- Autocommit is disabled.  With INSERT, UPDATE, or DELETE, a transaction starts.
-- On error, the transaction is rolled back automatically because it aborted.
-
 
 Install
 -------
@@ -87,3 +76,30 @@ or
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install sqlbless
 ```
+
+How to start
+-------------
+
+### Oracle
+
+    $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
+
+- On error, your transaction is not rolled back.
+
+### PostgreSQL
+
+    $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
+
+- Autocommit is disabled.  With INSERT, UPDATE, or DELETE, a transaction starts.
+- On error, the transaction is rolled back automatically because it aborted.
+
+### Common Options
+
+- `-crlf`
+    - Use CRLF
+- `-fs string`
+    - Set a field separator (default `","`)
+- `-null string`
+    - Set a string representing NULL (default `"<NULL>"`)
+- `-tsv`
+    - Use TAB as seperator

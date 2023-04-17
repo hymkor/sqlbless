@@ -186,7 +186,7 @@ type CommandIn interface {
 	Read(context.Context) ([]string, error)
 }
 
-func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn, history *History) error {
+func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn, history *History, onErrorAbort bool) error {
 	var spool interface {
 		io.Writer
 		io.Closer
@@ -252,10 +252,16 @@ func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn
 			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
 			if err == nil {
 				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
-				if err != nil && !dbSpec.DontRollbackOnFail {
-					fmt.Fprintln(tee(os.Stderr, spool), err.Error())
-					echo(spool, "( rollback automatically )")
-					err = txRollback(&tx, tee(os.Stderr, spool))
+				if err != nil {
+					if onErrorAbort || !dbSpec.DontRollbackOnFail {
+						fmt.Fprintln(tee(os.Stderr, spool), err.Error())
+						echo(spool, "( rollback automatically )")
+						errRollback := txRollback(&tx, tee(os.Stderr, spool))
+						if onErrorAbort {
+							return err
+						}
+						err = errRollback
+					}
 				}
 			}
 		case "COMMIT":
@@ -290,6 +296,9 @@ func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn
 		}
 		if err != nil {
 			fmt.Fprintln(tee(os.Stderr, spool), err.Error())
+			if onErrorAbort {
+				return err
+			}
 		}
 	}
 }
@@ -333,7 +342,7 @@ func mains(args []string) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
-	return loop(context.Background(), dbSpec, conn, &editor, &history)
+	return loop(context.Background(), dbSpec, conn, &editor, &history, false)
 }
 
 func main() {

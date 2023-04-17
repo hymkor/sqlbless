@@ -8,6 +8,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/nyaosorg/go-readline-ny v0.10.1
 	github.com/sijms/go-ora/v2 v2.6.17
+	golang.org/x/text v0.9.0
 )
 
 require (

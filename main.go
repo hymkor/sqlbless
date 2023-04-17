@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/transform"
+
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
@@ -105,7 +107,7 @@ func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error 
 	return nil
 }
 
-func tee(console, spool *os.File) io.Writer {
+func tee(console, spool io.Writer) io.Writer {
 	if spool != nil {
 		return io.MultiWriter(console, spool)
 	} else {
@@ -113,7 +115,7 @@ func tee(console, spool *os.File) io.Writer {
 	}
 }
 
-func echo(spool *os.File, query string) {
+func echo(spool io.Writer, query string) {
 	if spool != nil {
 		next := true
 		fmt.Fprintf(spool, "# (%s)\n", time.Now().Local().Format(time.DateTime))
@@ -145,6 +147,41 @@ func desc(ctx context.Context, conn canQuery, options *Options, table string, w 
 	return dumpRows(ctx, rows, w)
 }
 
+type Filter struct {
+	body   *os.File
+	filter io.WriteCloser
+}
+
+func (s *Filter) Write(b []byte) (int, error) {
+	if s.filter != nil {
+		return s.filter.Write(b)
+	} else {
+		return s.body.Write(b)
+
+	}
+}
+
+func (s *Filter) Close() error {
+	if s.filter != nil {
+		s.filter.Close()
+	}
+	return s.body.Close()
+}
+
+func (s *Filter) Name() string {
+	return s.body.Name()
+}
+
+func newFilter(fd *os.File) *Filter {
+	filter := transform.NewWriter(fd, lfToCrlf{})
+	return &Filter{
+		filter: filter,
+		body:   fd,
+	}
+}
+
+var flagCrLf = flag.Bool("crlf", false, "use CRLF")
+
 func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()
@@ -163,7 +200,12 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
 
-	var spool *os.File = nil
+	var spool interface {
+		io.Writer
+		io.Closer
+		Name() string
+	} = nil
+
 	var tx *sql.Tx = nil
 	defer func() {
 		if tx != nil {
@@ -203,7 +245,11 @@ func loop(ctx context.Context, options *Options, conn *sql.DB) error {
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
-					spool = fd
+					if *flagCrLf {
+						spool = newFilter(fd)
+					} else {
+						spool = fd
+					}
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
 				}
 			}

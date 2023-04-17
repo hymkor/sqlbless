@@ -127,18 +127,18 @@ func echo(spool io.Writer, query string) {
 	}
 }
 
-func desc(ctx context.Context, conn canQuery, options *Options, table string, w io.Writer) error {
-	if options.SqlForDesc == "" {
+func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, w io.Writer) error {
+	if dbSpec.SqlForDesc == "" {
 		return errors.New("DESC: not supported")
 	}
-	// fmt.Fprintln(os.Stderr, options.SqlForDesc)
+	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
 	var err error
 	if tableName == "" {
-		rows, err = conn.QueryContext(ctx, options.SqlForTab)
+		rows, err = conn.QueryContext(ctx, dbSpec.SqlForTab)
 	} else {
-		rows, err = conn.QueryContext(ctx, options.SqlForDesc, tableName)
+		rows, err = conn.QueryContext(ctx, dbSpec.SqlForDesc, tableName)
 	}
 	if err != nil {
 		return err
@@ -186,7 +186,7 @@ type CommandIn interface {
 	Read(context.Context) ([]string, error)
 }
 
-func loop(ctx context.Context, options *Options, conn *sql.DB, commandIn CommandIn, history *History) error {
+func loop(ctx context.Context, dbSpec *DBSpec, conn *sql.DB, commandIn CommandIn, history *History) error {
 	var spool interface {
 		io.Writer
 		io.Closer
@@ -252,7 +252,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB, commandIn Command
 			err = txBegin(ctx, conn, &tx, tee(os.Stderr, spool))
 			if err == nil {
 				err = doDML(ctx, tx, query, tee(os.Stdout, spool))
-				if err != nil && !options.DontRollbackOnFail {
+				if err != nil && !dbSpec.DontRollbackOnFail {
 					fmt.Fprintln(tee(os.Stderr, spool), err.Error())
 					echo(spool, "( rollback automatically )")
 					err = txRollback(&tx, tee(os.Stderr, spool))
@@ -268,7 +268,7 @@ func loop(ctx context.Context, options *Options, conn *sql.DB, commandIn Command
 			return io.EOF
 		case "DESC", "\\D":
 			echo(spool, query)
-			err = desc(ctx, conn, options, arg, tee(os.Stdout, spool))
+			err = desc(ctx, conn, dbSpec, arg, tee(os.Stdout, spool))
 		case "HISTORY":
 			echo(spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, spool))
@@ -312,9 +312,9 @@ func mains(args []string) error {
 	}
 	defer conn.Close()
 
-	options, ok := dbDependent[strings.ToUpper(args[0])]
+	dbSpec, ok := dbSpecs[strings.ToUpper(args[0])]
 	if !ok {
-		options = &Options{}
+		dbSpec = &DBSpec{}
 	}
 
 	disabler := colorable.EnableColorsStdout(nil)
@@ -333,7 +333,7 @@ func mains(args []string) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
-	return loop(context.Background(), options, conn, &editor, &history)
+	return loop(context.Background(), dbSpec, conn, &editor, &history)
 }
 
 func main() {

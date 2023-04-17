@@ -8,14 +8,14 @@ import (
 	_ "github.com/sijms/go-ora/v2"
 )
 
-type Options struct {
+type DBSpec struct {
 	DontRollbackOnFail bool
 	SqlForDesc         string
 	SqlForTab          string
 }
 
-var dbDependent = map[string]*Options{
-	"POSTGRES": &Options{
+var dbSpecs = map[string]*DBSpec{
+	"POSTGRES": &DBSpec{
 		DontRollbackOnFail: true,
 		SqlForDesc: `
       select a.attnum as "ID", a.attname as "NAME",
@@ -39,7 +39,7 @@ var dbDependent = map[string]*Options{
       select schemaname,tablename,tableowner
         from pg_tables`,
 	},
-	"ORACLE": &Options{
+	"ORACLE": &DBSpec{
 		DontRollbackOnFail: false,
 		SqlForDesc: `
       select column_id as "ID", column_name as "NAME",

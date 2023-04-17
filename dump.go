@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
 	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
+	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
+	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
 )
 
 type lfToCrlf struct{}
@@ -53,7 +54,11 @@ func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	csvWriter := csv.NewWriter(w)
 	defer csvWriter.Flush()
 
-	csvWriter.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
+	if *flagTsv {
+		csvWriter.Comma = '\t'
+	} else {
+		csvWriter.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
+	}
 	csvWriter.UseCRLF = false
 
 	if err := csvWriter.Write(columns); err != nil {

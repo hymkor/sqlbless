@@ -4,35 +4,34 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
-	"flag"
 	"fmt"
 	"io"
 	"unicode/utf8"
 )
 
-var (
-	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
-	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
-	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
-)
+type DumpConfig struct {
+	Comma   rune
+	UseCRLF bool
+	Null    string
+}
 
-func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
+func (cfg DumpConfig) DumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
+	csvw := csv.NewWriter(w)
+	defer csvw.Flush()
+
+	csvw.Comma = cfg.Comma
+	csvw.UseCRLF = cfg.UseCRLF
+
+	return rowsToCsv(ctx, rows, cfg.Null, csvw)
+}
+
+func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
 
-	csvWriter := csv.NewWriter(w)
-	defer csvWriter.Flush()
-
-	if *flagTsv {
-		csvWriter.Comma = '\t'
-	} else {
-		csvWriter.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
-	}
-	csvWriter.UseCRLF = false
-
-	if err := csvWriter.Write(columns); err != nil {
+	if err := csvw.Write(columns); err != nil {
 		return err
 	}
 
@@ -54,7 +53,7 @@ func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 		for i, a := range itemAny {
 			if p, ok := a.(*any); ok {
 				if *p == nil {
-					itemStr[i] = *flagNullString
+					itemStr[i] = null
 					continue
 				}
 				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {
@@ -64,7 +63,7 @@ func dumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 				itemStr[i] = fmt.Sprint(*p)
 			}
 		}
-		if err := csvWriter.Write(itemStr); err != nil {
+		if err := csvw.Write(itemStr); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)
 		}
 	}

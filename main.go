@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"golang.org/x/text/transform"
 
@@ -44,13 +45,13 @@ type canQuery interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
-func doSelect(ctx context.Context, conn canQuery, query string, w io.Writer) error {
+func doSelect(ctx context.Context, conn canQuery, query string, dcfg *DumpConfig, w io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("Query: %[1]w (%[1]T)", err)
 	}
 	defer rows.Close()
-	return dumpRows(ctx, rows, w)
+	return dcfg.DumpRows(ctx, rows, w)
 }
 
 type canExec interface {
@@ -127,7 +128,7 @@ func echo(spool io.Writer, query string) {
 	}
 }
 
-func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, w io.Writer) error {
+func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, dcfg *DumpConfig, w io.Writer) error {
 	if dbSpec.SqlForDesc == "" {
 		return errors.New("DESC: not supported")
 	}
@@ -144,7 +145,7 @@ func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, w io
 		return err
 	}
 	defer rows.Close()
-	return dumpRows(ctx, rows, w)
+	return dcfg.DumpRows(ctx, rows, w)
 }
 
 type Filter struct {
@@ -180,13 +181,19 @@ func newFilter(fd *os.File) *Filter {
 	}
 }
 
-var flagCrLf = flag.Bool("crlf", false, "use CRLF")
+var (
+	flagCrLf           = flag.Bool("crlf", false, "use CRLF")
+	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
+	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
+	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
+)
 
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
 }
 
 type Session struct {
+	DumpConfig
 	dbSpec       *DBSpec
 	conn         *sql.DB
 	history      *History
@@ -250,9 +257,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 		case "SELECT":
 			echo(ss.spool, query)
 			if ss.tx == nil {
-				err = doSelect(ctx, ss.conn, query, tee(os.Stdout, ss.spool))
+				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
 			} else {
-				err = doSelect(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
+				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
 			}
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
@@ -281,7 +288,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 			return io.EOF
 		case "DESC", "\\D":
 			echo(ss.spool, query)
-			err = desc(ctx, ss.conn, ss.dbSpec, arg, tee(os.Stdout, ss.spool))
+			err = desc(ctx, ss.conn, ss.dbSpec, arg, &ss.DumpConfig, tee(os.Stdout, ss.spool))
 		case "HISTORY":
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))
@@ -335,6 +342,13 @@ func mains(args []string) error {
 		onErrorAbort: false,
 	}
 	defer session.Close()
+
+	session.DumpConfig.Null = *flagNullString
+	if *flagTsv {
+		session.DumpConfig.Comma = '\t'
+	} else {
+		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
+	}
 
 	// interactive mode
 

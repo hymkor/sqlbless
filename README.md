@@ -80,18 +80,29 @@ scoop install sqlbless
 How to start
 -------------
 
+    $ sqlbless {options} DRIVERNAME "DATASOURCENAME"
+
 ### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
+- Use https://github.com/sijms/go-ora
 - On error, your transaction is not rolled back.
 
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
 
+- Use https://github.com/lib/pq
 - Autocommit is disabled.  With INSERT, UPDATE, or DELETE, a transaction starts.
 - On error, the transaction is rolled back automatically because it aborted.
+
+### SQL Server
+
+    $ sqlbless sqlserver "sqlserver://@localhost?database=master"
+    ( Windows authentication )
+
+- Use github.com/microsoft/go-mssqldb
 
 ### Common Options
 

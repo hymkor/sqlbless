@@ -1,3 +1,7 @@
+- `spool` writes program version also
+- Support Microsoft SQL Server
+- Fix: login error was not raised until the first SQL was input.
+
 v0.4.0
 =======
 Apr 17, 2023

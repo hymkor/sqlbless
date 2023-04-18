@@ -5,6 +5,7 @@ import (
 	"io"
 
 	_ "github.com/lib/pq"
+	_ "github.com/microsoft/go-mssqldb"
 	_ "github.com/sijms/go-ora/v2"
 )
 
@@ -56,6 +57,30 @@ var dbSpecs = map[string]*DBSpec{
         where table_name = UPPER(:1)
         order by column_id`,
 		SqlForTab: `select * from tab`,
+	},
+	"SQLSERVER": &DBSpec{
+		DontRollbackOnFail: true,
+		SqlForDesc: `
+        SELECT c.column_id as "ID",
+               c.name as "NAME",
+               case c.is_nullable
+                 when 1 then 'NULL'
+                 else 'NOT NULL'
+                end as "NULL?",
+                case
+                  when c.max_length > 0 then
+                    t.name + '(' + convert(varchar,c.max_length) + ')'
+                  else
+                   t.name
+                end as "TYPE"
+          FROM sys.columns c,
+               sys.objects o,
+               sys.types t
+        WHERE  c.object_id = o.object_id
+          AND  o.name = @p1
+          AND  c.user_type_id = t.user_type_id
+         order by c.column_id`,
+		SqlForTab: `select * from sys.objects`,
 	},
 }
 

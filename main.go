@@ -290,6 +290,10 @@ func mains(args []string) error {
 	}
 	defer conn.Close()
 
+	if err = conn.Ping(); err != nil {
+		return err
+	}
+
 	dbSpec, ok := dbSpecs[strings.ToUpper(args[0])]
 	if !ok {
 		dbSpec = &DBSpec{}

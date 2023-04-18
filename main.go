@@ -127,16 +127,19 @@ func echo(spool io.Writer, query string) {
 }
 
 func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, dcfg *DumpConfig, w io.Writer) error {
-	if dbSpec.SqlForDesc == "" {
-		return errors.New("DESC: not supported")
-	}
 	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
 	var err error
 	if tableName == "" {
+		if dbSpec.SqlForTab == "" {
+			return errors.New("DESC TABLE: not supported")
+		}
 		rows, err = conn.QueryContext(ctx, dbSpec.SqlForTab)
 	} else {
+		if dbSpec.SqlForDesc == "" {
+			return errors.New("DESC TABLE: not supported")
+		}
 		rows, err = conn.QueryContext(ctx, dbSpec.SqlForDesc, tableName)
 	}
 	if err != nil {

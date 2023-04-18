@@ -19,23 +19,24 @@ var dbSpecs = map[string]*DBSpec{
 	"POSTGRES": &DBSpec{
 		DontRollbackOnFail: true,
 		SqlForDesc: `
-      select a.attnum as "ID", a.attname as "NAME",
-              case
-                when a.attnotnull then 'NOT NULL'
-                else 'NULL'
-              end as "NULL?",
-              case
-                when t.typname = 'varchar' then 'varchar(' || ( a.atttypmod - 4 )  || ')'
-                when a.atttypmod >= 0 then t.typname || '(' || a.atttypmod || ')'
-                else t.typname
-              end as "TYPE"
+      select a.attnum as "ID",
+             a.attname as "NAME",
+             case
+               when t.typname = 'varchar' then 'varchar(' || ( a.atttypmod - 4 )  || ')'
+               when a.atttypmod >= 0 then t.typname || '(' || a.atttypmod || ')'
+               else t.typname
+             end as "TYPE",
+             case
+               when a.attnotnull then 'NOT NULL'
+               else 'NULL'
+             end as "NULL?"
         from pg_attribute a, pg_class c, pg_type t
-        where a.attrelid = c.oid
-          and c.relname = $1
-          and a.attnum > 0
-          and t.oid = a.atttypid
-          and a.attisdropped is false
-        order by a.attnum`,
+       where a.attrelid = c.oid
+         and c.relname = $1
+         and a.attnum > 0
+         and t.oid = a.atttypid
+         and a.attisdropped is false
+       order by a.attnum`,
 		SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
@@ -43,42 +44,43 @@ var dbSpecs = map[string]*DBSpec{
 	"ORACLE": &DBSpec{
 		DontRollbackOnFail: false,
 		SqlForDesc: `
-      select column_id as "ID", column_name as "NAME",
-              case
-                when nullable = 'Y' THEN 'NULL'
-                else 'NOT NULL'
-              end as "NULL?",
-              case data_type
-                when 'NUMBER' then data_type
-                when 'DATE' then data_type
-                else data_type || '(' || data_length || ')'
-              end as "TYPE"
+      select column_id as "ID",
+             column_name as "NAME",
+             case data_type
+               when 'NUMBER' then data_type
+               when 'DATE' then data_type
+               else data_type || '(' || data_length || ')'
+             end as "TYPE",
+             case
+               when nullable = 'Y' THEN 'NULL'
+               else 'NOT NULL'
+             end as "NULL?"
         from all_tab_columns
-        where table_name = UPPER(:1)
-        order by column_id`,
+       where table_name = UPPER(:1)
+       order by column_id`,
 		SqlForTab: `select * from tab`,
 	},
 	"SQLSERVER": &DBSpec{
 		DontRollbackOnFail: true,
 		SqlForDesc: `
-        SELECT c.column_id as "ID",
+        select c.column_id as "ID",
                c.name as "NAME",
+               case
+                 when c.max_length > 0 then
+                   t.name + '(' + convert(varchar,c.max_length) + ')'
+                 else
+                   t.name
+               end as "TYPE",
                case c.is_nullable
                  when 1 then 'NULL'
                  else 'NOT NULL'
-                end as "NULL?",
-                case
-                  when c.max_length > 0 then
-                    t.name + '(' + convert(varchar,c.max_length) + ')'
-                  else
-                   t.name
-                end as "TYPE"
-          FROM sys.columns c,
+               end as "NULL?"
+          from sys.columns c,
                sys.objects o,
                sys.types t
-        WHERE  c.object_id = o.object_id
-          AND  o.name = @p1
-          AND  c.user_type_id = t.user_type_id
+         where c.object_id = o.object_id
+           and o.name = @p1
+           and c.user_type_id = t.user_type_id
          order by c.column_id`,
 		SqlForTab: `select * from sys.objects`,
 	},

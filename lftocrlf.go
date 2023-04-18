@@ -1,6 +1,8 @@
 package main
 
 import (
+	"io"
+
 	"golang.org/x/text/transform"
 )
 
@@ -29,4 +31,43 @@ func (f lfToCrlf) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err er
 		nSrc++
 	}
 	return nDst, nSrc, nil
+}
+
+type FilterSource interface {
+	Write([]byte) (int, error)
+	Name() string
+	Close() error
+}
+
+type Filter struct {
+	body   FilterSource
+	filter io.WriteCloser
+}
+
+func (s *Filter) Write(b []byte) (int, error) {
+	if s.filter != nil {
+		return s.filter.Write(b)
+	} else {
+		return s.body.Write(b)
+
+	}
+}
+
+func (s *Filter) Close() error {
+	if s.filter != nil {
+		s.filter.Close()
+	}
+	return s.body.Close()
+}
+
+func (s *Filter) Name() string {
+	return s.body.Name()
+}
+
+func newFilter(fd FilterSource) *Filter {
+	filter := transform.NewWriter(fd, lfToCrlf{})
+	return &Filter{
+		filter: filter,
+		body:   fd,
+	}
 }

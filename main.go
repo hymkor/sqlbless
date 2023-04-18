@@ -15,8 +15,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"golang.org/x/text/transform"
-
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
@@ -148,39 +146,6 @@ func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, dcfg
 	return dcfg.DumpRows(ctx, rows, w)
 }
 
-type Filter struct {
-	body   *os.File
-	filter io.WriteCloser
-}
-
-func (s *Filter) Write(b []byte) (int, error) {
-	if s.filter != nil {
-		return s.filter.Write(b)
-	} else {
-		return s.body.Write(b)
-
-	}
-}
-
-func (s *Filter) Close() error {
-	if s.filter != nil {
-		s.filter.Close()
-	}
-	return s.body.Close()
-}
-
-func (s *Filter) Name() string {
-	return s.body.Name()
-}
-
-func newFilter(fd *os.File) *Filter {
-	filter := transform.NewWriter(fd, lfToCrlf{})
-	return &Filter{
-		filter: filter,
-		body:   fd,
-	}
-}
-
 var (
 	flagCrLf           = flag.Bool("crlf", false, "use CRLF")
 	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
@@ -199,11 +164,7 @@ type Session struct {
 	history      *History
 	onErrorAbort bool
 	tx           *sql.Tx
-	spool        interface {
-		io.Writer
-		io.Closer
-		Name() string
-	}
+	spool        FilterSource
 }
 
 func (ss *Session) Close() {

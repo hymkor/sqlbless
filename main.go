@@ -213,6 +213,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 						ss.spool = fd
 					}
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
+					writeSignature(ss.spool)
 				}
 			}
 		case "SELECT":
@@ -338,9 +339,13 @@ func mains(args []string) error {
 
 var version string
 
-func main() {
-	fmt.Printf("SQL-Bless %s-%s-%s by %s\n",
+func writeSignature(w io.Writer) {
+	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+}
+
+func main() {
+	writeSignature(os.Stdout)
 
 	flag.Parse()
 	if err := mains(flag.Args()); err != nil {

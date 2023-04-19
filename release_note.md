@@ -1,3 +1,6 @@
+- Disable Ctrl-S and Ctrl-R (incremental search)
+- Add the option -submit-enter
+
 v0.5.0
 ======
 Apr 19,2023

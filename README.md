@@ -102,7 +102,7 @@ How to start
     $ sqlbless sqlserver "sqlserver://@localhost?database=master"
     ( Windows authentication )
 
-- Use github.com/microsoft/go-mssqldb
+- Use https://github.com/microsoft/go-mssqldb
 
 ### Common Options
 

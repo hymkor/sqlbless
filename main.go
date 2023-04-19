@@ -154,6 +154,7 @@ var (
 	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
 	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
 	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
+	flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
 )
 
 type CommandIn interface {
@@ -330,6 +331,9 @@ func mains(args []string) error {
 
 	var editor multiline.Editor
 
+	if *flagSubmitByEnter {
+		editor.SwapEnter()
+	}
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
 	editor.SetColoring(&Coloring{})

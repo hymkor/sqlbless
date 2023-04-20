@@ -1,5 +1,6 @@
 - Disable Ctrl-S and Ctrl-R (incremental search)
 - Add the option -submit-enter
+- Remove automatic-rollback on error because psql (PostgreSQL) does not do it
 
 v0.5.0
 ======

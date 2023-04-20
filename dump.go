@@ -15,6 +15,8 @@ type RowToCsv struct {
 	Null    string
 }
 
+const dbgPrintType = false
+
 func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	csvw := csv.NewWriter(w)
 	defer csvw.Flush()
@@ -39,6 +41,17 @@ func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, csvw *csv.Write
 	itemStr := make([]string, len(columns))
 	for i := range itemAny {
 		itemAny[i] = new(any)
+	}
+
+	if dbgPrintType {
+		ct, err := rows.ColumnTypes()
+		if err != nil {
+			return err
+		}
+		for i, c := range ct {
+			itemStr[i] = c.DatabaseTypeName() + "(" + c.ScanType().String() + ")"
+		}
+		csvw.Write(itemStr)
 	}
 
 	for rows.Next() {

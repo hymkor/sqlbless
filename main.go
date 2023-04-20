@@ -232,17 +232,6 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
 			if err == nil {
 				err = doDML(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
-				if err != nil {
-					if ss.onErrorAbort || !ss.dbSpec.DontRollbackOnFail {
-						fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
-						echo(ss.spool, "( rollback automatically )")
-						errRollback := txRollback(&ss.tx, tee(os.Stderr, ss.spool))
-						if ss.onErrorAbort {
-							return err
-						}
-						err = errRollback
-					}
-				}
 			}
 		case "COMMIT":
 			echo(ss.spool, query)

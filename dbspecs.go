@@ -10,14 +10,12 @@ import (
 )
 
 type DBSpec struct {
-	DontRollbackOnFail bool
-	SqlForDesc         string
-	SqlForTab          string
+	SqlForDesc string
+	SqlForTab  string
 }
 
 var dbSpecs = map[string]*DBSpec{
 	"POSTGRES": &DBSpec{
-		DontRollbackOnFail: true,
 		SqlForDesc: `
       select a.attnum as "ID",
              a.attname as "NAME",
@@ -42,7 +40,6 @@ var dbSpecs = map[string]*DBSpec{
         from pg_tables`,
 	},
 	"ORACLE": &DBSpec{
-		DontRollbackOnFail: false,
 		SqlForDesc: `
       select column_id as "ID",
              column_name as "NAME",
@@ -61,7 +58,6 @@ var dbSpecs = map[string]*DBSpec{
 		SqlForTab: `select * from tab`,
 	},
 	"SQLSERVER": &DBSpec{
-		DontRollbackOnFail: true,
 		SqlForDesc: `
         select c.column_id as "ID",
                c.name as "NAME",

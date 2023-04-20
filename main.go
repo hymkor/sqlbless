@@ -43,13 +43,13 @@ type canQuery interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
-func doSelect(ctx context.Context, conn canQuery, query string, dcfg *DumpConfig, w io.Writer) error {
+func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, w io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("Query: %[1]w (%[1]T)", err)
 	}
 	defer rows.Close()
-	return dcfg.DumpRows(ctx, rows, w)
+	return r2c.Dump(ctx, rows, w)
 }
 
 type canExec interface {
@@ -126,7 +126,7 @@ func echo(spool io.Writer, query string) {
 	}
 }
 
-func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, dcfg *DumpConfig, w io.Writer) error {
+func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, r2c *RowToCsv, w io.Writer) error {
 	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
@@ -146,7 +146,7 @@ func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, dcfg
 		return err
 	}
 	defer rows.Close()
-	return dcfg.DumpRows(ctx, rows, w)
+	return r2c.Dump(ctx, rows, w)
 }
 
 var (
@@ -162,7 +162,7 @@ type CommandIn interface {
 }
 
 type Session struct {
-	DumpConfig
+	DumpConfig   RowToCsv
 	dbSpec       *DBSpec
 	conn         *sql.DB
 	history      *History

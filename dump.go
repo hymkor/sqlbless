@@ -9,13 +9,13 @@ import (
 	"unicode/utf8"
 )
 
-type DumpConfig struct {
+type RowToCsv struct {
 	Comma   rune
 	UseCRLF bool
 	Null    string
 }
 
-func (cfg DumpConfig) DumpRows(ctx context.Context, rows *sql.Rows, w io.Writer) error {
+func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	csvw := csv.NewWriter(w)
 	defer csvw.Flush()
 

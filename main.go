@@ -126,27 +126,27 @@ func echo(spool io.Writer, query string) {
 	}
 }
 
-func desc(ctx context.Context, conn canQuery, dbSpec *DBSpec, table string, r2c *RowToCsv, w io.Writer) error {
+func (ss *Session) desc(ctx context.Context, table string, w io.Writer) error {
 	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
 	var err error
 	if tableName == "" {
-		if dbSpec.SqlForTab == "" {
+		if ss.dbSpec.SqlForTab == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		rows, err = conn.QueryContext(ctx, dbSpec.SqlForTab)
+		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForTab)
 	} else {
-		if dbSpec.SqlForDesc == "" {
+		if ss.dbSpec.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		rows, err = conn.QueryContext(ctx, dbSpec.SqlForDesc, tableName)
+		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForDesc, tableName)
 	}
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
-	return r2c.Dump(ctx, rows, w)
+	return ss.DumpConfig.Dump(ctx, rows, w)
 }
 
 var (
@@ -254,7 +254,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 			return io.EOF
 		case "DESC", "\\D":
 			echo(ss.spool, query)
-			err = desc(ctx, ss.conn, ss.dbSpec, arg, &ss.DumpConfig, tee(os.Stdout, ss.spool))
+			err = ss.desc(ctx, arg, tee(os.Stdout, ss.spool))
 		case "HISTORY":
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))

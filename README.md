@@ -9,7 +9,7 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 - Save the result of SELECT in CSV format
 - Oracle and PostgreSQL are supported.
     - Any database supported by Go's "database/sql" can be used with a
-small amount of extra code in `dbdepends.go`
+small amount of extra code in `dbspecs.go`
 
 ![image](./demo.gif)
 

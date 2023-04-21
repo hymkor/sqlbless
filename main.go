@@ -246,6 +246,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		ss.history.Add(query)
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
+		case "REM":
+			break
 		case "SPOOL":
 			fname, _ := cutField(arg)
 			if fname == "" {

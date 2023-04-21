@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"database/sql"
 	"encoding/csv"
@@ -161,14 +162,43 @@ type CommandIn interface {
 	Read(context.Context) ([]string, error)
 }
 
+type Script struct {
+	br *bufio.Reader
+}
+
+func (script *Script) Read(context.Context) ([]string, error) {
+	var buffer strings.Builder
+	quoted := 0
+	for {
+		ch, _, err := script.br.ReadRune()
+		if err != nil {
+			return []string{buffer.String()}, err
+		}
+		switch ch {
+		case '\'':
+			quoted |= 1
+			buffer.WriteByte('\'')
+		case '"':
+			quoted |= 2
+			buffer.WriteByte('"')
+		case ';':
+			if quoted == 0 {
+				return []string{buffer.String()}, nil
+			}
+			buffer.WriteByte(';')
+		default:
+			buffer.WriteRune(ch)
+		}
+	}
+}
+
 type Session struct {
-	DumpConfig   RowToCsv
-	dbSpec       *DBSpec
-	conn         *sql.DB
-	history      *History
-	onErrorAbort bool
-	tx           *sql.Tx
-	spool        FilterSource
+	DumpConfig RowToCsv
+	dbSpec     *DBSpec
+	conn       *sql.DB
+	history    *History
+	tx         *sql.Tx
+	spool      FilterSource
 }
 
 func (ss *Session) Close() {
@@ -181,16 +211,36 @@ func (ss *Session) Close() {
 	}
 }
 
-func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
-	for {
+func (ss *Session) Start(ctx context.Context, fname string) error {
+	fd, err := os.Open(fname)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+	script := &Script{
+		br: bufio.NewReader(fd),
+	}
+	return ss.Loop(ctx, script, true)
+}
+
+func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort bool) error {
+	eof := false
+	for !eof {
 		if ss.spool != nil {
 			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
 		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
-			return err
+			if err == io.EOF {
+				eof = true
+			} else {
+				return err
+			}
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
+		if query == "" {
+			continue
+		}
 		ss.history.Add(query)
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
@@ -255,6 +305,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 					text})
 			}
 			csvw.Flush()
+		case "START":
+			fname, _ := cutField(arg)
+			ss.Start(ctx, fname)
 		default:
 			echo(ss.spool, query)
 			if ss.tx != nil {
@@ -265,11 +318,12 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn) error {
 		}
 		if err != nil {
 			fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
-			if ss.onErrorAbort {
+			if onErrorAbort {
 				return err
 			}
 		}
 	}
+	return nil
 }
 
 func mains(args []string) error {
@@ -295,10 +349,9 @@ func mains(args []string) error {
 	var history History
 
 	session := &Session{
-		dbSpec:       dbSpec,
-		conn:         conn,
-		history:      &history,
-		onErrorAbort: false,
+		dbSpec:  dbSpec,
+		conn:    conn,
+		history: &history,
 	}
 	defer session.Close()
 
@@ -334,7 +387,7 @@ func mains(args []string) error {
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
 
-	return session.Loop(context.Background(), &editor)
+	return session.Loop(context.Background(), &editor, false)
 }
 
 var version string

@@ -156,6 +156,7 @@ var (
 	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
 	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
 	flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
+	flagScript         = flag.String("f", "", "script file")
 )
 
 type CommandIn interface {
@@ -362,6 +363,11 @@ func mains(args []string) error {
 		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
 	}
 
+	ctx := context.Background()
+	if *flagScript != "" {
+		return session.Start(ctx, *flagScript)
+	}
+
 	// interactive mode
 
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
@@ -386,8 +392,7 @@ func mains(args []string) error {
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
 	})
-
-	return session.Loop(context.Background(), &editor, false)
+	return session.Loop(ctx, &editor, false)
 }
 
 var version string

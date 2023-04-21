@@ -324,6 +324,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 				err = errors.New("Transaction is not closed. Please Commit or Rollback.")
 			} else {
 				_, err = ss.conn.ExecContext(ctx, query)
+				if err == nil {
+					fmt.Fprintln(tee(os.Stderr, ss.spool), "Ok")
+				}
 			}
 		}
 		if err != nil {

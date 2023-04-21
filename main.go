@@ -165,7 +165,8 @@ type CommandIn interface {
 }
 
 type Script struct {
-	br *bufio.Reader
+	br   *bufio.Reader
+	echo io.Writer
 }
 
 func (script *Script) Read(context.Context) ([]string, error) {
@@ -174,7 +175,9 @@ func (script *Script) Read(context.Context) ([]string, error) {
 	for {
 		ch, _, err := script.br.ReadRune()
 		if err != nil {
-			return []string{buffer.String()}, err
+			code := buffer.String()
+			fmt.Fprintln(script.echo, code)
+			return []string{code}, err
 		}
 		switch ch {
 		case '\'':
@@ -185,7 +188,9 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			buffer.WriteByte('"')
 		case ';':
 			if quoted == 0 {
-				return []string{buffer.String()}, nil
+				code := buffer.String()
+				fmt.Fprintln(script.echo, code)
+				return []string{code}, nil
 			}
 			buffer.WriteByte(';')
 		default:
@@ -220,7 +225,8 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 	}
 	defer fd.Close()
 	script := &Script{
-		br: bufio.NewReader(fd),
+		br:   bufio.NewReader(fd),
+		echo: os.Stderr,
 	}
 	return ss.Loop(ctx, script, true)
 }

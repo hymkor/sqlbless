@@ -4,6 +4,7 @@
 - Implement `START filename` and `-f filename`
 - Implement `REM` for comments
 - Spool: append `;` at the tail of SQL
+- Print `Ok` after DDL succeeds.
 
 v0.5.0
 ======

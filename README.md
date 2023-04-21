@@ -10,6 +10,7 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 - Oracle and PostgreSQL are supported.
     - Any database supported by Go's "database/sql" can be used with a
 small amount of extra code in `dbspecs.go`
+- Auto commit is disabled.
 
 ![image](./demo.gif)
 
@@ -87,15 +88,12 @@ How to start
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - Use https://github.com/sijms/go-ora
-- On error, your transaction is not rolled back.
 
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
 
 - Use https://github.com/lib/pq
-- Autocommit is disabled.  With INSERT, UPDATE, or DELETE, a transaction starts.
-- On error, the transaction is rolled back automatically because it aborted.
 
 ### SQL Server
 

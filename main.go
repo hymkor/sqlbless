@@ -119,6 +119,7 @@ func echo(spool io.Writer, query string) {
 	if spool != nil {
 		next := true
 		fmt.Fprintf(spool, "# (%s)\n", time.Now().Local().Format(time.DateTime))
+		query = query + ";"
 		for next {
 			var line string
 			line, query, next = strings.Cut(query, "\n")

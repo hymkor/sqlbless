@@ -35,8 +35,11 @@ Supported commands
     - `spool off` .. stop spooling and close.
 - EXIT / QUIT
     - Rollback a transaction and exit SQL-Bless.
+- START filename
+    - Start the SQL script given with filename
 
-Semicolon `;` can be omitted.
+- Semicolon `;` is a statement seperator when script is executed.
+- When sql is input interactively, Semicolon `;` is ignored.
 
 Example of a spooled file
 --------------------------
@@ -112,3 +115,5 @@ How to start
     - Set a string representing NULL (default `"<NULL>"`)
 - `-tsv`
     - Use TAB as seperator
+- `-f string`
+    - Start the script

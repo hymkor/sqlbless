@@ -180,6 +180,7 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			return []string{code}, err
 		}
 		switch ch {
+		case '\r':
 		case '\'':
 			quoted ^= 1
 			buffer.WriteByte('\'')

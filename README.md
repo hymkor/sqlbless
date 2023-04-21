@@ -37,6 +37,7 @@ Supported commands
     - Rollback a transaction and exit SQL-Bless.
 - START filename
     - Start the SQL script given with filename
+- REM comments
 
 - Semicolon `;` is a statement seperator when script is executed.
 - When sql is input interactively, Semicolon `;` is ignored.

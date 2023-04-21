@@ -181,10 +181,10 @@ func (script *Script) Read(context.Context) ([]string, error) {
 		}
 		switch ch {
 		case '\'':
-			quoted |= 1
+			quoted ^= 1
 			buffer.WriteByte('\'')
 		case '"':
-			quoted |= 2
+			quoted ^= 2
 			buffer.WriteByte('"')
 		case ';':
 			if quoted == 0 {

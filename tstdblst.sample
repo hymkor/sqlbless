@@ -1,0 +1,4 @@
+# This is a sample. Please copy it as `tstdblst` and change parameters
+oracle|oracle://system:PASSWORD@localhost:PORT/xepdb1
+sqlserver|sqlserver://@localhost?database=master
+postgres|host=127.0.0.1 port=5432 user=postgres dbname=postgres sslmode=disable

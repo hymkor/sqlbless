@@ -19,6 +19,9 @@ all:
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 
 test:
+ifeq ($(OS),Windows_NT)
+	expect test.lua tstdblst
+endif
 	go test -v
 
 _package:

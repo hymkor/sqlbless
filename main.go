@@ -160,6 +160,7 @@ var (
 	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
 	flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
 	flagScript         = flag.String("f", "", "script file")
+	flagPrintType      = flag.Bool("print-type", false, "(for debug) Print type in CSV")
 )
 
 type CommandIn interface {
@@ -388,6 +389,7 @@ func mains(args []string) error {
 	} else {
 		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
 	}
+	session.DumpConfig.PrintType = *flagPrintType
 
 	ctx := context.Background()
 	if *flagScript != "" {

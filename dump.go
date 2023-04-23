@@ -10,12 +10,11 @@ import (
 )
 
 type RowToCsv struct {
-	Comma   rune
-	UseCRLF bool
-	Null    string
+	Comma     rune
+	UseCRLF   bool
+	Null      string
+	PrintType bool
 }
-
-const dbgPrintType = false
 
 func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 	csvw := csv.NewWriter(w)
@@ -24,10 +23,10 @@ func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error
 	csvw.Comma = cfg.Comma
 	csvw.UseCRLF = cfg.UseCRLF
 
-	return rowsToCsv(ctx, rows, cfg.Null, csvw)
+	return rowsToCsv(ctx, rows, cfg.Null, cfg.PrintType, csvw)
 }
 
-func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, csvw *csv.Writer) error {
+func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, printType bool, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
@@ -43,7 +42,7 @@ func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, csvw *csv.Write
 		itemAny[i] = new(any)
 	}
 
-	if dbgPrintType {
+	if printType {
 		ct, err := rows.ColumnTypes()
 		if err != nil {
 			return err

@@ -1,6 +1,7 @@
 - Option `-f -`: read a script from STDIN
 - When STDIN is not a terminal, do not use go-readline-ny and read STDIN sequentially
 - Support MySQL
+- Add debug option -print-type
 
 v0.6.0
 ======

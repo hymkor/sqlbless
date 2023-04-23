@@ -82,6 +82,20 @@ var dbSpecs = map[string]*DBSpec{
 		SqlForTab: `select * from sys.objects`,
 	},
 	"MYSQL": &DBSpec{
+		SqlForDesc: `
+        select ordinal_position as "ID",
+               column_name as "NAME",
+               case
+                 when character_maximum_length is null then data_type
+                 else concat(data_type,'(',character_maximum_length,')')
+               end as "TYPE",
+               case is_nullable
+                 when "YES" then 'NULL'
+                 else 'NOT NULL'
+               end as "NULL?"
+          from information_schema.columns
+         where table_name = ?
+         order by ordinal_position`,
 		SqlForTab: `select * from information_schema.tables`,
 	},
 }

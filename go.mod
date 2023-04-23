@@ -9,6 +9,7 @@ require (
 	github.com/microsoft/go-mssqldb v0.21.0
 	github.com/nyaosorg/go-readline-ny v0.10.1
 	github.com/sijms/go-ora/v2 v2.6.17
+	golang.org/x/term v0.7.0
 	golang.org/x/text v0.9.0
 )
 

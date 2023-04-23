@@ -16,6 +16,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"golang.org/x/term"
+
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
@@ -390,6 +392,10 @@ func mains(args []string) error {
 	ctx := context.Background()
 	if *flagScript != "" {
 		return session.Start(ctx, *flagScript)
+	}
+
+	if !term.IsTerminal(int(os.Stdin.Fd())) {
+		return session.StartFromStdin(ctx)
 	}
 
 	// interactive mode

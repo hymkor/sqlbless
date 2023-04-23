@@ -1,3 +1,5 @@
+- Option `-f -`: read a script from STDIN
+
 v0.6.0
 ======
 Apr 22, 2023

@@ -219,7 +219,18 @@ func (ss *Session) Close() {
 	}
 }
 
+func (ss *Session) StartFromStdin(ctx context.Context) error {
+	script := &Script{
+		br:   bufio.NewReader(os.Stdin),
+		echo: os.Stderr,
+	}
+	return ss.Loop(ctx, script, true)
+}
+
 func (ss *Session) Start(ctx context.Context, fname string) error {
+	if fname == "-" {
+		return ss.StartFromStdin(ctx)
+	}
 	fd, err := os.Open(fname)
 	if err != nil {
 		return err

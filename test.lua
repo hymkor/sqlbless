@@ -24,7 +24,7 @@ function dbTest(arg1,arg2)
     end
     local ok,err = run{
         { "CREATE TABLE TESTTBL",
-          "(TESTNO NUMERIC CONSTRAINT PK_TEST PRIMARY KEY,",
+          "(TESTNO NUMERIC ,",
           " TNAME  CHARACTER VARYING(14) ,",
           " LOC    CHARACTER VARYING(13) ) ;" },
         { "INSERT INTO TESTTBL VALUES",

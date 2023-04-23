@@ -1,4 +1,5 @@
 - Option `-f -`: read a script from STDIN
+- When STDIN is not a terminal, do not use go-readline-ny and read STDIN sequentially
 
 v0.6.0
 ======

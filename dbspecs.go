@@ -81,6 +81,9 @@ var dbSpecs = map[string]*DBSpec{
          order by c.column_id`,
 		SqlForTab: `select * from sys.objects`,
 	},
+	"MYSQL": &DBSpec{
+		SqlForTab: `select * from information_schema.tables`,
+	},
 }
 
 func usage(w io.Writer) {

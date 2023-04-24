@@ -1,3 +1,7 @@
+v0.7.0
+======
+Apr 25, 2023
+
 - Option `-f -`: read a script from STDIN
 - When STDIN is not a terminal, do not use go-readline-ny and read STDIN sequentially
 - Support MySQL

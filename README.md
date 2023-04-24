@@ -106,6 +106,12 @@ How to start
 
 - Use https://github.com/microsoft/go-mssqldb
 
+### MySQL
+
+    $ sqlbless.exe mysql user:password@/database
+
+- Use http://github.com/go-sql-driver/mysql
+
 ### Common Options
 
 - `-crlf`

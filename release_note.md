@@ -1,3 +1,13 @@
+v0.7.1
+======
+May 4, 2023
+
+- Update importing libraries
+    - go-readline-ny  from v0.10.1 to v0.11.2
+    - go-multiline-ny from v0.6.7  to v0.7.0
+        - Ctrl-B can move cursor to the end of the previous line
+        - Ctrl-F can move cursor to the beginning of the next line
+
 v0.7.0
 ======
 Apr 25, 2023

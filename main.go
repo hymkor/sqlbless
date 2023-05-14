@@ -21,6 +21,8 @@ import (
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/nyaosorg/go-readline-ny/completion"
+	"github.com/nyaosorg/go-readline-ny/keys"
 )
 
 func cutField(s string) (string, string) {
@@ -354,6 +356,35 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 	return nil
 }
 
+type sqlCompletion struct{}
+
+func (sqlCompletion) Enclosures() string {
+	return `'"`
+}
+
+func (sqlCompletion) Delimiters() string {
+	return ","
+}
+
+func (sqlCompletion) List(field []string) (fullnames []string, basenames []string) {
+	if len(field) <= 1 {
+		fullnames = []string{
+			"ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT",
+			"HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL",
+			"START", "TRUNCATE", "UPDATE", "\\D",
+		}
+	} else if len(field) >= 5 {
+		fullnames = []string{
+			"AND", "FROM", "INTO", "OR", "WHERE",
+		}
+	} else if len(field) >= 3 {
+		fullnames = []string{
+			"FROM", "INTO",
+		}
+	}
+	return
+}
+
 func mains(args []string) error {
 	if len(args) < 2 {
 		usage(os.Stdout)
@@ -423,6 +454,9 @@ func mains(args []string) error {
 			return io.WriteString(w, "SQL> ")
 		}
 		return fmt.Fprintf(w, "%3d> ", i+1)
+	})
+	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
+		Completion: sqlCompletion{},
 	})
 	return session.Loop(ctx, &editor, false)
 }

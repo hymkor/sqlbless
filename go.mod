@@ -8,8 +8,8 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/microsoft/go-mssqldb v0.21.0
-	github.com/nyaosorg/go-readline-ny v0.11.6
-	github.com/sijms/go-ora/v2 v2.7.4
+	github.com/nyaosorg/go-readline-ny v0.12.1
+	github.com/sijms/go-ora/v2 v2.7.6
 	golang.org/x/term v0.8.0
 	golang.org/x/text v0.9.0
 )
@@ -21,6 +21,7 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-tty v0.0.5 // indirect
+	github.com/nyaosorg/go-box/v2 v2.1.4 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect

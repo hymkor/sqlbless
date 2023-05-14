@@ -1,3 +1,7 @@
+V0.8.0
+======
+May 15, 2023
+
 - Added input completion for some keywords such as SELECT and INSERT. 
 
 v0.7.1

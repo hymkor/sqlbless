@@ -51,7 +51,7 @@ type canQuery interface {
 func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, w io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("Query: %[1]w (%[1]T)", err)
+		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
 	defer rows.Close()
 	return r2c.Dump(ctx, rows, w)
@@ -64,7 +64,7 @@ type canExec interface {
 func doDML(ctx context.Context, conn canExec, query string, w io.Writer) error {
 	result, err := conn.ExecContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("Exec: %[1]w (%[1]T)", err)
+		return fmt.Errorf("exec: %[1]w (%[1]T)", err)
 	}
 	count, err := result.RowsAffected()
 	if err != nil {
@@ -270,7 +270,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
 		case "REM":
-			break
+			// nothing to do
 		case "SPOOL":
 			fname, _ := cutField(arg)
 			if fname == "" {
@@ -338,7 +338,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		default:
 			echo(ss.spool, query)
 			if ss.tx != nil {
-				err = errors.New("Transaction is not closed. Please Commit or Rollback.")
+				err = errors.New("transaction is not closed. Please Commit or Rollback")
 			} else {
 				_, err = ss.conn.ExecContext(ctx, query)
 				if err == nil {

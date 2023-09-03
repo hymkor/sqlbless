@@ -458,6 +458,17 @@ func mains(args []string) error {
 	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
 		Completion: sqlCompletion{},
 	})
+	editor.EnterToCommitWhen(func(lines []string, csrline int) bool {
+		for {
+			last := strings.TrimSpace(lines[len(lines)-1])
+			if last != "" || len(lines) <= 1 {
+				c, _ := utf8.DecodeLastRuneInString(last)
+				return c == ';'
+			}
+			lines = lines[:len(lines)-1]
+		}
+	})
+
 	return session.Loop(ctx, &editor, false)
 }
 

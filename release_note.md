@@ -1,4 +1,6 @@
-V0.8.0
+- When lines end with `;`, Enter-key works as submiting
+
+v0.8.0
 ======
 May 15, 2023
 

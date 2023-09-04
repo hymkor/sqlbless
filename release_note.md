@@ -1,5 +1,6 @@
 v0.9.0
 ======
+Sep 4, 2023
 
 - When lines end with `;`, Enter-key works as submiting
 

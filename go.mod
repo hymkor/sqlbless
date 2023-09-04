@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/hymkor/go-multiline-ny v0.11.2
+	github.com/hymkor/go-multiline-ny v0.12.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/microsoft/go-mssqldb v1.6.0

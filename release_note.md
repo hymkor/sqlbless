@@ -1,3 +1,6 @@
+v0.9.0
+======
+
 - When lines end with `;`, Enter-key works as submiting
 
 v0.8.0

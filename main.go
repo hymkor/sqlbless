@@ -458,7 +458,7 @@ func mains(args []string) error {
 	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
 		Completion: sqlCompletion{},
 	})
-	editor.EnterToCommitWhen(func(lines []string, csrline int) bool {
+	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		for {
 			last := strings.TrimSpace(lines[len(lines)-1])
 			if last != "" || len(lines) <= 1 {

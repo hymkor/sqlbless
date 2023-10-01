@@ -8,7 +8,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/microsoft/go-mssqldb v1.6.0
-	github.com/nyaosorg/go-readline-ny v0.15.0
+	github.com/nyaosorg/go-readline-ny v0.15.2
 	github.com/sijms/go-ora/v2 v2.7.18
 	golang.org/x/term v0.12.0
 	golang.org/x/text v0.13.0

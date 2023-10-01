@@ -37,8 +37,8 @@ github.com/microsoft/go-mssqldb v1.6.0 h1:mM3gYdVwEPFrlg/Dvr2DNVEgYFG7L42l+dGc67
 github.com/microsoft/go-mssqldb v1.6.0/go.mod h1:00mDtPbeQCRGC1HwOOR5K/gr30P1NcEG0vx6Kbv2aJU=
 github.com/nyaosorg/go-box/v2 v2.1.4 h1:kD+hlbceIG93HiI2wxOvnuPGZzNcEt/gWNu1krgZf6E=
 github.com/nyaosorg/go-box/v2 v2.1.4/go.mod h1:raYiz1+ScY4DdrnuoJ8IO5BkE65AldpV9HHuXLg2O1U=
-github.com/nyaosorg/go-readline-ny v0.15.0 h1:wAqT+VE+wRn4jZ18hQgWTpADkTLq/LkdM8zi6sXXp6E=
-github.com/nyaosorg/go-readline-ny v0.15.0/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
+github.com/nyaosorg/go-readline-ny v0.15.2 h1:uNf3qxDCkXftmR2tD7UoLGOvOByMSjWgv7rmZ1o8jO0=
+github.com/nyaosorg/go-readline-ny v0.15.2/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
 github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 h1:KoWmjvw+nsYOo29YJK9vDA65RGE3NrOnUtO7a+RF9HU=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=

@@ -20,7 +20,7 @@ all:
 
 test:
 ifeq ($(OS),Windows_NT)
-	expect test.lua tstdblst
+	pwsh test.ps1 tstdblst
 endif
 	go test -v
 

@@ -1,28 +1,23 @@
 -- This is a test-script for Expect-lua on Windows.
 -- ( https://github.com/hymkor/expect )
 
-function run(scripts)
+function makescript(scripts)
+    local buffer = ""
     for i=1,#scripts do
-        local s = scripts[i]
-        for j=1,#s do
-            local rc = expect( j>1 and (j..">") or "SQL>")
-            if rc ~= 0 then
-                return nil,"can not found prompt"
-            end
-            send(s[j]..(j<#s and "\r" or "\n"))
+        local s = table.concat(scripts[i],"|")
+        if i > 1 then
+            buffer = buffer .. "||"
         end
+        buffer = buffer .. s
     end
-    return true
+    return buffer
 end
 
 function dbTest(arg1,arg2)
     local testLst = "TEST.LST"
     os.remove(testLst)
-    local pid,err = assert(spawn("./sqlbless",arg1,arg2))
-    if not pid then
-        return nil,"can not execute sqlbless"
-    end
-    local ok,err = run{
+
+    local script = makescript{
         { "CREATE TABLE TESTTBL",
           "(TESTNO NUMERIC ,",
           " TNAME  CHARACTER VARYING(14) ,",
@@ -36,8 +31,10 @@ function dbTest(arg1,arg2)
         { "DROP TABLE TESTTBL"},
         { "EXIT" },
     }
-    if not ok then
-        return nil,err
+
+    local pid,err = assert(spawn("./sqlbless","-auto",script,arg1,arg2))
+    if not pid then
+        return nil,"can not execute sqlbless"
     end
     wait(pid)
 
@@ -75,7 +72,7 @@ function main(second,dblst)
             if #spec < 2 then
                 return nil,dblst..": too few arguments: "..line
             end
-            print("Try DB:"..spec[1])
+            print("Try DB:",spec[1])
             local ok,err = dbTest(spec[1],spec[2])
             if not ok then
                 return nil,err
@@ -94,6 +91,6 @@ if ok then
     print("OK")
     os.exit(0)
 else
-    print("NG:"..err)
+    print("NG:",err)
     os.exit(1)
 end

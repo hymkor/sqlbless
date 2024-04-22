@@ -21,6 +21,7 @@ import (
 	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
 )
@@ -163,6 +164,7 @@ var (
 	flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
 	flagScript         = flag.String("f", "", "script file")
 	flagPrintType      = flag.Bool("print-type", false, "(for debug) Print type in CSV")
+	flagAuto           = flag.String("auto", "", "autopilot")
 )
 
 type CommandIn interface {
@@ -444,6 +446,16 @@ func mains(args []string) error {
 
 	if *flagSubmitByEnter {
 		editor.SwapEnter()
+	}
+	if *flagAuto != "" {
+		text := strings.ReplaceAll(*flagAuto, "||", "\n") // "||" -> Ctrl-J(Commit)
+		text = strings.ReplaceAll(text, "|", "\r")        // "|" -> Ctrl-M (NewLine)
+		if text[len(text)-1] != '\n' {                    // EOF -> Ctrl-J(Commit)
+			text = text + "\n"
+		}
+		editor.LineEditor.Tty = &auto.Pilot{
+			Text: strings.Split(text, ""),
+		}
 	}
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())

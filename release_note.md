@@ -1,7 +1,9 @@
 - Implement `-auto` option (for test and benchmark)
 - Replace the test code written by [ExpectLua]-Script to PowerShell
+- Use [CSVI] as a pager for the output of SELECT statement
 
 [ExpectLua]: https://github.com/hymkor/expect
+[CSVI]: https://github.com/hymkor/csvi
 
 v0.9.0
 ======

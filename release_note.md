@@ -1,3 +1,8 @@
+- Implement `-auto` option (for test and benchmark)
+- Replace the test code written by [ExpectLua]-Script to PowerShell
+
+[ExpectLua]: https://github.com/hymkor/expect
+
 v0.9.0
 ======
 Sep 4, 2023

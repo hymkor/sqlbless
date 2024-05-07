@@ -301,11 +301,13 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "SELECT":
 			echo(ss.spool, query)
-			if ss.tx == nil {
-				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
-			} else {
-				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
-			}
+			err = csvPager(query, func(pOut io.Writer) error {
+				if ss.tx == nil {
+					return doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(pOut, ss.spool))
+				} else {
+					return doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(pOut, ss.spool))
+				}
+			}, os.Stdout)
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
 			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
@@ -322,7 +324,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			return io.EOF
 		case "DESC", "\\D":
 			echo(ss.spool, query)
-			err = ss.desc(ctx, arg, tee(os.Stdout, ss.spool))
+			err = csvPager(query, func(pOut io.Writer) error {
+				return ss.desc(ctx, arg, tee(pOut, ss.spool))
+			}, os.Stdout)
 		case "HISTORY":
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))

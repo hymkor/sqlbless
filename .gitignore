@@ -1,0 +1,5 @@
+*.sql
+*.cmd
+tstdblst
+*.lst
+*.LST

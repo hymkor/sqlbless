@@ -1,6 +1,7 @@
 - SQL がエラーの時でも CSV ページャが呼ばれる問題を修正
 - エスケープシーケンスがスプールファイルに含まれてしまう問題を修正
 - `desc TABLE` で TABLE が存在しない時もページャが呼ばれる問題を修正
+- Ctrl-D もしくは `exit` で終了した時、EOF がエラーとして表示される問題を修正
 
 v0.10.0
 =======
@@ -12,9 +13,6 @@ May 8, 2024
 
 [ExpectLua]: https://github.com/hymkor/expect
 [CSVI]: https://github.com/hymkor/csvi
-
-![image](https://github.com/hymkor/sqlbless/assets/3752189/030a3f7a-d5fa-4e6c-89f3-93982de0a004)
-
 
 v0.9.0
 =======

@@ -1,6 +1,7 @@
 - Fix: CSV pager was called even when SQL Statement raised error
 - Fix: Escape Sequences were inserted into the spooled file
 - Fix: `desc TABLE` called pager even when TABLE did not exist
+- Fix: EOF was reported as an error when Ctrl-D or `exit` is typed.
 
 v0.10.0
 =======

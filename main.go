@@ -262,18 +262,16 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 }
 
 func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort bool) error {
-	eof := false
-	for !eof {
+	for {
 		if ss.spool != nil {
 			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
 		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			if err == io.EOF {
-				eof = true
-			} else {
-				return err
+				return nil
 			}
+			return err
 		}
 		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
 		if query == "" {
@@ -330,7 +328,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			echo(ss.spool, query)
 			err = txRollback(&ss.tx, tee(os.Stderr, ss.spool))
 		case "EXIT", "QUIT":
-			return io.EOF
+			return nil
 		case "DESC", "\\D":
 			echo(ss.spool, query)
 			err = ss.desc(ctx, arg, os.Stdout, ss.spool)
@@ -366,7 +364,6 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		}
 	}
-	return nil
 }
 
 type sqlCompletion struct{}

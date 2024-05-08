@@ -1,5 +1,6 @@
-*.sql
-*.cmd
-tstdblst
-*.lst
 *.LST
+*.cmd
+*.lst
+*.sql
+sqlbless
+tstdblst

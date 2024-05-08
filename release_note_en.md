@@ -1,3 +1,7 @@
+v0.10.1
+=======
+May 9, 2024
+
 - Fix: CSV pager was called even when SQL Statement raised error
 - Fix: Escape Sequences were inserted into the spooled file
 - Fix: `desc TABLE` called pager even when TABLE did not exist

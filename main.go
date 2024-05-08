@@ -54,8 +54,13 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, o
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
+	_rows := rowsHasNext(rows)
+	if _rows == nil {
+		rows.Close()
+		return fmt.Errorf("data not found")
+	}
 	return csvPager(query, func(pOut io.Writer) error {
-		_err := r2c.Dump(ctx, rows, pOut)
+		_err := r2c.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
 	}, out, spool)

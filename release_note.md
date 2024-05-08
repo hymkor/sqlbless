@@ -1,3 +1,7 @@
+v0.10.0
+=======
+May 8, 2024
+
 - Implement `-auto` option (for test and benchmark)
 - Replace the test code written by [ExpectLua]-Script to PowerShell
 - Use [CSVI] as a pager for the output of SELECT statement

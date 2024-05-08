@@ -54,8 +54,11 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, w
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
-	defer rows.Close()
-	return r2c.Dump(ctx, rows, w)
+	return csvPager(query, func(pOut io.Writer) error {
+		_err := r2c.Dump(ctx, rows, pOut)
+		rows.Close()
+		return _err
+	}, w)
 }
 
 type canExec interface {
@@ -301,13 +304,11 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "SELECT":
 			echo(ss.spool, query)
-			err = csvPager(query, func(pOut io.Writer) error {
-				if ss.tx == nil {
-					return doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(pOut, ss.spool))
-				} else {
-					return doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(pOut, ss.spool))
-				}
-			}, os.Stdout)
+			if ss.tx == nil {
+				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
+			} else {
+				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
+			}
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
 			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))

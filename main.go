@@ -136,7 +136,7 @@ func echo(spool io.Writer, query string) {
 	}
 }
 
-func (ss *Session) desc(ctx context.Context, table string, w io.Writer) error {
+func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer) error {
 	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
@@ -155,8 +155,16 @@ func (ss *Session) desc(ctx context.Context, table string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
-	return ss.DumpConfig.Dump(ctx, rows, w)
+	_rows := rowsHasNext(rows)
+	if _rows == nil {
+		rows.Close()
+		return fmt.Errorf("%s: table not found", table)
+	}
+	return csvPager(table, func(pOut io.Writer) error {
+		err := ss.DumpConfig.Dump(ctx, _rows, pOut)
+		rows.Close()
+		return err
+	}, out, spool)
 }
 
 var (
@@ -325,9 +333,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			return io.EOF
 		case "DESC", "\\D":
 			echo(ss.spool, query)
-			err = csvPager(query, func(pOut io.Writer) error {
-				return ss.desc(ctx, arg, pOut)
-			}, os.Stdout, ss.spool)
+			err = ss.desc(ctx, arg, os.Stdout, ss.spool)
 		case "HISTORY":
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))

@@ -16,7 +16,39 @@ type RowToCsv struct {
 	PrintType bool
 }
 
-func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error {
+type _RowsI interface {
+	Close() error
+	ColumnTypes() ([]*sql.ColumnType, error)
+	Columns() ([]string, error)
+	Err() error
+	Next() bool
+	Scan(dest ...any) error
+}
+
+type _UnreadRows struct {
+	*sql.Rows
+	unread bool
+}
+
+func rowsHasNext(r *sql.Rows) *_UnreadRows {
+	if !r.Next() {
+		return nil
+	}
+	return &_UnreadRows{
+		Rows:   r,
+		unread: true,
+	}
+}
+
+func (r *_UnreadRows) Next() bool {
+	if r.unread {
+		r.unread = false
+		return true
+	}
+	return r.Rows.Next()
+}
+
+func (cfg RowToCsv) Dump(ctx context.Context, rows _RowsI, w io.Writer) error {
 	csvw := csv.NewWriter(w)
 	defer csvw.Flush()
 
@@ -26,7 +58,7 @@ func (cfg RowToCsv) Dump(ctx context.Context, rows *sql.Rows, w io.Writer) error
 	return rowsToCsv(ctx, rows, cfg.Null, cfg.PrintType, csvw)
 }
 
-func rowsToCsv(ctx context.Context, rows *sql.Rows, null string, printType bool, csvw *csv.Writer) error {
+func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)

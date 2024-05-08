@@ -34,10 +34,14 @@ func (_QuitCsvi) Close() error {
 	return nil
 }
 
-func csvPager(title string, f func(pOut io.Writer) error, out io.Writer) (err error) {
+func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) (err error) {
 	pIn, pOut := io.Pipe()
 	go func() {
-		err = f(pOut)
+		if spool == nil {
+			err = f(pOut)
+		} else {
+			err = f(tee(pOut, spool))
+		}
 		pOut.Close()
 	}()
 

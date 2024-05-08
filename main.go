@@ -49,7 +49,7 @@ type canQuery interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
-func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, w io.Writer) error {
+func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, out, spool io.Writer) error {
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
@@ -58,7 +58,7 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, w
 		_err := r2c.Dump(ctx, rows, pOut)
 		rows.Close()
 		return _err
-	}, w)
+	}, out, spool)
 }
 
 type canExec interface {
@@ -305,9 +305,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		case "SELECT":
 			echo(ss.spool, query)
 			if ss.tx == nil {
-				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
+				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, os.Stdout, ss.spool)
 			} else {
-				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, tee(os.Stdout, ss.spool))
+				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, os.Stdout, ss.spool)
 			}
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
@@ -326,8 +326,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		case "DESC", "\\D":
 			echo(ss.spool, query)
 			err = csvPager(query, func(pOut io.Writer) error {
-				return ss.desc(ctx, arg, tee(pOut, ss.spool))
-			}, os.Stdout)
+				return ss.desc(ctx, arg, pOut)
+			}, os.Stdout, ss.spool)
 		case "HISTORY":
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))

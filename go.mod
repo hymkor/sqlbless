@@ -6,13 +6,13 @@ toolchain go1.22.2
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.9.1
-	github.com/hymkor/go-multiline-ny v0.12.1
+	github.com/hymkor/csvi v1.9.3
+	github.com/hymkor/go-multiline-ny v0.13.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/microsoft/go-mssqldb v1.7.1
 	github.com/nyaosorg/go-readline-ny v1.3.1
-	github.com/sijms/go-ora/v2 v2.8.16
+	github.com/sijms/go-ora/v2 v2.8.18
 	golang.org/x/term v0.20.0
 	golang.org/x/text v0.15.0
 )

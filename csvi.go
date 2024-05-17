@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"strings"
 
@@ -34,7 +35,12 @@ func (_QuitCsvi) Close() error {
 	return nil
 }
 
-func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) (err error) {
+func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) error {
+	_, err := csvEdit(title, true, f, out, spool)
+	return err
+}
+
+func csvEdit(title string, readonly bool, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
 	pIn, pOut := io.Pipe()
 	go func() {
 		if spool == nil {
@@ -59,14 +65,16 @@ func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) 
 		CellWidth:   14,
 		HeaderLines: 1,
 		FixColumn:   true,
-		ReadOnly:    true,
+		ReadOnly:    readonly,
 		Message:     titleBuf.String(),
 	}
 	if *flagAuto != "" {
 		cfg.Pilot = _QuitCsvi{}
 	}
-	cfg.Edit(pIn, out)
+	var err2 error
+	result, err2 = cfg.Edit(pIn, out)
+	err = errors.Join(err, err2)
 
 	pIn.Close()
-	return
+	return result, err
 }

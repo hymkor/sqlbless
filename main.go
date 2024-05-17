@@ -19,11 +19,15 @@ import (
 	"golang.org/x/term"
 
 	"github.com/mattn/go-colorable"
+	"github.com/mattn/go-tty"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
+
+	"github.com/hymkor/csvi/uncsv"
 )
 
 func cutField(s string) (string, string) {
@@ -64,6 +68,135 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, o
 		rows.Close()
 		return _err
 	}, out, spool)
+}
+
+func csvRowModified(csvRow *uncsv.Row) bool {
+	for _, cell := range csvRow.Cell {
+		if cell.Modified() {
+			return true
+		}
+	}
+	return false
+}
+
+func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writer) error {
+	var conn canQuery
+	if ss.tx == nil {
+		conn = ss.conn
+	} else {
+		conn = ss.tx
+	}
+
+	// replace `edit ` to `select * from `
+	_, tableAndWhere := cutField(command)
+	query := "SELECT * FROM " + tableAndWhere
+
+	table, _ := cutField(tableAndWhere)
+
+	rows, err := conn.QueryContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("query: %[1]w (%[1]T)", err)
+	}
+	_rows := rowsHasNext(rows)
+	if _rows == nil {
+		rows.Close()
+		return fmt.Errorf("data not found")
+	}
+	columns, err := rows.Columns()
+	if err != nil {
+		rows.Close()
+		return err
+	}
+	columnTypes, err := rows.ColumnTypes()
+	columnQuotes := [][2]string{}
+	for _, ct := range columnTypes {
+		name := strings.ToUpper(ct.DatabaseTypeName())
+		if strings.Contains(name, "INT") ||
+			strings.Contains(name, "NUMBER") ||
+			strings.Contains(name, "DECIMAL") {
+			columnQuotes = append(columnQuotes, [2]string{"", ""})
+		} else {
+			columnQuotes = append(columnQuotes, [2]string{"'", "'"})
+		}
+	}
+	csvRows, err := csvEdit(command, false, func(pOut io.Writer) error {
+		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
+		rows.Close()
+		return _err
+	}, out, spool)
+
+	if err != nil && err != io.EOF {
+		return err
+	}
+	csvRows.Each(func(row *uncsv.Row) bool {
+		if !csvRowModified(row) {
+			return true
+		}
+		var sql strings.Builder
+		sql.WriteString("UPDATE  ")
+		sql.WriteString(table)
+
+		del := "\n   SET  "
+		null := ss.DumpConfig.Null
+
+		var where strings.Builder
+		for i, c := range row.Cell {
+			if i > 0 {
+				where.WriteString("\n   AND  ")
+			} else {
+				where.WriteString("\n WHERE  ")
+			}
+			q := columnQuotes[i]
+			if string(c.Original()) == null {
+				fmt.Fprintf(&where, "%s is NULL", columns[i])
+			} else {
+				fmt.Fprintf(&where, "%s = %s%s%s", columns[i], q[0], c.Original(), q[1])
+			}
+			if c.Modified() {
+				if c.Text() == null {
+					fmt.Fprintf(&sql, "%s%s = NULL ",
+						del,
+						columns[i])
+				} else {
+					fmt.Fprintf(&sql, "%s%s = %s%s%s ",
+						del,
+						columns[i],
+						q[0],
+						c.Text(),
+						q[1])
+				}
+				del = ",\n        "
+			}
+		}
+		sql.WriteString(where.String())
+		dmlSql := sql.String()
+		fmt.Println(dmlSql)
+		var tty1 *tty.TTY
+		tty1, err = tty.Open()
+		if err != nil {
+			return false
+		}
+		defer tty1.Close()
+		fmt.Print("Execute? [y/n]")
+		var answer string
+		answer, err = readline.GetKey(tty1)
+		fmt.Println()
+		if err != nil {
+			return false
+		}
+		if answer == "y" || answer == "Y" {
+			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+			if err != nil {
+				return false
+			}
+			err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
+			if err != nil {
+				return false
+			}
+		}
+		return true
+	})
+	return err
 }
 
 type canExec interface {
@@ -313,6 +446,10 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 					writeSignature(ss.spool)
 				}
 			}
+		case "EDIT":
+			echo(ss.spool, query)
+			err = doEdit(ctx, ss, query, os.Stdout, ss.spool)
+
 		case "SELECT":
 			echo(ss.spool, query)
 			if ss.tx == nil {

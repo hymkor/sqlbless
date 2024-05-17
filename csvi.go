@@ -55,6 +55,7 @@ func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) 
 	}
 
 	cfg := &csvi.Config{
+		Mode:        &uncsv.Mode{Comma: ','},
 		CellWidth:   14,
 		HeaderLines: 1,
 		FixColumn:   true,
@@ -64,7 +65,7 @@ func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) 
 	if *flagAuto != "" {
 		cfg.Pilot = _QuitCsvi{}
 	}
-	cfg.Main(&uncsv.Mode{Comma: ','}, pIn, out)
+	cfg.Edit(pIn, out)
 
 	pIn.Close()
 	return

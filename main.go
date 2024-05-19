@@ -31,22 +31,12 @@ import (
 )
 
 func cutField(s string) (string, string) {
-	for len(s) > 0 && (s[0] == ' ' || s[0] == '\n' || s[0] == '\r' || s[0] == '\t' || s[0] == '\v') {
-		s = s[1:]
-	}
+	s = strings.TrimLeft(s, " \n\r\t\v")
 	i := 0
 	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
 		i++
 	}
 	return s[:i], s[i:]
-}
-
-func trimSemicolon(s string) string {
-	if len(s) >= 1 && s[len(s)-1] == ';' {
-		s = s[:len(s)-1]
-		s = strings.TrimSpace(s)
-	}
-	return s
 }
 
 type canQuery interface {
@@ -411,7 +401,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			return err
 		}
-		query := trimSemicolon(strings.TrimSpace(strings.Join(lines, "\n")))
+		query := strings.TrimRight(strings.Join(lines, "\n"), "; \n\r\t\v")
 		if query == "" {
 			continue
 		}

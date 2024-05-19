@@ -60,13 +60,31 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, o
 	}, out, spool)
 }
 
-func csvRowModified(csvRow *uncsv.Row) bool {
+type typeModified int
+
+const (
+	notModified = iota
+	modified
+	newRow
+)
+
+func csvRowModified(csvRow *uncsv.Row) typeModified {
+	bits := 0
 	for _, cell := range csvRow.Cell {
 		if cell.Modified() {
-			return true
+			bits |= 1
+		}
+		if len(cell.Original()) > 0 {
+			bits |= 2
 		}
 	}
-	return false
+	switch bits {
+	case 1:
+		return newRow
+	case 3:
+		return modified
+	}
+	return notModified
 }
 
 func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writer) error {
@@ -119,47 +137,66 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 		return err
 	}
 	csvRows.Each(func(row *uncsv.Row) bool {
-		if !csvRowModified(row) {
-			return true
-		}
-		var sql strings.Builder
-		sql.WriteString("UPDATE  ")
-		sql.WriteString(table)
-
-		del := "\n   SET  "
+		var dmlSql string
 		null := ss.DumpConfig.Null
-
-		var where strings.Builder
-		for i, c := range row.Cell {
-			if i > 0 {
-				where.WriteString("\n   AND  ")
-			} else {
-				where.WriteString("\n WHERE  ")
-			}
-			q := columnQuotes[i]
-			if string(c.Original()) == null {
-				fmt.Fprintf(&where, "%s is NULL", columns[i])
-			} else {
-				fmt.Fprintf(&where, "%s = %s%s%s", columns[i], q[0], c.Original(), q[1])
-			}
-			if c.Modified() {
-				if c.Text() == null {
-					fmt.Fprintf(&sql, "%s%s = NULL ",
-						del,
-						columns[i])
-				} else {
-					fmt.Fprintf(&sql, "%s%s = %s%s%s ",
-						del,
-						columns[i],
-						q[0],
-						c.Text(),
-						q[1])
+		switch csvRowModified(row) {
+		case notModified:
+			return true
+		case newRow:
+			var sql strings.Builder
+			fmt.Fprintf(&sql, "INSERT INTO %s VALUES\n( ", table)
+			for i, c := range row.Cell {
+				if i > 0 {
+					sql.WriteByte(',')
 				}
-				del = ",\n        "
+				if c.Text() == null {
+					sql.WriteString("NULL")
+				} else {
+					q := columnQuotes[i]
+					fmt.Fprintf(&sql, "%s%s%s", q[0], c.Text(), q[1])
+				}
 			}
+			sql.WriteString(")\n")
+			dmlSql = sql.String()
+		case modified:
+			var sql strings.Builder
+			sql.WriteString("UPDATE  ")
+			sql.WriteString(table)
+
+			del := "\n   SET  "
+
+			var where strings.Builder
+			for i, c := range row.Cell {
+				if i > 0 {
+					where.WriteString("\n   AND  ")
+				} else {
+					where.WriteString("\n WHERE  ")
+				}
+				q := columnQuotes[i]
+				if string(c.Original()) == null {
+					fmt.Fprintf(&where, "%s is NULL", columns[i])
+				} else {
+					fmt.Fprintf(&where, "%s = %s%s%s", columns[i], q[0], c.Original(), q[1])
+				}
+				if c.Modified() {
+					if c.Text() == null {
+						fmt.Fprintf(&sql, "%s%s = NULL ",
+							del,
+							columns[i])
+					} else {
+						fmt.Fprintf(&sql, "%s%s = %s%s%s ",
+							del,
+							columns[i],
+							q[0],
+							c.Text(),
+							q[1])
+					}
+					del = ",\n        "
+				}
+			}
+			sql.WriteString(where.String())
+			dmlSql = sql.String()
 		}
-		sql.WriteString(where.String())
-		dmlSql := sql.String()
 		fmt.Println(dmlSql)
 		var tty1 *tty.TTY
 		tty1, err = tty.Open()

@@ -6,10 +6,11 @@ toolchain go1.22.2
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.9.3
+	github.com/hymkor/csvi v1.9.4-0.20240519125013-76e5dfb3adaf
 	github.com/hymkor/go-multiline-ny v0.13.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
+	github.com/mattn/go-tty v0.0.5
 	github.com/microsoft/go-mssqldb v1.7.1
 	github.com/nyaosorg/go-readline-ny v1.3.1
 	github.com/sijms/go-ora/v2 v2.8.18
@@ -26,7 +27,6 @@ require (
 	github.com/hymkor/go-windows1x-virtualterminal v0.5.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/mattn/go-tty v0.0.5 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/nyaosorg/go-readline-skk v0.3.1 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.2 // indirect

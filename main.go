@@ -87,6 +87,33 @@ func csvRowModified(csvRow *uncsv.Row) typeModified {
 	return notModified
 }
 
+func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
+	fmt.Println(dmlSql)
+	tty1, err := tty.Open()
+	if err != nil {
+		return err
+	}
+	defer tty1.Close()
+	fmt.Print("Execute? [y/n]")
+	var answer string
+	answer, err = readline.GetKey(tty1)
+	fmt.Println()
+	if err != nil {
+		return err
+	}
+	if answer == "y" || answer == "Y" {
+		err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+		if err != nil {
+			return err
+		}
+		err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writer) error {
 	var conn canQuery
 	if ss.tx == nil {
@@ -197,31 +224,8 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			sql.WriteString(where.String())
 			dmlSql = sql.String()
 		}
-		fmt.Println(dmlSql)
-		var tty1 *tty.TTY
-		tty1, err = tty.Open()
-		if err != nil {
-			return false
-		}
-		defer tty1.Close()
-		fmt.Print("Execute? [y/n]")
-		var answer string
-		answer, err = readline.GetKey(tty1)
-		fmt.Println()
-		if err != nil {
-			return false
-		}
-		if answer == "y" || answer == "Y" {
-			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
-			if err != nil {
-				return false
-			}
-			err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
-			if err != nil {
-				return false
-			}
-		}
-		return true
+		err = askSqlAndExecute(ctx, ss, dmlSql)
+		return err == nil
 	})
 	return err
 }

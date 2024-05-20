@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"time"
 	"unicode/utf8"
 )
 
@@ -100,11 +101,16 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, cs
 					itemStr[i] = null
 					continue
 				}
+				if tm, ok := (*p).(time.Time); ok {
+					itemStr[i] = tm.Format("2006-01-02 15:04:05")
+					continue
+				}
 				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {
 					itemStr[i] = string(b)
 					continue
 				}
 				itemStr[i] = fmt.Sprint(*p)
+				// itemStr[i] += fmt.Sprintf("(%T)", *p)
 			}
 		}
 		if err := csvw.Write(itemStr); err != nil {

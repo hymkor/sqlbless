@@ -344,7 +344,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			csvw.Flush()
 		case "START":
 			fname, _ := cutField(arg)
-			ss.Start(ctx, fname)
+			err = ss.Start(ctx, fname)
 		default:
 			echo(ss.spool, query)
 			if ss.tx != nil {

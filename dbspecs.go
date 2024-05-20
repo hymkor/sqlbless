@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -13,6 +14,17 @@ import (
 type DBSpec struct {
 	SqlForDesc string
 	SqlForTab  string
+	ToStamp    func(string) (string, error) // Column name contains /TIMESTAMP/
+	ToTime     func(string) (string, error) // Column name contains /TIME/
+	ToDate     func(string) (string, error) // Column name contains /DATE/
+}
+
+func oracleToDate(s string) (string, error) {
+	_, err := time.Parse("2006-01-02 15:05:06", s)
+	if err != nil {
+		return "", err
+	}
+	return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
 }
 
 var dbSpecs = map[string]*DBSpec{
@@ -57,6 +69,9 @@ var dbSpecs = map[string]*DBSpec{
        where table_name = UPPER(:1)
        order by column_id`,
 		SqlForTab: `select * from tab`,
+		ToStamp:   oracleToDate,
+		ToDate:    oracleToDate,
+		ToTime:    oracleToDate,
 	},
 	"SQLSERVER": &DBSpec{
 		SqlForDesc: `

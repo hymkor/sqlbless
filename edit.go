@@ -141,6 +141,12 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return s, nil
 			})
+		} else if strings.Contains(name, "STAMP") {
+			quoteFunc = append(quoteFunc, ss.dbSpec.ToStamp)
+		} else if strings.Contains(name, "TIME") {
+			quoteFunc = append(quoteFunc, ss.dbSpec.ToTime)
+		} else if strings.Contains(name, "DATE") {
+			quoteFunc = append(quoteFunc, ss.dbSpec.ToDate)
 		} else {
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil

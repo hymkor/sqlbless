@@ -137,6 +137,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		if strings.Contains(name, "INT") ||
 			strings.Contains(name, "NUMBER") ||
+			strings.Contains(name, "NUMERIC") ||
 			strings.Contains(name, "DECIMAL") {
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return s, nil

@@ -193,7 +193,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 	}
 	editResult.RemovedRows(func(row *uncsv.Row) bool {
 		var sql strings.Builder
-		fmt.Fprintf(&sql, "DELETE FROM %s\n", table)
+		fmt.Fprintf(&sql, "DELETE FROM %s", table)
 		sql.WriteString(createWhere(row, columns, columnQuotes, null))
 		err = askSqlAndExecute(ctx, ss, sql.String())
 		return err == nil

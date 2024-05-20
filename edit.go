@@ -50,6 +50,11 @@ func csvRowIsNew(row *uncsv.Row) bool {
 	return true
 }
 
+const (
+	_ANSI_CURSOR_OFF = "\x1B[?25l"
+	_ANSI_CURSOR_ON  = "\x1B[?25h"
+)
+
 func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
 	fmt.Println(dmlSql)
 	tty1, err := tty.Open()
@@ -57,10 +62,10 @@ func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
 		return err
 	}
 	defer tty1.Close()
-	fmt.Print("Execute? [y/n]")
+	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
 	var answer string
 	answer, err = readline.GetKey(tty1)
-	fmt.Println()
+	fmt.Println(answer, _ANSI_CURSOR_OFF)
 	if err != nil {
 		return err
 	}

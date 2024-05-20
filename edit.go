@@ -132,6 +132,9 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 		return err
 	}
 	columnTypes, err := rows.ColumnTypes()
+	if err != nil {
+		return err
+	}
 	quoteFunc := make([]func(string) (string, error), 0, len(columnTypes))
 	for _, ct := range columnTypes {
 		name := strings.ToUpper(ct.DatabaseTypeName())

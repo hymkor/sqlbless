@@ -138,19 +138,15 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 	quoteFunc := make([]func(string) (string, error), 0, len(columnTypes))
 	for _, ct := range columnTypes {
 		name := strings.ToUpper(ct.DatabaseTypeName())
-		if strings.Contains(name, "INT") ||
+		if conv := ss.dbSpec.TryTypeNameToConv(name); conv != nil {
+			quoteFunc = append(quoteFunc, conv)
+		} else if strings.Contains(name, "INT") ||
 			strings.Contains(name, "NUMBER") ||
 			strings.Contains(name, "NUMERIC") ||
 			strings.Contains(name, "DECIMAL") {
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return s, nil
 			})
-		} else if strings.Contains(name, "STAMP") {
-			quoteFunc = append(quoteFunc, ss.dbSpec.ToStamp)
-		} else if strings.Contains(name, "TIME") {
-			quoteFunc = append(quoteFunc, ss.dbSpec.ToTime)
-		} else if strings.Contains(name, "DATE") {
-			quoteFunc = append(quoteFunc, ss.dbSpec.ToDate)
 		} else {
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil

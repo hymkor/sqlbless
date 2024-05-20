@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,35 +13,51 @@ import (
 )
 
 type DBSpec struct {
-	SqlForDesc string
-	SqlForTab  string
-	ToStamp    func(string) (string, error) // Column name contains /TIMESTAMP/
-	ToTime     func(string) (string, error) // Column name contains /TIME/
-	ToDate     func(string) (string, error) // Column name contains /DATE/
+	SqlForDesc     string
+	SqlForTab      string
+	TypeNameToConv func(string) func(string) (string, error)
 }
 
-func oracleToDate(s string) (string, error) {
-	_, err := time.Parse("2006-01-02 15:05:06", s)
-	if err != nil {
-		return "", err
+func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, error) {
+	if dbSpec.TypeNameToConv == nil {
+		return nil
 	}
-	return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+	return dbSpec.TypeNameToConv(typeName)
 }
 
-func posgresToStamp(s string) (string, error) {
-	_, err := time.Parse("2006-01-02 15:04:05", s)
-	if err != nil {
-		return "", err
+func oracleTypeNameToConv(typeName string) func(string) (string, error) {
+	if !strings.Contains(typeName, "DATE") {
+		return nil
 	}
-	return "TO_TIMESTAMP('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+	return func(s string) (string, error) {
+		_, err := time.Parse("2006-01-02 15:05:06", s)
+		if err != nil {
+			return "", err
+		}
+		return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+	}
 }
 
-func posgresToDate(s string) (string, error) {
-	dt, err := time.Parse("2006-01-02 15:04:05", s)
-	if err != nil {
-		return "", err
+func posgresTypeNameToConv(typeName string) func(string) (string, error) {
+	if strings.Contains(typeName, "TIMESTAMP") {
+		return func(s string) (string, error) {
+			_, err := time.Parse("2006-01-02 15:04:05", s)
+			if err != nil {
+				return "", err
+			}
+			return "TO_TIMESTAMP('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+		}
+	} else if strings.Contains(typeName, "DATE") {
+		return func(s string) (string, error) {
+			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			if err != nil {
+				return "", err
+			}
+			return "TO_DATE('" + dt.Format("2006-01-02") + "','YYYY-MM-DD')", nil
+		}
+	} else {
+		return nil
 	}
-	return "TO_DATE('" + dt.Format("2006-01-02") + "','YYYY-MM-DD')", nil
 }
 
 var dbSpecs = map[string]*DBSpec{
@@ -67,9 +84,7 @@ var dbSpecs = map[string]*DBSpec{
 		SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
-		ToStamp: posgresToStamp,
-		ToDate:  posgresToDate,
-		ToTime:  posgresToStamp,
+		TypeNameToConv: posgresTypeNameToConv,
 	},
 	"ORACLE": &DBSpec{
 		SqlForDesc: `
@@ -87,10 +102,8 @@ var dbSpecs = map[string]*DBSpec{
         from all_tab_columns
        where table_name = UPPER(:1)
        order by column_id`,
-		SqlForTab: `select * from tab`,
-		ToStamp:   oracleToDate,
-		ToDate:    oracleToDate,
-		ToTime:    oracleToDate,
+		SqlForTab:      `select * from tab`,
+		TypeNameToConv: oracleTypeNameToConv,
 	},
 	"SQLSERVER": &DBSpec{
 		SqlForDesc: `

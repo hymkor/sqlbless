@@ -114,6 +114,24 @@ func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
 	return nil
 }
 
+func createWhere(row *uncsv.Row, columns []string, columnQuotes [][2]string, null string) string {
+	var where strings.Builder
+	for i, c := range row.Cell {
+		if i > 0 {
+			where.WriteString("\n   AND  ")
+		} else {
+			where.WriteString("\n WHERE  ")
+		}
+		q := columnQuotes[i]
+		if string(c.Original()) == null {
+			fmt.Fprintf(&where, "%s is NULL", columns[i])
+		} else {
+			fmt.Fprintf(&where, "%s = %s%s%s", columns[i], q[0], c.Original(), q[1])
+		}
+	}
+	return where.String()
+}
+
 func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writer) error {
 	var conn canQuery
 	if ss.tx == nil {
@@ -192,19 +210,8 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 
 			del := "\n   SET  "
 
-			var where strings.Builder
 			for i, c := range row.Cell {
-				if i > 0 {
-					where.WriteString("\n   AND  ")
-				} else {
-					where.WriteString("\n WHERE  ")
-				}
 				q := columnQuotes[i]
-				if string(c.Original()) == null {
-					fmt.Fprintf(&where, "%s is NULL", columns[i])
-				} else {
-					fmt.Fprintf(&where, "%s = %s%s%s", columns[i], q[0], c.Original(), q[1])
-				}
 				if c.Modified() {
 					if c.Text() == null {
 						fmt.Fprintf(&sql, "%s%s = NULL ",
@@ -221,7 +228,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 					del = ",\n        "
 				}
 			}
-			sql.WriteString(where.String())
+			sql.WriteString(createWhere(row, columns, columnQuotes, null))
 			dmlSql = sql.String()
 		}
 		err = askSqlAndExecute(ctx, ss, dmlSql)

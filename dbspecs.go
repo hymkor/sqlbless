@@ -27,6 +27,22 @@ func oracleToDate(s string) (string, error) {
 	return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
 }
 
+func posgresToStamp(s string) (string, error) {
+	_, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return "", err
+	}
+	return "TO_TIMESTAMP('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+}
+
+func posgresToDate(s string) (string, error) {
+	dt, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return "", err
+	}
+	return "TO_DATE('" + dt.Format("2006-01-02") + "','YYYY-MM-DD')", nil
+}
+
 var dbSpecs = map[string]*DBSpec{
 	"POSTGRES": &DBSpec{
 		SqlForDesc: `
@@ -51,6 +67,9 @@ var dbSpecs = map[string]*DBSpec{
 		SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
+		ToStamp: posgresToStamp,
+		ToDate:  posgresToDate,
+		ToTime:  posgresToStamp,
 	},
 	"ORACLE": &DBSpec{
 		SqlForDesc: `

@@ -1,3 +1,5 @@
+- Create new statement: `edit TABLENAME [WHERE...]` to edit the records of table with [CSVI]
+
 v0.10.1
 =======
 May 9, 2024

@@ -41,6 +41,15 @@ func csvRowModified(csvRow *uncsv.Row) typeModified {
 	return notModified
 }
 
+func csvRowIsNew(row *uncsv.Row) bool {
+	for _, cell := range row.Cell {
+		if len(cell.Original()) > 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
 	fmt.Println(dmlSql)
 	tty1, err := tty.Open()
@@ -192,6 +201,9 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 		return err
 	}
 	editResult.RemovedRows(func(row *uncsv.Row) bool {
+		if csvRowIsNew(row) {
+			return true
+		}
 		var sql strings.Builder
 		fmt.Fprintf(&sql, "DELETE FROM %s", table)
 		sql.WriteString(createWhere(row, columns, columnQuotes, null))

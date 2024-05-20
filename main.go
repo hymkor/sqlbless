@@ -172,7 +172,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			columnQuotes = append(columnQuotes, [2]string{"'", "'"})
 		}
 	}
-	csvRows, err := csvEdit(command, false, func(pOut io.Writer) error {
+	editResult, err := csvEdit(command, false, func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
@@ -181,9 +181,9 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 	if err != nil && err != io.EOF {
 		return err
 	}
-	csvRows.Each(func(row *uncsv.Row) bool {
+	null := ss.DumpConfig.Null
+	editResult.Each(func(row *uncsv.Row) bool {
 		var dmlSql string
-		null := ss.DumpConfig.Null
 		switch csvRowModified(row) {
 		case notModified:
 			return true
@@ -232,6 +232,16 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			dmlSql = sql.String()
 		}
 		err = askSqlAndExecute(ctx, ss, dmlSql)
+		return err == nil
+	})
+	if err != nil {
+		return err
+	}
+	editResult.RemovedRows(func(row *uncsv.Row) bool {
+		var sql strings.Builder
+		fmt.Fprintf(&sql, "DELETE FROM %s\n", table)
+		sql.WriteString(createWhere(row, columns, columnQuotes, null))
+		err = askSqlAndExecute(ctx, ss, sql.String())
 		return err == nil
 	})
 	return err

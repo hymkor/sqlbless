@@ -272,7 +272,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		if query == "" {
 			continue
 		}
-		ss.history.Add(query)
+		if _, ok := commandIn.(*Script); !ok {
+			ss.history.Add(query)
+		}
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
 		case "REM":

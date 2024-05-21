@@ -25,12 +25,14 @@ func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, e
 	return dbSpec.TypeNameToConv(typeName)
 }
 
+const dateTimeFormat = "2006-01-02 15:04:05"
+
 func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 	if !strings.Contains(typeName, "DATE") {
 		return nil
 	}
 	return func(s string) (string, error) {
-		_, err := time.Parse("2006-01-02 15:05:06", s)
+		_, err := time.Parse(dateTimeFormat, s)
 		if err != nil {
 			return "", err
 		}
@@ -41,7 +43,7 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 func posgresTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.Contains(typeName, "TIMESTAMP") {
 		return func(s string) (string, error) {
-			_, err := time.Parse("2006-01-02 15:04:05", s)
+			_, err := time.Parse(dateTimeFormat, s)
 			if err != nil {
 				return "", err
 			}
@@ -49,7 +51,7 @@ func posgresTypeNameToConv(typeName string) func(string) (string, error) {
 		}
 	} else if strings.Contains(typeName, "DATE") {
 		return func(s string) (string, error) {
-			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			dt, err := time.Parse(dateTimeFormat, s)
 			if err != nil {
 				return "", err
 			}
@@ -63,7 +65,7 @@ func posgresTypeNameToConv(typeName string) func(string) (string, error) {
 func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.Contains(typeName, "DATETIME") {
 		return func(s string) (string, error) {
-			_, err := time.Parse("2006-01-02 15:04:05", s)
+			_, err := time.Parse(dateTimeFormat, s)
 			if err != nil {
 				return "", err
 			}
@@ -72,7 +74,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 	if strings.Contains(typeName, "DATE") {
 		return func(s string) (string, error) {
-			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			dt, err := time.Parse(dateTimeFormat, s)
 			if err != nil {
 				return "", err
 			}
@@ -81,7 +83,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 	if strings.Contains(typeName, "TIME") {
 		return func(s string) (string, error) {
-			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			dt, err := time.Parse(dateTimeFormat, s)
 			if err != nil {
 				return "", err
 			}

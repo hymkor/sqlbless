@@ -60,6 +60,37 @@ func posgresTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 }
 
+func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
+	if strings.Contains(typeName, "DATETIME") {
+		return func(s string) (string, error) {
+			_, err := time.Parse("2006-01-02 15:04:05", s)
+			if err != nil {
+				return "", err
+			}
+			return "CONVERT(DATETIME,'" + s + "',120)", nil
+		}
+	}
+	if strings.Contains(typeName, "DATE") {
+		return func(s string) (string, error) {
+			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			if err != nil {
+				return "", err
+			}
+			return "CONVERT(DATE,'" + dt.Format("2006.01.02") + "',102)", nil
+		}
+	}
+	if strings.Contains(typeName, "TIME") {
+		return func(s string) (string, error) {
+			dt, err := time.Parse("2006-01-02 15:04:05", s)
+			if err != nil {
+				return "", err
+			}
+			return "CONVERT(TIME,'" + dt.Format("15:04:05") + "',108)", nil
+		}
+	}
+	return nil
+}
+
 var dbSpecs = map[string]*DBSpec{
 	"POSTGRES": &DBSpec{
 		SqlForDesc: `
@@ -126,7 +157,8 @@ var dbSpecs = map[string]*DBSpec{
            and o.name = @p1
            and c.user_type_id = t.user_type_id
          order by c.column_id`,
-		SqlForTab: `select * from sys.objects`,
+		SqlForTab:      `select * from sys.objects`,
+		TypeNameToConv: sqlServerTypeNameToConv,
 	},
 	"MYSQL": &DBSpec{
 		SqlForDesc: `

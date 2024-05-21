@@ -1,4 +1,6 @@
 - Create new statement: `edit TABLENAME [WHERE...]` to edit the records of table with [CSVI]
+- Fix: The command `START` did not show error-messages
+- `start`: do not include the contents of script into history
 
 v0.10.1
 =======

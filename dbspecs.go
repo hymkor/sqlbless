@@ -93,6 +93,37 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 	return nil
 }
 
+func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
+	if strings.Contains(typeName, "DATETIME") {
+		return func(s string) (string, error) {
+			_, err := time.Parse(dateTimeFormat, s)
+			if err != nil {
+				return "", err
+			}
+			return "STR_TO_DATE('" + s + "','%Y-%m-%d %H:%i:%s')", nil
+		}
+	}
+	if strings.Contains(typeName, "TIME") {
+		return func(s string) (string, error) {
+			_, err := time.Parse(dateTimeFormat, s)
+			if err != nil {
+				return "", err
+			}
+			return "STR_TO_DATE('" + s + "','%H:%i:%s')", nil
+		}
+	}
+	if strings.Contains(typeName, "DATE") {
+		return func(s string) (string, error) {
+			_, err := time.Parse("2006-01-02", s)
+			if err != nil {
+				return "", err
+			}
+			return "STR_TO_DATE('" + s + "','%Y-%m-%d')", nil
+		}
+	}
+	return nil
+}
+
 var dbSpecs = map[string]*DBSpec{
 	"POSTGRES": &DBSpec{
 		SqlForDesc: `
@@ -177,7 +208,8 @@ var dbSpecs = map[string]*DBSpec{
           from information_schema.columns
          where table_name = ?
          order by ordinal_position`,
-		SqlForTab: `select * from information_schema.tables`,
+		SqlForTab:      `select * from information_schema.tables`,
+		TypeNameToConv: mySQLTypeNameToConv,
 	},
 }
 

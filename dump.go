@@ -10,6 +10,8 @@ import (
 	"unicode/utf8"
 )
 
+const debugWatchType = false
+
 type RowToCsv struct {
 	Comma     rune
 	UseCRLF   bool
@@ -97,6 +99,10 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, cs
 		}
 		for i, a := range itemAny {
 			if p, ok := a.(*any); ok {
+				if debugWatchType {
+					itemStr[i] = fmt.Sprintf("%[1]v(%[1]T)", *p)
+					continue
+				}
 				if *p == nil {
 					itemStr[i] = null
 					continue
@@ -110,7 +116,6 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, cs
 					continue
 				}
 				itemStr[i] = fmt.Sprint(*p)
-				// itemStr[i] += fmt.Sprintf("(%T)", *p)
 			}
 		}
 		if err := csvw.Write(itemStr); err != nil {

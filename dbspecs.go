@@ -3,16 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
-	"strings"
-	"time"
-
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
-	_ "github.com/microsoft/go-mssqldb"
-	_ "github.com/sijms/go-ora/v2"
 )
 
 type DBSpec struct {
+	Usage          string
 	SqlForDesc     string
 	SqlForTab      string
 	TypeNameToConv func(string) func(string) (string, error)
@@ -27,195 +21,16 @@ func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, e
 
 const dateTimeFormat = "2006-01-02 15:04:05"
 
-func oracleTypeNameToConv(typeName string) func(string) (string, error) {
-	if !strings.Contains(typeName, "DATE") {
-		return nil
-	}
-	return func(s string) (string, error) {
-		_, err := time.Parse(dateTimeFormat, s)
-		if err != nil {
-			return "", err
-		}
-		return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
-	}
-}
-
-func posgresTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "TIMESTAMP") {
-		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "TO_TIMESTAMP('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
-		}
-	} else if strings.Contains(typeName, "DATE") {
-		return func(s string) (string, error) {
-			dt, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "TO_DATE('" + dt.Format("2006-01-02") + "','YYYY-MM-DD')", nil
-		}
-	} else {
-		return nil
-	}
-}
-
-func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "DATETIME") {
-		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "CONVERT(DATETIME,'" + s + "',120)", nil
-		}
-	}
-	if strings.Contains(typeName, "DATE") {
-		return func(s string) (string, error) {
-			dt, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "CONVERT(DATE,'" + dt.Format("2006.01.02") + "',102)", nil
-		}
-	}
-	if strings.Contains(typeName, "TIME") {
-		return func(s string) (string, error) {
-			dt, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "CONVERT(TIME,'" + dt.Format("15:04:05") + "',108)", nil
-		}
-	}
-	return nil
-}
-
-func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "DATETIME") {
-		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "STR_TO_DATE('" + s + "','%Y-%m-%d %H:%i:%s')", nil
-		}
-	}
-	if strings.Contains(typeName, "TIME") {
-		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
-			if err != nil {
-				return "", err
-			}
-			return "STR_TO_DATE('" + s + "','%H:%i:%s')", nil
-		}
-	}
-	if strings.Contains(typeName, "DATE") {
-		return func(s string) (string, error) {
-			_, err := time.Parse("2006-01-02", s)
-			if err != nil {
-				return "", err
-			}
-			return "STR_TO_DATE('" + s + "','%Y-%m-%d')", nil
-		}
-	}
-	return nil
-}
-
 var dbSpecs = map[string]*DBSpec{
-	"POSTGRES": &DBSpec{
-		SqlForDesc: `
-      select a.attnum as "ID",
-             a.attname as "NAME",
-             case
-               when t.typname = 'varchar' then 'varchar(' || ( a.atttypmod - 4 )  || ')'
-               when a.atttypmod >= 0 then t.typname || '(' || a.atttypmod || ')'
-               else t.typname
-             end as "TYPE",
-             case
-               when a.attnotnull then 'NOT NULL'
-               else 'NULL'
-             end as "NULL?"
-        from pg_attribute a, pg_class c, pg_type t
-       where a.attrelid = c.oid
-         and c.relname = $1
-         and a.attnum > 0
-         and t.oid = a.atttypid
-         and a.attisdropped is false
-       order by a.attnum`,
-		SqlForTab: `
-      select schemaname,tablename,tableowner
-        from pg_tables`,
-		TypeNameToConv: posgresTypeNameToConv,
-	},
-	"ORACLE": &DBSpec{
-		SqlForDesc: `
-      select column_id as "ID",
-             column_name as "NAME",
-             case data_type
-               when 'NUMBER' then data_type
-               when 'DATE' then data_type
-               else data_type || '(' || data_length || ')'
-             end as "TYPE",
-             case
-               when nullable = 'Y' THEN 'NULL'
-               else 'NOT NULL'
-             end as "NULL?"
-        from all_tab_columns
-       where table_name = UPPER(:1)
-       order by column_id`,
-		SqlForTab:      `select * from tab`,
-		TypeNameToConv: oracleTypeNameToConv,
-	},
-	"SQLSERVER": &DBSpec{
-		SqlForDesc: `
-        select c.column_id as "ID",
-               c.name as "NAME",
-               case
-                 when c.max_length > 0 then
-                   t.name + '(' + convert(varchar,c.max_length) + ')'
-                 else
-                   t.name
-               end as "TYPE",
-               case c.is_nullable
-                 when 1 then 'NULL'
-                 else 'NOT NULL'
-               end as "NULL?"
-          from sys.columns c,
-               sys.objects o,
-               sys.types t
-         where c.object_id = o.object_id
-           and o.name = @p1
-           and c.user_type_id = t.user_type_id
-         order by c.column_id`,
-		SqlForTab:      `select * from sys.objects`,
-		TypeNameToConv: sqlServerTypeNameToConv,
-	},
-	"MYSQL": &DBSpec{
-		SqlForDesc: `
-        select ordinal_position as "ID",
-               column_name as "NAME",
-               case
-                 when character_maximum_length is null then data_type
-                 else concat(data_type,'(',character_maximum_length,')')
-               end as "TYPE",
-               case is_nullable
-                 when "YES" then 'NULL'
-                 else 'NOT NULL'
-               end as "NULL?"
-          from information_schema.columns
-         where table_name = ?
-         order by ordinal_position`,
-		SqlForTab:      `select * from information_schema.tables`,
-		TypeNameToConv: mySQLTypeNameToConv,
-	},
+	"POSTGRES":  postgreSqlSpec,
+	"ORACLE":    oracleSpec,
+	"SQLSERVER": sqlServerSpec,
+	"MYSQL":     mySqlSpec,
 }
 
 func usage(w io.Writer) {
 	fmt.Fprintln(w, "Usage:")
-	fmt.Fprintln(w, `  sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE`)
-	fmt.Fprintln(w, `  sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"`)
-	fmt.Fprintln(w, `  sqlbless sqlserver "sqlserver://@localhost?database=master"`)
+	for _, d := range dbSpecs {
+		fmt.Fprintf(w, "  %s\n", d.Usage)
+	}
 }

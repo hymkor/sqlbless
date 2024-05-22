@@ -19,7 +19,11 @@ func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, e
 	return dbSpec.TypeNameToConv(typeName)
 }
 
-const dateTimeFormat = "2006-01-02 15:04:05"
+const (
+	dateTimeFormat = "2006-01-02 15:04:05"
+	dateOnlyFormat = "2006-01-02"
+	timeOnlyFormat = "15:04:05"
+)
 
 var dbSpecs = map[string]*DBSpec{
 	"POSTGRES":  postgreSqlSpec,

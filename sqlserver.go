@@ -23,7 +23,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return "CONVERT(DATE,'" + dt.Format("2006.01.02") + "',102)", nil
+			return "CONVERT(DATE,'" + dt.Format(dateOnlyFormat) + "',23)", nil
 		}
 	}
 	if strings.Contains(typeName, "TIME") {
@@ -32,7 +32,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return "CONVERT(TIME,'" + dt.Format("15:04:05") + "',108)", nil
+			return "CONVERT(TIME,'" + dt.Format(timeOnlyFormat) + "',108)", nil
 		}
 	}
 	return nil

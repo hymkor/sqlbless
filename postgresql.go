@@ -22,7 +22,7 @@ func posgresTypeNameToConv(typeName string) func(string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return "TO_DATE('" + dt.Format("2006-01-02") + "','YYYY-MM-DD')", nil
+			return "TO_DATE('" + dt.Format(dateOnlyFormat) + "','YYYY-MM-DD')", nil
 		}
 	} else {
 		return nil

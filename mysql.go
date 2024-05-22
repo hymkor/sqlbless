@@ -28,7 +28,7 @@ func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 	if strings.Contains(typeName, "DATE") {
 		return func(s string) (string, error) {
-			_, err := time.Parse("2006-01-02", s)
+			_, err := time.Parse(dateOnlyFormat, s)
 			if err != nil {
 				return "", err
 			}

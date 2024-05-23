@@ -307,7 +307,11 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "EDIT":
 			echo(ss.spool, query)
-			err = doEdit(ctx, ss, query, os.Stdout, ss.spool)
+			var tty getKeyAndSize
+			if editor, ok := commandIn.(*multiline.Editor); ok {
+				tty = editor.LineEditor.Tty
+			}
+			err = doEdit(ctx, ss, query, tty, os.Stdout, ss.spool)
 
 		case "SELECT":
 			echo(ss.spool, query)

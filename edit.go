@@ -7,10 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mattn/go-tty"
-
-	"github.com/nyaosorg/go-readline-ny"
-
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -55,16 +51,10 @@ const (
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
 
-func askSqlAndExecute(ctx context.Context, ss *Session, dmlSql string) error {
+func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
 	fmt.Println(dmlSql)
-	tty1, err := tty.Open()
-	if err != nil {
-		return err
-	}
-	defer tty1.Close()
 	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
-	var answer string
-	answer, err = readline.GetKey(tty1)
+	answer, err := getKey()
 	fmt.Println(answer, _ANSI_CURSOR_OFF)
 	if err != nil {
 		return err
@@ -103,7 +93,8 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (str
 	return where.String(), nil
 }
 
-func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writer) error {
+func doEdit(ctx context.Context, ss *Session, command string, pilot getKeyAndSize, out, spool io.Writer) error {
+
 	var conn canQuery
 	if ss.tx == nil {
 		conn = ss.conn
@@ -153,7 +144,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			})
 		}
 	}
-	editResult, err := csvEdit(command, false, func(pOut io.Writer) error {
+	editResult, err := csvEdit(command, pilot, func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
@@ -223,7 +214,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		err = askSqlAndExecute(ctx, ss, dmlSql)
+		err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
 		return err == nil
 	})
 	if err != nil {
@@ -241,7 +232,7 @@ func doEdit(ctx context.Context, ss *Session, command string, out, spool io.Writ
 			return false
 		}
 		sql.WriteString(v)
-		err = askSqlAndExecute(ctx, ss, sql.String())
+		err = askSqlAndExecute(ctx, ss, pilot.GetKey, sql.String())
 		return err == nil
 	})
 	return err

@@ -1,11 +1,13 @@
 SQL-Bless
 ===========
 
+**&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
+
 The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 
 - Emacs-like keybindings for inline editing of multiple lines of SQL.
     - The action of `Enter` key will only insert a line feed code.
-    - Press `Ctrl`-`Enter` to execute the input.
+    - Press `Ctrl-J` or `Ctrl`-`Enter` to execute the input.
 - Save the result of SELECT in CSV format
 - Supported RDBMS[^anydatabase]
     - Oracle
@@ -22,7 +24,8 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 |-----|---------|
 | `Enter`, `Ctrl`-`M` | **Insert a linefeed** |
 | `Ctrl`-`Enter`/`J` | **Execute text as SQL** |
-| `Ctrl`-`F`/`B`/`N`/`P` | Editing like Emacs |
+| `Ctrl`-`F`/`B` | Move Cursor forward or backward |
+| `Ctrl`-`N`/`P` | Move Cursor or refer history |
 | `Ctrl`-`C` | Exit with rollback |
 | `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
 | `ALT`-`P`, `Ctrl`-`Up`, `PageUp` | Insert the previous SQL (history)|

@@ -175,11 +175,21 @@ var (
 
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
+	GetKey() (string, error)
+	Size() (int, int, error)
 }
 
 type Script struct {
 	br   *bufio.Reader
 	echo io.Writer
+}
+
+func (script *Script) GetKey() (string, error) {
+	return "", io.EOF
+}
+
+func (script *Script) Size() (int, int, error) {
+	return 80, 25, nil
 }
 
 func (script *Script) Read(context.Context) ([]string, error) {
@@ -211,6 +221,18 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			buffer.WriteRune(ch)
 		}
 	}
+}
+
+type InteractiveIn struct {
+	*multiline.Editor
+}
+
+func (i InteractiveIn) GetKey() (string, error) {
+	return i.Editor.LineEditor.Tty.GetKey()
+}
+
+func (i InteractiveIn) Size() (int, int, error) {
+	return i.Editor.LineEditor.Tty.Size()
 }
 
 type Session struct {
@@ -307,11 +329,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "EDIT":
 			echo(ss.spool, query)
-			var tty getKeyAndSize
-			if editor, ok := commandIn.(*multiline.Editor); ok {
-				tty = editor.LineEditor.Tty
-			}
-			err = doEdit(ctx, ss, query, tty, os.Stdout, ss.spool)
+			err = doEdit(ctx, ss, query, commandIn, os.Stdout, ss.spool)
 
 		case "SELECT":
 			echo(ss.spool, query)
@@ -494,7 +512,7 @@ func mains(args []string) error {
 		}
 	})
 
-	return session.Loop(ctx, &editor, false)
+	return session.Loop(ctx, InteractiveIn{Editor: &editor}, false)
 }
 
 var version string

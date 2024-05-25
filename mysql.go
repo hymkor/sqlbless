@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"strings"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -10,29 +10,29 @@ import (
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.Contains(typeName, "DATETIME") {
 		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "STR_TO_DATE('" + s + "','%Y-%m-%d %H:%i:%s')", nil
+			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d %%H:%%i:%%s')", dt.Format(dateTimeFormat)), nil
 		}
 	}
 	if strings.Contains(typeName, "TIME") {
 		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "STR_TO_DATE('" + s + "','%H:%i:%s')", nil
+			return fmt.Sprintf("STR_TO_DATE('%s','%%H:%%i:%%s')", dt.Format(timeOnlyFormat)), nil
 		}
 	}
 	if strings.Contains(typeName, "DATE") {
 		return func(s string) (string, error) {
-			_, err := time.Parse(dateOnlyFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "STR_TO_DATE('" + s + "','%Y-%m-%d')", nil
+			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d')", dt.Format(dateOnlyFormat)), nil
 		}
 	}
 	return nil

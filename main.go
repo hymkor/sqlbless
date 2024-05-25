@@ -176,7 +176,10 @@ var (
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
 	GetKey() (string, error)
-	Size() (int, int, error)
+
+	// AutoPilotForCsvi returns Tty object when AutoPilot is enabled.
+	// When disabled, it MUST return nil.
+	AutoPilotForCsvi() getKeyAndSize
 }
 
 type Script struct {
@@ -188,8 +191,8 @@ func (script *Script) GetKey() (string, error) {
 	return "", io.EOF
 }
 
-func (script *Script) Size() (int, int, error) {
-	return 80, 25, nil
+func (script *Script) AutoPilotForCsvi() getKeyAndSize {
+	return nil
 }
 
 func (script *Script) Read(context.Context) ([]string, error) {
@@ -225,14 +228,15 @@ func (script *Script) Read(context.Context) ([]string, error) {
 
 type InteractiveIn struct {
 	*multiline.Editor
+	tty getKeyAndSize
 }
 
-func (i InteractiveIn) GetKey() (string, error) {
+func (i *InteractiveIn) GetKey() (string, error) {
 	return i.Editor.LineEditor.Tty.GetKey()
 }
 
-func (i InteractiveIn) Size() (int, int, error) {
-	return i.Editor.LineEditor.Tty.Size()
+func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
+	return i.tty
 }
 
 type Session struct {
@@ -478,15 +482,18 @@ func mains(args []string) error {
 	if *flagSubmitByEnter {
 		editor.SwapEnter()
 	}
+	var tty getKeyAndSize
 	if *flagAuto != "" {
 		text := strings.ReplaceAll(*flagAuto, "||", "\n") // "||" -> Ctrl-J(Commit)
 		text = strings.ReplaceAll(text, "|", "\r")        // "|" -> Ctrl-M (NewLine)
 		if text[len(text)-1] != '\n' {                    // EOF -> Ctrl-J(Commit)
 			text = text + "\n"
 		}
-		editor.LineEditor.Tty = &auto.Pilot{
+		tty1 := &auto.Pilot{
 			Text: strings.Split(text, ""),
 		}
+		editor.LineEditor.Tty = tty1
+		tty = tty1
 	}
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
@@ -512,7 +519,10 @@ func mains(args []string) error {
 		}
 	})
 
-	return session.Loop(ctx, InteractiveIn{Editor: &editor}, false)
+	return session.Loop(ctx, &InteractiveIn{
+		Editor: &editor,
+		tty:    tty,
+	}, false)
 }
 
 var version string

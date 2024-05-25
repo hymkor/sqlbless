@@ -93,7 +93,7 @@ func csvPager(title string, quitImmediate bool, f func(pOut io.Writer) error, ou
 
 func csvEdit(title string, tty getKeyAndSize, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
 	var pilot csvi.Pilot
-	if *flagAuto != "" {
+	if tty != nil {
 		pilot = &_AutoCsvi{Tty: tty}
 	}
 	return _csvEdit(title, false, pilot, f, out, spool)

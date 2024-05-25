@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"strings"
-	"time"
 
 	_ "github.com/microsoft/go-mssqldb"
 )
@@ -10,29 +10,29 @@ import (
 func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.Contains(typeName, "DATETIME") {
 		return func(s string) (string, error) {
-			_, err := time.Parse(dateTimeFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "CONVERT(DATETIME,'" + s + "',120)", nil
+			return fmt.Sprintf("CONVERT(DATETIME,'%s',120)", dt.Format(dateTimeFormat)), nil
 		}
 	}
 	if strings.Contains(typeName, "DATE") {
 		return func(s string) (string, error) {
-			dt, err := time.Parse(dateTimeFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "CONVERT(DATE,'" + dt.Format(dateOnlyFormat) + "',23)", nil
+			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(dateOnlyFormat)), nil
 		}
 	}
 	if strings.Contains(typeName, "TIME") {
 		return func(s string) (string, error) {
-			dt, err := time.Parse(dateTimeFormat, s)
+			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return "CONVERT(TIME,'" + dt.Format(timeOnlyFormat) + "',108)", nil
+			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format(timeOnlyFormat)), nil
 		}
 	}
 	return nil

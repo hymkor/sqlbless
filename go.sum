@@ -26,12 +26,12 @@ github.com/golang-sql/sqlexp v0.1.0 h1:ZCD6MBpcuOVfGVqsEmY5/4FtYiKz6tSyUv9LPEDei
 github.com/golang-sql/sqlexp v0.1.0/go.mod h1:J4ad9Vo8ZCWQ2GMrC4UCQy1JpCbwU9m3EOqtpKwwwHI=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.9.4-0.20240520182631-520d442d11c3 h1:au0XWnKj46FwfLPrXSBcMy+roVZZTO6/VdocpLu8yfQ=
-github.com/hymkor/csvi v1.9.4-0.20240520182631-520d442d11c3/go.mod h1:Ha3RHAkBxs5tu01siB6x47kUpDR2egQcvEuQAcsE/6k=
+github.com/hymkor/csvi v1.9.5-0.20240526152603-d50198402fab h1:SIjR6BusLyoxbksw6C8YjugYLuCmwaMJoM0EGGO0KJQ=
+github.com/hymkor/csvi v1.9.5-0.20240526152603-d50198402fab/go.mod h1:Ha3RHAkBxs5tu01siB6x47kUpDR2egQcvEuQAcsE/6k=
 github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvIh28VcWDhc=
 github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
-github.com/hymkor/go-multiline-ny v0.13.0 h1:fkSlKcTjQ89dnNihGUzCbE7D4iHdz/jE7g3xgy4h95E=
-github.com/hymkor/go-multiline-ny v0.13.0/go.mod h1:fuN37GmIPtLunNQFPedCbJSF2YNzUdqjdvBxihmoMr8=
+github.com/hymkor/go-multiline-ny v0.13.1-0.20240526135333-9b8efe106b2b h1:Koux8bVkjZANTKu71Ve64DEQb0guUGXvWdoqWZGGko0=
+github.com/hymkor/go-multiline-ny v0.13.1-0.20240526135333-9b8efe106b2b/go.mod h1:fuN37GmIPtLunNQFPedCbJSF2YNzUdqjdvBxihmoMr8=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=
@@ -68,8 +68,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
-github.com/sijms/go-ora/v2 v2.8.18 h1:hrmgl0Iognh7XiYDRvFKmSgJW7J05yq7TMljravaXE0=
-github.com/sijms/go-ora/v2 v2.8.18/go.mod h1:EHxlY6x7y9HAsdfumurRfTd+v8NrEOTR3Xl4FWlH6xk=
+github.com/sijms/go-ora/v2 v2.8.19 h1:7LoKZatDYGi18mkpQTR/gQvG9yOdtc7hPAex96Bqisc=
+github.com/sijms/go-ora/v2 v2.8.19/go.mod h1:EHxlY6x7y9HAsdfumurRfTd+v8NrEOTR3Xl4FWlH6xk=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 golang.org/x/crypto v0.23.0 h1:dIJU/v2J8Mdglj/8rJ6UUOM3Zc9zLZxVZwwxMooUSAI=

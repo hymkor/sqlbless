@@ -49,7 +49,7 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, o
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return csvPager(query, func(pOut io.Writer) error {
+	return csvPager(query, *flagAuto != "", func(pOut io.Writer) error {
 		_err := r2c.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
@@ -155,7 +155,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		rows.Close()
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return csvPager(table, func(pOut io.Writer) error {
+	return csvPager(table, *flagAuto != "", func(pOut io.Writer) error {
 		err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return err

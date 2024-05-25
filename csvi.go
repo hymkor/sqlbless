@@ -82,8 +82,12 @@ func (_AutoCsvi) Close() error {
 	return nil
 }
 
-func csvPager(title string, f func(pOut io.Writer) error, out, spool io.Writer) error {
-	_, err := _csvEdit(title, true, _QuitCsvi{}, f, out, spool)
+func csvPager(title string, quitImmediate bool, f func(pOut io.Writer) error, out, spool io.Writer) error {
+	var pilot csvi.Pilot
+	if quitImmediate {
+		pilot = _QuitCsvi{}
+	}
+	_, err := _csvEdit(title, true, pilot, f, out, spool)
 	return err
 }
 

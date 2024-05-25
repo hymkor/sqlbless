@@ -92,7 +92,11 @@ func csvPager(title string, quitImmediate bool, f func(pOut io.Writer) error, ou
 }
 
 func csvEdit(title string, tty getKeyAndSize, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
-	return _csvEdit(title, false, _AutoCsvi{Tty: tty}, f, out, spool)
+	var pilot csvi.Pilot
+	if *flagAuto != "" {
+		pilot = &_AutoCsvi{Tty: tty}
+	}
+	return _csvEdit(title, false, pilot, f, out, spool)
 }
 
 func _csvEdit(title string, readonly bool, pilot csvi.Pilot, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"strings"
-	"time"
 
 	_ "github.com/sijms/go-ora/v2"
 )
@@ -12,11 +12,11 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 		return nil
 	}
 	return func(s string) (string, error) {
-		_, err := time.Parse(dateTimeFormat, s)
+		dt, err := parseAnyDateTime(s)
 		if err != nil {
 			return "", err
 		}
-		return "TO_DATE('" + s + "','YYYY-MM-DD HH24:MI:SS')", nil
+		return fmt.Sprintf("TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')", dt.Format(dateTimeFormat)), nil
 	}
 }
 

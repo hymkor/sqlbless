@@ -128,11 +128,25 @@ func _csvEdit(title string, readonly bool, pilot csvi.Pilot, f func(pOut io.Writ
 		ReadOnly:    readonly,
 		Message:     titleBuf.String(),
 		Pilot:       pilot,
+		KeyMap:      make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
+	}
+	applyChange := false
+	if !readonly {
+		cfg.KeyMap["c"] = func(app *csvi.Application) (*csvi.CommandResult, error) {
+			if app.YesNo("Apply the changes ? [y/n] ") {
+				io.WriteString(app, "y\n")
+				applyChange = true
+				return &csvi.CommandResult{Quit: true}, nil
+			}
+			return &csvi.CommandResult{}, nil
+		}
 	}
 	var err2 error
 	result, err2 = cfg.Edit(pIn, out)
 	err = errors.Join(err, err2)
-
 	pIn.Close()
-	return result, err
+	if applyChange {
+		return result, err
+	}
+	return nil, err
 }

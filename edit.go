@@ -153,6 +153,9 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	if err != nil && err != io.EOF {
 		return err
 	}
+	if editResult == nil {
+		return nil
+	}
 	null := ss.DumpConfig.Null
 	editResult.Each(func(row *uncsv.Row) bool {
 		var dmlSql string

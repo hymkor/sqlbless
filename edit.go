@@ -144,7 +144,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			})
 		}
 	}
-	editResult, err := csvEdit(command, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
+	editResult, err := csvEdit(command, ss.DumpConfig.Comma, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err

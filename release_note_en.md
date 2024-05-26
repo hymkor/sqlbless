@@ -1,6 +1,8 @@
 - Create new statement: `edit TABLENAME [WHERE...]` to edit the records of table with [CSVI]
 - Fix: The command `START` did not show error-messages
 - `start`: do not include the contents of script into history
+- `select`: Fix: all columns were joined when `-tsv` was specified
+- (go-multiline-ny) The text before the first Ctrl-P/N is treated as if it were the latest entry in the history not to lose them
 
 v0.10.1
 =======

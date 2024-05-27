@@ -428,6 +428,12 @@ func mains(args []string) error {
 		usage(os.Stdout)
 		return nil
 	}
+
+	dbSpec, ok := dbSpecs[strings.ToUpper(args[0])]
+	if !ok {
+		return fmt.Errorf("not support driver: %s", args[0])
+	}
+
 	conn, err := sql.Open(args[0], args[1])
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
@@ -436,11 +442,6 @@ func mains(args []string) error {
 
 	if err = conn.Ping(); err != nil {
 		return err
-	}
-
-	dbSpec, ok := dbSpecs[strings.ToUpper(args[0])]
-	if !ok {
-		dbSpec = &DBSpec{}
 	}
 
 	var history History

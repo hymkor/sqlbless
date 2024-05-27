@@ -6,8 +6,8 @@ toolchain go1.22.2
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.9.5-0.20240526152603-d50198402fab
-	github.com/hymkor/go-multiline-ny v0.13.1-0.20240526135333-9b8efe106b2b
+	github.com/hymkor/csvi v1.9.5
+	github.com/hymkor/go-multiline-ny v0.14.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/microsoft/go-mssqldb v1.7.1

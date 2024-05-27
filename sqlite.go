@@ -1,11 +1,11 @@
 package main
 
 import (
-	_ "github.com/glebarez/go-sqlite"
+	_ "github.com/glebarez/go-sqlite/compat"
 )
 
 var sqliteSpec = &DBSpec{
-	Usage: "sqlbless sqlite path/to/some.db",
+	Usage: "sqlbless sqlite3 path/to/some.db",
 	SqlForTab: `
 	select 'SCHEMA' AS SCHEMA,* from sqlite_master
 	union all

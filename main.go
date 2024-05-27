@@ -138,7 +138,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	var err error
 	if tableName == "" {
 		if ss.dbSpec.SqlForTab == "" {
-			return errors.New("DESC TABLE: not supported")
+			return errors.New("DESC: not supported")
 		}
 		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForTab)
 	} else {

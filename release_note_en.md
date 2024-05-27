@@ -1,3 +1,5 @@
+- Support SQLite3 (using pure go driver: "github.com/glebarez/go-sqlite")
+
 v0.11.0
 =======
 May 27, 2024

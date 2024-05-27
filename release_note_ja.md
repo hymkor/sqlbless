@@ -1,3 +1,5 @@
+- SQLite3 をサポート(Pure Go のドライバー "github.com/glebarez/go-sqlite" を使用)
+
 v0.11.0
 =======
 May 27, 2024

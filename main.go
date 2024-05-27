@@ -145,7 +145,8 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.dbSpec.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForDesc, tableName)
+		sql := strings.ReplaceAll(ss.dbSpec.SqlForDesc, "{table_name}", tableName)
+		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
 	}
 	if err != nil {
 		return err

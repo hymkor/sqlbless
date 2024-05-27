@@ -52,6 +52,7 @@ var dbSpecs = map[string]*DBSpec{
 	"ORACLE":    oracleSpec,
 	"SQLSERVER": sqlServerSpec,
 	"MYSQL":     mySqlSpec,
+	"SQLITE":    sqliteSpec,
 }
 
 func usage(w io.Writer) {

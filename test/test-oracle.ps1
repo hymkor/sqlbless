@@ -1,3 +1,6 @@
+Set-PSDebug -Strict
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 $testLst = "output.lst"
 
 if ( (Test-Path $testLst) ){
@@ -14,7 +17,7 @@ $script = `
     "(10,TO_DATE('2024-05-25 13:45:33','YYYY-MM-DD HH24:MI:SS')) ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|qyy" +
+    "/10|lr2015-06-07 20:21:22|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -33,7 +36,7 @@ if ( -not $conn ){
     exit 1
 }
 
-.\sqlbless.exe -auto "$script" oracle "$conn"
+..\sqlbless.exe -auto "$script" oracle "$conn"
 
 $ok = $false
 
@@ -43,14 +46,9 @@ Select-Object -skip 1 |
 ForEach-Object {
     $field = ($_ -split ",")
     if ( $field.Length -ge 2 -and $field[1] -eq "2015-06-07 20:21:22" ){
-        $ok = $true
+        Write-Host ("Found {0} --> OK" -f $field[1])
+        exit 0
     }
 }
-
-if ( $ok ){
-    Write-Host "--> OK"
-    exit 0
-} else {
-    Write-Host "--> NG"
-    exit 1
-}
+Write-Host "--> NG"
+exit 1

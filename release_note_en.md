@@ -1,4 +1,5 @@
-- Support SQLite3 (using pure go driver: "github.com/glebarez/go-sqlite")
+- Support SQLite3 (using https://github.com/mattn/go-sqlite3)
+- Fix: error was not displayed even when not supported driver name was given
 
 v0.11.0
 =======

@@ -1,4 +1,5 @@
-- SQLite3 をサポート(Pure Go のドライバー "github.com/glebarez/go-sqlite" を使用)
+- SQLite3 をサポート(https://github.com/mattn/go-sqlite3 使用)
+- サポートしていないドライバー名が与えられた時、エラーにならない問題を修正
 
 v0.11.0
 =======

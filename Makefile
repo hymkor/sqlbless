@@ -26,14 +26,14 @@ endif
 	go test -v
 
 _dist:
-	$(SET) "CGO_ENABLED=1" && go build $(GOOPT)
+	go build $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
-	$(SET) "GOOS=linux" && $(SET) "GOARCH=386"   && $(MAKE) _dist
-	$(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
-	$(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _dist
-	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
+	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=linux" && $(SET) "GOARCH=386"   && $(MAKE) _dist
+	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
+	$(SET) "CGO_ENABLED=1" && $(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _dist
+	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)

@@ -9,15 +9,14 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
     - The action of `Enter` key will only insert a line feed code.
     - Press `Ctrl-J` or `Ctrl`-`Enter` to execute the input.
 - Save the result of SELECT in CSV format
-- Supported RDBMS[^anydatabase]
+- Supported RDBMS
+    - SQLite3
     - Oracle
     - PostgreSQL
     - Microsoft SQL Server
     - MySQL
 - Allows editing database records directly, similar to a spreadsheet (with the `EDIT` command)
 - Auto commit is disabled.
-
-[^anydatabase]: Any database supported by Go's "database/sql" can be used with a small amount of extra code in `dbspecs.go`
 
 ![image](./demo.gif)
 
@@ -100,6 +99,15 @@ How to start
 -------------
 
     $ sqlbless {options} DRIVERNAME "DATASOURCENAME"
+
+### SQLite3
+
+    $ sqlbless sqlite3 :memory:
+    $ sqlbless sqlite3 path/to/file.db
+
+- Use
+    - https://github.com/mattn/go-sqlite3 (Windows-386, TDM-GCC is required)
+    - https://github.com/glebarez/go-sqlite (Linux and Windows-amd64)
 
 ### Oracle
 

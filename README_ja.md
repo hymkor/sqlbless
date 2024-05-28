@@ -9,15 +9,14 @@ SQL-Bless は SQL\*Plus や psql のようなコマンドライン用データ�
     - Enter キーは改行を挿入するのみ
     - Ctrl-Enter (Ctrl-J) で入力内容を実行
 - SELECT結果は CSV 形式で保存
-- 以下のRDBMSをサポート[^anydatabase]
+- 以下のRDBMSをサポート
+    - SQLite3
     - Oracle
     - PostgreSQL
     - Microsoft SQL Server
     - MySQL
 - データベースのレコードをスプレッド風に編集可能 (`EDIT` コマンド)
 - トランザクションモード動作(オートコミット無効化)
-
-[^anydatabase]: Go言語の "database/sql" によってサポートされるデータベースであれば、`dbspecs.go` に少量の拡張コードを追加することで利用可能
 
 ![image](./demo.gif)
 
@@ -99,6 +98,15 @@ scoop install sqlbless
 --------
 
     $ sqlbless {options} DRIVERNAME "DATASOURCENAME"
+
+### SQLite3
+
+    $ sqlbless sqlite3 :memory:
+    $ sqlbless sqlite3 path/to/file.db
+
+- Use
+    - https://github.com/mattn/go-sqlite3 (Windows-386, TDM-GCC is required)
+    - https://github.com/glebarez/go-sqlite (Linux and Windows-amd64)
 
 ### Oracle
 

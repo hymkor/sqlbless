@@ -83,12 +83,6 @@ Install
 
 Download the binary package from [Releases](https://github.com/hymkor/sqlbless/releases) and extract the executable.
 
-### Use `go install`
-
-```
-go install github.com/hymkor/sqlbless@latest
-```
-
 ### Use scoop-installer
 
 ```

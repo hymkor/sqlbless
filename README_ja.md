@@ -82,12 +82,6 @@ AQ$_QUEUES,TABLE,<NULL>
 
 バイナリパッケージを[Releases](https://github.com/hymkor/sqlbless/releases)よりダウンロードして、実行ファイルを展開してください。
 
-### `go install` を使用する場合
-
-```
-go install github.com/hymkor/sqlbless@latest
-```
-
 ### scoop インストーラーを使用する場合
 
 ```

@@ -1,3 +1,6 @@
+Set-PSDebug -Strict
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 $testLst = "output.lst"
 
 if ( (Test-Path $testLst) ){
@@ -16,7 +19,7 @@ $script = `
     "(10,TIMESTAMP '2024-05-25 13:45:33',DATE '2024-05-26',TIME '14:53:26') ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|qyy" +
+    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -35,7 +38,7 @@ if ( -not $conn ){
     exit 1
 }
 
-.\sqlbless.exe -auto "$script" postgres "$conn"
+..\sqlbless.exe -auto "$script" postgres "$conn"
 
 $ok = $false
 

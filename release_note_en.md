@@ -1,3 +1,7 @@
+v0.12.0
+=======
+May 29, 2024
+
 - Support SQLite3. For windows-386, use "mattn/go-sqlite3" and for others, "glebarez/go-sqlite"
 - Fix: error was not displayed even when not supported driver name was given
 - (Fixed the problem that the test script was not compatible with the latest specifications and moved it to ./test)

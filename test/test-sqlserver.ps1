@@ -1,3 +1,6 @@
+Set-PSDebug -Strict
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 $testLst = "output.lst"
 
 if ( (Test-Path $testLst) ){
@@ -18,7 +21,7 @@ $script = `
     " CONVERT(TIME,'14:53:26',108)) ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|qyy" +
+    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -37,7 +40,7 @@ if ( -not $conn ){
     exit 1
 }
 
-.\sqlbless.exe -auto "$script" sqlserver "$conn"
+..\sqlbless.exe -auto "$script" sqlserver "$conn"
 
 $ok = $false
 

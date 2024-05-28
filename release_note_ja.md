@@ -1,5 +1,6 @@
-- SQLite3 をサポート(https://github.com/mattn/go-sqlite3 使用)
+- SQLite3 をサポート。windows-386向けには "mattn/go-sqlite3" を、他の組合せには "glebarez/go-sqlite" を使うようにした。
 - サポートしていないドライバー名が与えられた時、エラーにならない問題を修正
+- ( テストスクリプトが最新仕様に対応していなかった点を修正し、./test へ移動 )
 
 v0.11.0
 =======

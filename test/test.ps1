@@ -1,4 +1,5 @@
 Set-PSDebug -Strict
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
 
 function DB-Test($arg1,$arg2){
     $testLst = "TEST.LST"
@@ -22,7 +23,7 @@ function DB-Test($arg1,$arg2){
 
     $script = ( $script | ForEach-Object{ $_ -join "|"} ) -join "||"
     # Write-Host $script
-    .\sqlbless -auto "$script" "$arg1" "$arg2"
+    ..\sqlbless -auto "$script" "$arg1" "$arg2"
 
     $lines = ( Get-Content $testLst | Where-Object{ $_ -notlike "#*" } )
     # Write-Host ($lines -join "`n")
@@ -41,7 +42,7 @@ function DB-Test($arg1,$arg2){
 }
 
 function main($dblst){
-    Get-Content $dblst | ForEach-Object {
+    Get-Content "tstdblst" | ForEach-Object {
         if ( $_ -notlike "#*" ){
             # Write-Host ("LINE: {0}" -f $_)
             $spec = ($_ -split "\|")

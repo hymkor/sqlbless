@@ -121,7 +121,7 @@ func tee(console, spool io.Writer) io.Writer {
 func echo(spool io.Writer, query string) {
 	if spool != nil {
 		next := true
-		fmt.Fprintf(spool, "# (%s)\n", time.Now().Local().Format(time.DateTime))
+		fmt.Fprintf(spool, "### <%s> ###\n", time.Now().Local().Format(time.DateTime))
 		query = query + ";"
 		for next {
 			var line string

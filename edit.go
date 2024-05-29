@@ -69,6 +69,8 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		if err != nil {
 			return err
 		}
+	} else {
+		echoPrefix(ss.spool, "(cancel) ", dmlSql)
 	}
 	return nil
 }

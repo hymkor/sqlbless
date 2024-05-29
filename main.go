@@ -119,6 +119,10 @@ func tee(console, spool io.Writer) io.Writer {
 }
 
 func echo(spool io.Writer, query string) {
+	echoPrefix(spool, "", query)
+}
+
+func echoPrefix(spool io.Writer, prefix, query string) {
 	if spool != nil {
 		next := true
 		fmt.Fprintf(spool, "### <%s> ###\n", time.Now().Local().Format(time.DateTime))
@@ -126,7 +130,7 @@ func echo(spool io.Writer, query string) {
 		for next {
 			var line string
 			line, query, next = strings.Cut(query, "\n")
-			fmt.Fprintf(spool, "# %s\n", line)
+			fmt.Fprintf(spool, "# %s%s\n", prefix, line)
 		}
 	}
 }

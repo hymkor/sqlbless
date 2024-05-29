@@ -47,6 +47,11 @@ Supported commands
 - `START filename`
     - Start the SQL script given with filename
 - `REM comments`
+- `DESC [tablename]` / `\D [tablename]`
+    - When the tablename is given, show the specification of the the table
+    - Without the tablename, show the list of tables.
+- `HISTORY`
+    - Show the history of input SQLs
 - `EDIT tablename [WHERE conditions...]`
     - Start an [editor][csvi] to modify the selected records of the table.
     - In the editor, press `c` to apply changes, `q` or `ESC` to quit without applying changes

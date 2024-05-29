@@ -47,6 +47,11 @@ SQL-Bless は SQL\*Plus や psql のようなコマンドライン用データ�
 - `START filename`
     - ファイル名で指定した SQL スクリプトを実行します。
 - `REM comments`
+- `DESC [tablename]` / `\D [tablename]`
+    - テーブル名が指定された場合、そのテーブルの使用を表示します
+    - テーブル名が省略された場合、テーブルの一覧を表示します
+- `HISTORY`
+    - 入力履歴を表示します
 - `EDIT tablename [WHERE conditions...]`
     - 選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します
     - エディタ中では `c` キーで変更を適用して終了、`q`キーもしくは`ESC`キーで修正を破棄して終了

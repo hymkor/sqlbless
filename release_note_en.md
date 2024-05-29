@@ -2,9 +2,13 @@ v0.12.0
 =======
 May 29, 2024
 
-- Support SQLite3. For windows-386, use "mattn/go-sqlite3" and for others, "glebarez/go-sqlite"
+- [#1] Support SQLite3. For windows-386, use "mattn/go-sqlite3" and for others, "glebarez/go-sqlite" (Thanks to [@emisjerry] and [@spiegel-im-spiegel])
 - Fix: error was not displayed even when not supported driver name was given
 - (Fixed the problem that the test script was not compatible with the latest specifications and moved it to ./test)
+
+[#1]: https://github.com/hymkor/sqlbless/issues/1
+[@emisjerry]: https://github.com/emisjerry
+[@spiegel-im-spiegel]: https://github.com/spiegel-im-spiegel
 
 v0.11.0
 =======

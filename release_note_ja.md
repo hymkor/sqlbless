@@ -2,9 +2,13 @@ v0.12.0
 =======
 May 29, 2024
 
-- SQLite3 をサポート。windows-386向けには "mattn/go-sqlite3" を、他の組合せには "glebarez/go-sqlite" を使うようにした。
+- [#1] SQLite3 をサポート。windows-386向けには "mattn/go-sqlite3" を、他の組合せには "glebarez/go-sqlite" を使うようにした。(Thanks to [@emisjerry] and [@spiegel-im-spiegel])
 - サポートしていないドライバー名が与えられた時、エラーにならない問題を修正
 - ( テストスクリプトが最新仕様に対応していなかった点を修正し、./test へ移動 )
+
+[#1]: https://github.com/hymkor/sqlbless/issues/1
+[@emisjerry]: https://github.com/emisjerry
+[@spiegel-im-spiegel]: https://github.com/spiegel-im-spiegel
 
 v0.11.0
 =======

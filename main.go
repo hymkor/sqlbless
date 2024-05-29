@@ -154,6 +154,9 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	_rows := rowsHasNext(rows)
 	if _rows == nil {
 		rows.Close()
+		if table == "" {
+			return errors.New("no tables are found")
+		}
 		return fmt.Errorf("%s: table not found", table)
 	}
 	return csvPager(table, ss.DumpConfig.Comma, *flagAuto != "", func(pOut io.Writer) error {

@@ -52,6 +52,7 @@ const (
 )
 
 func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
+	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
 	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
 	answer, err := getKey()

@@ -55,25 +55,30 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
 	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
-	answer, err := getKey()
-	fmt.Println(answer, _ANSI_CURSOR_OFF)
-	if err != nil {
-		return err
-	}
-	if answer == "y" || answer == "Y" {
-		err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+	for {
+		answer, err := getKey()
 		if err != nil {
+			fmt.Println(_ANSI_CURSOR_OFF)
 			return err
 		}
-		echo(ss.spool, dmlSql)
-		err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
-		if err != nil {
-			return err
+		if answer == "y" || answer == "Y" {
+			fmt.Println(answer, _ANSI_CURSOR_OFF)
+			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+			if err != nil {
+				return err
+			}
+			echo(ss.spool, dmlSql)
+			err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
+			if err != nil {
+				return err
+			}
+			return nil
+		} else if answer == "n" || answer == "N" {
+			fmt.Println(answer, _ANSI_CURSOR_OFF)
+			echoPrefix(ss.spool, "(cancel) ", dmlSql)
+			return nil
 		}
-	} else {
-		echoPrefix(ss.spool, "(cancel) ", dmlSql)
 	}
-	return nil
 }
 
 func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (string, error), null string) (string, error) {

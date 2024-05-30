@@ -121,14 +121,15 @@ func _csvEdit(title string, comma rune, readonly bool, pilot csvi.Pilot, f func(
 	}
 
 	cfg := &csvi.Config{
-		Mode:        &uncsv.Mode{Comma: byte(comma)},
-		CellWidth:   14,
-		HeaderLines: 1,
-		FixColumn:   true,
-		ReadOnly:    readonly,
-		Message:     titleBuf.String(),
-		Pilot:       pilot,
-		KeyMap:      make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
+		Mode:          &uncsv.Mode{Comma: byte(comma)},
+		CellWidth:     14,
+		HeaderLines:   1,
+		FixColumn:     true,
+		ReadOnly:      readonly,
+		ProtectHeader: true,
+		Message:       titleBuf.String(),
+		Pilot:         pilot,
+		KeyMap:        make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
 	}
 	applyChange := false
 	if !readonly {

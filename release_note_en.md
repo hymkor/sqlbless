@@ -1,3 +1,15 @@
+* Modify the error message of `desc` with no arguments when no tables exist.  
+  `: table not found` → `no tables are found`
+* Change the time format of spooled files:  
+  `# (2024-05-30 18:15:52)` → `### <2024-05-30 18:46:13> ###`
+* `EDIT` command:
+    * Executed SQLs are recorded to spooled file now.
+    * Print `\n---\n` before SQL is displayed.
+    * Include the fixes of csvi v1.9.6
+        * Fix: `o` and `O`: inserted column was always the first one of the new line
+        * Fix: `O`: the line of cursor is incorrect before new cell text is input
+    * When confirming SQL execution, keys other than `y` and `n` are ignored.
+
 v0.12.0
 =======
 May 29, 2024

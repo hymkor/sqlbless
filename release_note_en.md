@@ -11,7 +11,8 @@
         * Fix: `O`: the line of cursor is incorrect before new cell text is input
         * Header can not be modified now.
     * When confirming SQL execution, keys other than `y` and `n` are ignored.
-    * When SQL fails, ask to contiue(`c`) or abort(`a`)
+    * When SQL fails, ask whether continue(`c`) or abort(`a`)
+    * Minimal input check is now performed when entering data into cells in the editor.
 
 v0.12.0
 =======

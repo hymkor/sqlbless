@@ -10,6 +10,7 @@
         * Fix: `o` and `O`: inserted column was always the first one of the new line
         * Fix: `O`: the line of cursor is incorrect before new cell text is input
         * Header can not be modified now.
+        * Do not create an empty row at the tail
     * When confirming SQL execution, keys other than `y` and `n` are ignored.
     * When SQL fails, ask whether continue(`c`) or abort(`a`)
     * Minimal input check is now performed when entering data into cells in the editor.

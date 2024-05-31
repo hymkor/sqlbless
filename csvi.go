@@ -82,73 +82,73 @@ func (_AutoCsvi) Close() error {
 	return nil
 }
 
-func csvPager(title string, comma rune, quitImmediate bool, f func(pOut io.Writer) error, out, spool io.Writer) error {
-	var pilot csvi.Pilot
-	if quitImmediate {
-		pilot = _QuitCsvi{}
+func csvPager(title string, ss *Session, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
+	cfg := &csvi.Config{
+		Message:  escape0x2400(title),
+		ReadOnly: true,
 	}
-	_, err := _csvEdit(title, comma, nil, true, pilot, f, out, spool)
+	if automatic {
+		cfg.Pilot = _QuitCsvi{}
+	}
+	_, err := callCsvi(ss, cfg, csvWriteTo, out)
 	return err
 }
 
-func csvEdit(title string, comma rune, v func(*csvi.CellValidatedEvent) (string, error), tty getKeyAndSize, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
-	var pilot csvi.Pilot
-	if tty != nil {
-		pilot = &_AutoCsvi{Tty: tty}
-	}
-	return _csvEdit(title, comma, v, false, pilot, f, out, spool)
-}
+func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) (string, error), tty getKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
-func _csvEdit(title string, comma rune, v func(*csvi.CellValidatedEvent) (string, error), readonly bool, pilot csvi.Pilot, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
-
-	pIn, pOut := io.Pipe()
-	go func() {
-		if spool == nil {
-			err = f(pOut)
-		} else {
-			err = f(tee(pOut, spool))
-		}
-		pOut.Close()
-	}()
-
-	var titleBuf strings.Builder
-	for _, c := range title {
-		if c < ' ' {
-			titleBuf.WriteRune(0x2400 + c)
-		} else {
-			titleBuf.WriteRune(c)
-		}
-	}
-
-	cfg := &csvi.Config{
-		Mode:            &uncsv.Mode{Comma: byte(comma)},
-		CellWidth:       14,
-		HeaderLines:     1,
-		FixColumn:       true,
-		ReadOnly:        readonly,
-		ProtectHeader:   true,
-		Message:         titleBuf.String(),
-		Pilot:           pilot,
-		KeyMap:          make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
-		OnCellValidated: v,
-	}
 	applyChange := false
-	if !readonly {
-		cfg.KeyMap["c"] = func(app *csvi.Application) (*csvi.CommandResult, error) {
-			if app.YesNo("Apply the changes ? [y/n] ") {
-				io.WriteString(app, "y\n")
-				applyChange = true
-				return &csvi.CommandResult{Quit: true}, nil
-			}
-			return &csvi.CommandResult{}, nil
-		}
+	cfg := &csvi.Config{
+		Message: escape0x2400(title),
+		KeyMap: map[string]func(*csvi.Application) (*csvi.CommandResult, error){
+			"c": func(app *csvi.Application) (*csvi.CommandResult, error) {
+				if app.YesNo("Apply the changes ? [y/n] ") {
+					io.WriteString(app, "y\n")
+					applyChange = true
+					return &csvi.CommandResult{Quit: true}, nil
+				}
+				return &csvi.CommandResult{}, nil
+			},
+		},
+		OnCellValidated: validate,
 	}
-	var err2 error
-	result, err2 = cfg.Edit(pIn, out)
-	err = errors.Join(err, err2)
-	pIn.Close()
+	if tty != nil {
+		cfg.Pilot = &_AutoCsvi{Tty: tty}
+	}
+	result, err := callCsvi(ss, cfg, csvWriteTo, out)
 	if applyChange {
 		return result, err
 	}
 	return nil, err
+}
+
+func escape0x2400(s string) string {
+	var buf strings.Builder
+	for _, c := range s {
+		if c < ' ' {
+			buf.WriteRune(0x2400 + c)
+		} else {
+			buf.WriteRune(c)
+		}
+	}
+	return buf.String()
+}
+
+func callCsvi(ss *Session, cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+
+	var err1 error
+	pIn, pOut := io.Pipe()
+	go func() {
+		err1 = csvWriteTo(tee(pOut, ss.spool))
+		pOut.Close()
+	}()
+
+	cfg.Mode = &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)}
+	cfg.CellWidth = 14
+	cfg.HeaderLines = 1
+	cfg.FixColumn = true
+	cfg.ProtectHeader = true
+
+	result, err2 := cfg.Edit(pIn, out)
+	pIn.Close()
+	return result, errors.Join(err1, err2)
 }

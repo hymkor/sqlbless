@@ -39,7 +39,13 @@ type canQuery interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
-func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, out, spool io.Writer) error {
+func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) error {
+	var conn canQuery
+	if ss.tx == nil {
+		conn = ss.conn
+	} else {
+		conn = ss.tx
+	}
 	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
@@ -49,11 +55,11 @@ func doSelect(ctx context.Context, conn canQuery, query string, r2c *RowToCsv, o
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return csvPager(query, r2c.Comma, *flagAuto != "", func(pOut io.Writer) error {
-		_err := r2c.Dump(ctx, _rows, pOut)
+	return csvPager(query, ss, *flagAuto != "", func(pOut io.Writer) error {
+		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
-	}, out, spool)
+	}, out)
 }
 
 type canExec interface {
@@ -163,11 +169,11 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return csvPager(table, ss.DumpConfig.Comma, *flagAuto != "", func(pOut io.Writer) error {
+	return csvPager(table, ss, *flagAuto != "", func(pOut io.Writer) error {
 		err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return err
-	}, out, spool)
+	}, out)
 }
 
 var (
@@ -341,15 +347,11 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "EDIT":
 			echo(ss.spool, query)
-			err = doEdit(ctx, ss, query, commandIn, os.Stdout, ss.spool)
+			err = doEdit(ctx, ss, query, commandIn, os.Stdout)
 
 		case "SELECT":
 			echo(ss.spool, query)
-			if ss.tx == nil {
-				err = doSelect(ctx, ss.conn, query, &ss.DumpConfig, os.Stdout, ss.spool)
-			} else {
-				err = doSelect(ctx, ss.tx, query, &ss.DumpConfig, os.Stdout, ss.spool)
-			}
+			err = doSelect(ctx, ss, query, os.Stdout)
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
 			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))

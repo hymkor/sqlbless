@@ -129,7 +129,7 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (str
 	return where.String(), nil
 }
 
-func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out, spool io.Writer) error {
+func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
 
 	var conn canQuery
 	if ss.tx == nil {
@@ -208,11 +208,11 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	v := func(e *csvi.CellValidatedEvent) (string, error) {
 		return validateFunc[e.Col](e.Text)
 	}
-	editResult, err := csvEdit(command, ss.DumpConfig.Comma, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
+	editResult, err := csvEdit(command, ss, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
-	}, out, spool)
+	}, out)
 
 	if err != nil && err != io.EOF {
 		return err

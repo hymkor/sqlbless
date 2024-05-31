@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -52,6 +53,30 @@ const (
 )
 
 func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
+	err := _askSqlAndExecute(ctx, ss, getKey, dmlSql)
+	if err == nil {
+		return nil
+	}
+	fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
+	fmt.Print("Continue or abort [c/a] ", _ANSI_CURSOR_ON)
+	for {
+		answer, _err := getKey()
+		if _err != nil {
+			fmt.Println(_err.Error(), _ANSI_CURSOR_OFF)
+			return errors.Join(err, _err)
+		}
+		if answer == "c" || answer == "C" {
+			fmt.Println(answer, _ANSI_CURSOR_OFF)
+			return nil
+		}
+		if answer == "a" || answer == "A" {
+			fmt.Println(answer, _ANSI_CURSOR_OFF)
+			return errors.New("abort edit")
+		}
+	}
+}
+
+func _askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
 	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
@@ -166,6 +191,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		return nil
 	}
 	null := ss.DumpConfig.Null
+	askAsAbort := false
 	editResult.Each(func(row *uncsv.Row) bool {
 		var dmlSql string
 		switch csvRowModified(row) {
@@ -226,8 +252,15 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
-		return err == nil
+		if askAsAbort {
+			echoPrefix(tee(os.Stderr, ss.spool), "(cancel) ", dmlSql)
+		} else {
+			err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
+		}
+		if err != nil {
+			askAsAbort = true
+		}
+		return true
 	})
 	if err != nil {
 		return err
@@ -244,8 +277,16 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			return false
 		}
 		sql.WriteString(v)
-		err = askSqlAndExecute(ctx, ss, pilot.GetKey, sql.String())
-		return err == nil
+		dmlSql := sql.String()
+		if askAsAbort {
+			echoPrefix(tee(os.Stderr, ss.spool), "(cancel) ", dmlSql)
+		} else {
+			err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
+		}
+		if err != nil {
+			askAsAbort = true
+		}
+		return true
 	})
 	return err
 }

@@ -97,10 +97,18 @@ func csvPager(title string, ss *Session, automatic bool, csvWriteTo func(pOut io
 func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) (string, error), tty getKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
+	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		if e.CursorRow.Index() < 1 {
+			return &csvi.CommandResult{}, nil
+		}
+		e.CursorRow.Replace(e.CursorCol, ss.DumpConfig.Null, &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)})
+		return &csvi.CommandResult{}, nil
+	}
+
 	cfg := &csvi.Config{
 		Message: escape0x2400(title),
-		KeyMap: map[string]func(*csvi.Application) (*csvi.CommandResult, error){
-			"c": func(app *csvi.Application) (*csvi.CommandResult, error) {
+		KeyMap: map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
+			"c": func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
 				if app.YesNo("Apply the changes ? [y/n] ") {
 					io.WriteString(app, "y\n")
 					applyChange = true
@@ -108,6 +116,8 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 				}
 				return &csvi.CommandResult{}, nil
 			},
+			"x": setNull,
+			"d": setNull,
 		},
 		OnCellValidated: validate,
 	}

@@ -293,7 +293,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort bool) error {
 	for {
 		if ss.spool != nil {
-			fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
+			fmt.Fprintf(os.Stderr, "\nSpooling to '%s' now\n", ss.spool.Name())
 		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {

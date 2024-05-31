@@ -29,20 +29,20 @@ const (
 )
 
 var (
-	rxDateTime = regexp.MustCompile(`\d{4}-\d\d-\d\d \d\d:\d\d:\d\d`)
-	rxDateOnly = regexp.MustCompile(`\d{4}-\d\d-\d\d`)
-	rxTimeOnly = regexp.MustCompile(`\d\d:\d\d:\d\d`)
+	rxDateTime = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\s*$`)
+	rxDateOnly = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
+	rxTimeOnly = regexp.MustCompile(`^\s*(\d\d:\d\d:\d\d)\s*$`)
 )
 
 func parseAnyDateTime(s string) (time.Time, error) {
-	if m := rxDateTime.FindString(s); m != "" {
-		return time.Parse(dateTimeFormat, m)
+	if m := rxDateTime.FindStringSubmatch(s); m != nil {
+		return time.Parse(dateTimeFormat, m[1])
 	}
-	if m := rxDateOnly.FindString(s); m != "" {
-		return time.Parse(dateOnlyFormat, m)
+	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
+		return time.Parse(dateOnlyFormat, m[1])
 	}
-	if m := rxTimeOnly.FindString(s); m != "" {
-		return time.Parse(timeOnlyFormat, m)
+	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
+		return time.Parse(timeOnlyFormat, m[1])
 	}
 	return time.Time{}, errors.New("not time format")
 }

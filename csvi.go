@@ -87,19 +87,19 @@ func csvPager(title string, comma rune, quitImmediate bool, f func(pOut io.Write
 	if quitImmediate {
 		pilot = _QuitCsvi{}
 	}
-	_, err := _csvEdit(title, comma, true, pilot, f, out, spool)
+	_, err := _csvEdit(title, comma, nil, true, pilot, f, out, spool)
 	return err
 }
 
-func csvEdit(title string, comma rune, tty getKeyAndSize, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
+func csvEdit(title string, comma rune, v func(*csvi.CellValidatedEvent) (string, error), tty getKeyAndSize, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
 	var pilot csvi.Pilot
 	if tty != nil {
 		pilot = &_AutoCsvi{Tty: tty}
 	}
-	return _csvEdit(title, comma, false, pilot, f, out, spool)
+	return _csvEdit(title, comma, v, false, pilot, f, out, spool)
 }
 
-func _csvEdit(title string, comma rune, readonly bool, pilot csvi.Pilot, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
+func _csvEdit(title string, comma rune, v func(*csvi.CellValidatedEvent) (string, error), readonly bool, pilot csvi.Pilot, f func(pOut io.Writer) error, out, spool io.Writer) (result *csvi.Result, err error) {
 
 	pIn, pOut := io.Pipe()
 	go func() {
@@ -121,15 +121,16 @@ func _csvEdit(title string, comma rune, readonly bool, pilot csvi.Pilot, f func(
 	}
 
 	cfg := &csvi.Config{
-		Mode:          &uncsv.Mode{Comma: byte(comma)},
-		CellWidth:     14,
-		HeaderLines:   1,
-		FixColumn:     true,
-		ReadOnly:      readonly,
-		ProtectHeader: true,
-		Message:       titleBuf.String(),
-		Pilot:         pilot,
-		KeyMap:        make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
+		Mode:            &uncsv.Mode{Comma: byte(comma)},
+		CellWidth:       14,
+		HeaderLines:     1,
+		FixColumn:       true,
+		ReadOnly:        readonly,
+		ProtectHeader:   true,
+		Message:         titleBuf.String(),
+		Pilot:           pilot,
+		KeyMap:          make(map[string]func(*csvi.Application) (*csvi.CommandResult, error)),
+		OnCellValidated: v,
 	}
 	applyChange := false
 	if !readonly {

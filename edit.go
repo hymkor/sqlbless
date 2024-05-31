@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -160,11 +162,23 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	if err != nil {
 		return err
 	}
+	null := ss.DumpConfig.Null
 	quoteFunc := make([]func(string) (string, error), 0, len(columnTypes))
+	validateFunc := make([]func(string) (string, error), 0, len(columnTypes))
 	for _, ct := range columnTypes {
 		name := strings.ToUpper(ct.DatabaseTypeName())
+		var v func(string) (string, error)
 		if conv := ss.dbSpec.TryTypeNameToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
+			v = func(s string) (string, error) {
+				if s == null {
+					return s, nil
+				}
+				if _, err := conv(s); err != nil {
+					return "", err
+				}
+				return s, nil
+			}
 		} else if strings.Contains(name, "INT") ||
 			strings.Contains(name, "NUMBER") ||
 			strings.Contains(name, "NUMERIC") ||
@@ -172,13 +186,29 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return s, nil
 			})
+			v = func(s string) (string, error) {
+				if s == null {
+					return s, nil
+				}
+				if _, err := strconv.ParseFloat(s, 64); err != nil {
+					return "", err
+				}
+				return s, nil
+			}
 		} else {
 			quoteFunc = append(quoteFunc, func(s string) (string, error) {
 				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil
 			})
+			v = func(s string) (string, error) {
+				return s, nil
+			}
 		}
+		validateFunc = append(validateFunc, v)
 	}
-	editResult, err := csvEdit(command, ss.DumpConfig.Comma, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
+	v := func(e *csvi.CellValidatedEvent) (string, error) {
+		return validateFunc[e.Col](e.Text)
+	}
+	editResult, err := csvEdit(command, ss.DumpConfig.Comma, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
@@ -190,7 +220,6 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	if editResult == nil {
 		return nil
 	}
-	null := ss.DumpConfig.Null
 	askAsAbort := false
 	editResult.Each(func(row *uncsv.Row) bool {
 		var dmlSql string

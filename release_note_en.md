@@ -14,6 +14,7 @@
     * When confirming SQL execution, keys other than `y` and `n` are ignored.
     * When SQL fails, ask whether continue(`c`) or abort(`a`)
     * Minimal input check is now performed when entering data into cells in the editor.
+    * `x` and `d` store NULL into the current column
 
 v0.12.0
 =======

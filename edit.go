@@ -135,11 +135,6 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
-	_rows := rowsHasNext(rows)
-	if _rows == nil {
-		rows.Close()
-		return fmt.Errorf("data not found")
-	}
 	columns, err := rows.Columns()
 	if err != nil {
 		rows.Close()
@@ -208,7 +203,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		return validateFunc[e.Col](e.Text)
 	}
 	editResult, err := csvEdit(command, ss, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
-		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
+		_err := ss.DumpConfig.Dump(ctx, rows, pOut)
 		rows.Close()
 		return _err
 	}, out)

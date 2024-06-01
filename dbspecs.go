@@ -23,15 +23,15 @@ func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, e
 }
 
 const (
-	dateTimeFormat = "2006-01-02 15:04:05"
+	dateTimeFormat = "2006-01-02 15:04:05.999999999"
 	dateOnlyFormat = "2006-01-02"
-	timeOnlyFormat = "15:04:05"
+	timeOnlyFormat = "15:04:05.999999999"
 )
 
 var (
-	rxDateTime = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\s*$`)
+	rxDateTime = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
 	rxDateOnly = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
-	rxTimeOnly = regexp.MustCompile(`^\s*(\d\d:\d\d:\d\d)\s*$`)
+	rxTimeOnly = regexp.MustCompile(`^\s*(\d\d:\d\d:\d\d(?:\.\d+))\s*$`)
 )
 
 func parseAnyDateTime(s string) (time.Time, error) {

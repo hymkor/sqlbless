@@ -31,7 +31,7 @@ const (
 var (
 	rxDateTime = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
 	rxDateOnly = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
-	rxTimeOnly = regexp.MustCompile(`^\s*(\d\d:\d\d:\d\d(?:\.\d+))\s*$`)
+	rxTimeOnly = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
 )
 
 func parseAnyDateTime(s string) (time.Time, error) {

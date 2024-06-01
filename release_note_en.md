@@ -15,6 +15,7 @@
     * When SQL fails, ask whether continue(`c`) or abort(`a`)
     * Minimal input check is now performed when entering data into cells in the editor.
     * `x` and `d` store NULL into the current column
+    * Fix: `edit` could not be started when no data records were selected.
 
 v0.12.0
 =======

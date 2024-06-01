@@ -168,10 +168,14 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	for _, ct := range columnTypes {
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
+		_ct := ct
 		if conv := ss.dbSpec.TryTypeNameToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
 				if s == null {
+					if nullable, ok := _ct.Nullable(); ok && !nullable {
+						return "", errors.New("This Column is NOT NULL")
+					}
 					return s, nil
 				}
 				if _, err := conv(s); err != nil {
@@ -188,6 +192,9 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			})
 			v = func(s string) (string, error) {
 				if s == null {
+					if nullable, ok := _ct.Nullable(); ok && !nullable {
+						return "", errors.New("This Column is NOT NULL")
+					}
 					return s, nil
 				}
 				if _, err := strconv.ParseFloat(s, 64); err != nil {
@@ -200,6 +207,11 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil
 			})
 			v = func(s string) (string, error) {
+				if s == null {
+					if nullable, ok := _ct.Nullable(); ok && !nullable {
+						return "", errors.New("This Column is NOT NULL")
+					}
+				}
 				return s, nil
 			}
 		}

@@ -101,6 +101,14 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 		if e.CursorRow.Index() < 1 {
 			return &csvi.CommandResult{}, nil
 		}
+		ce := &csvi.CellValidatedEvent{
+			Text: ss.DumpConfig.Null,
+			Row:  e.CursorRow.Index(),
+			Col:  e.CursorCol,
+		}
+		if _, err := validate(ce); err != nil {
+			return &csvi.CommandResult{Message: err.Error()}, nil
+		}
 		e.CursorRow.Replace(e.CursorCol, ss.DumpConfig.Null, &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)})
 		return &csvi.CommandResult{}, nil
 	}

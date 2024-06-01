@@ -15,11 +15,12 @@ $script = `
     "  DT      DATE ,|" +
     "  TM      TIME ,|" +
     " PRIMARY  KEY (TESTNO) ); ||" +
-    "INSERT INTO TESTTBL VALUES|",
-    "(10,TIMESTAMP '2024-05-25 13:45:33',DATE '2024-05-26',TIME '14:53:26') ||" +
+    "INSERT INTO TESTTBL VALUES|" +
+    "(10,TIMESTAMP '2024-05-25 13:45:33.10',|" +
+    " DATE '2024-05-26',TIME '14:53:26.2') ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|cyy" +
+    "/10|lr2015-06-07 20:21:22.23|lr2016-07-08|lr15:54:27.1|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -50,13 +51,13 @@ ForEach-Object {
     if ( $field.Length -lt 4 ){
         return
     }
-    if ( $field[1] -ne "2015-06-07 20:21:22" ){
+    if ( $field[1] -ne "2015-06-07 20:21:22.23" ){
         return
     }
     if ( $field[2] -notlike "2016-07-08*" ){
         return
     }
-    if ( $field[3] -notlike "*15:54:27" ){
+    if ( $field[3] -notlike "*15:54:27.1" ){
         return
     }
     $ok = $true

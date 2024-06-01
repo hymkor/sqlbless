@@ -8,16 +8,25 @@ import (
 )
 
 func oracleTypeNameToConv(typeName string) func(string) (string, error) {
-	if !strings.Contains(typeName, "DATE") {
-		return nil
-	}
-	return func(s string) (string, error) {
-		dt, err := parseAnyDateTime(s)
-		if err != nil {
-			return "", err
+	if strings.Contains(typeName, "TIMESTAMP") {
+		return func(s string) (string, error) {
+			dt, err := parseAnyDateTime(s)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')", dt.Format(dateTimeFormat)), nil
 		}
-		return fmt.Sprintf("TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')", dt.Format(dateTimeFormat)), nil
 	}
+	if strings.Contains(typeName, "DATE") {
+		return func(s string) (string, error) {
+			dt, err := parseAnyDateTime(s)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')", dt.Format(dateTimeFormat)), nil
+		}
+	}
+	return nil
 }
 
 var oracleSpec = &DBSpec{
@@ -25,9 +34,10 @@ var oracleSpec = &DBSpec{
 	SqlForDesc: `
   select column_id as "ID",
 		 column_name as "NAME",
-		 case data_type
-		   when 'NUMBER' then data_type
-		   when 'DATE' then data_type
+		 case 
+		   when data_type = 'NUMBER' then data_type
+		   when data_type = 'DATE' then data_type
+		   when data_type like 'TIMESTAMP%' then data_type
 		   else data_type || '(' || data_length || ')'
 		 end as "TYPE",
 		 case

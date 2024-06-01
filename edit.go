@@ -54,58 +54,45 @@ const (
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
 
-func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
-	err := _askSqlAndExecute(ctx, ss, getKey, dmlSql)
-	if err == nil {
-		return nil
-	}
-	fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
-	fmt.Print("Continue or abort [c/a] ", _ANSI_CURSOR_ON)
+func ask2(msg, yes, no string, getKey func() (string, error)) (bool, error) {
+	fmt.Print(msg, _ANSI_CURSOR_ON)
 	for {
-		answer, _err := getKey()
-		if _err != nil {
-			fmt.Println(_err.Error(), _ANSI_CURSOR_OFF)
-			return errors.Join(err, _err)
+		answer, err := getKey()
+		if err != nil {
+			return false, err
 		}
-		if answer == "c" || answer == "C" {
+		if strings.Contains(yes, answer) {
 			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			return nil
+			return true, nil
 		}
-		if answer == "a" || answer == "A" {
+		if strings.Contains(no, answer) {
 			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			return errors.New("abort edit")
+			return false, nil
 		}
 	}
 }
 
-func _askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
+func continueOrAbort(getKey func() (string, error)) (bool, error) {
+	return ask2("Continue or abort [c/a] ", "cC", "aA", getKey)
+}
+
+func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
-	fmt.Print("Execute? [y/n] ", _ANSI_CURSOR_ON)
-	for {
-		answer, err := getKey()
-		if err != nil {
-			fmt.Println(_ANSI_CURSOR_OFF)
-			return err
-		}
-		if answer == "y" || answer == "Y" {
-			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
-			if err != nil {
-				return err
-			}
-			echo(ss.spool, dmlSql)
-			err = doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
-			if err != nil {
-				return err
-			}
-			return nil
-		} else if answer == "n" || answer == "N" {
-			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			echoPrefix(ss.spool, "(cancel) ", dmlSql)
-			return nil
-		}
+	answer, err := ask2("Execute? [y/n] ", "yY", "nN", getKey)
+	if err != nil {
+		return err
 	}
+	if !answer {
+		echoPrefix(ss.spool, "(cancel) ", dmlSql)
+		return nil
+	}
+	err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+	if err != nil {
+		return err
+	}
+	echo(ss.spool, dmlSql)
+	return doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
 }
 
 func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (string, error), null string) (string, error) {
@@ -232,7 +219,13 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	if editResult == nil {
 		return nil
 	}
-	askAsAbort := false
+	const (
+		Success = iota
+		Failure
+		AbortAll
+	)
+	status := Success
+
 	editResult.Each(func(row *uncsv.Row) bool {
 		var dmlSql string
 		switch csvRowModified(row) {
@@ -293,13 +286,22 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		if askAsAbort {
+		if status == Failure {
+			if ans, _ := continueOrAbort(pilot.GetKey); ans {
+				status = Success
+			} else {
+				status = AbortAll
+			}
+		}
+		if status == AbortAll {
 			echoPrefix(tee(os.Stderr, ss.spool), "(cancel) ", dmlSql)
 		} else {
 			err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
-		}
-		if err != nil {
-			askAsAbort = true
+			if err != nil {
+				fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
+				status = Failure
+				err = nil
+			}
 		}
 		return true
 	})
@@ -310,6 +312,13 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		if csvRowIsNew(row) {
 			return true
 		}
+		if status == Failure {
+			if ans, _ := continueOrAbort(pilot.GetKey); ans {
+				status = Success
+			} else {
+				status = AbortAll
+			}
+		}
 		var sql strings.Builder
 		fmt.Fprintf(&sql, "DELETE FROM %s", table)
 		var v string
@@ -319,13 +328,14 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		}
 		sql.WriteString(v)
 		dmlSql := sql.String()
-		if askAsAbort {
+		if status == AbortAll {
 			echoPrefix(tee(os.Stderr, ss.spool), "(cancel) ", dmlSql)
 		} else {
 			err = askSqlAndExecute(ctx, ss, pilot.GetKey, dmlSql)
-		}
-		if err != nil {
-			askAsAbort = true
+			if err != nil {
+				status = Failure
+				err = nil
+			}
 		}
 		return true
 	})

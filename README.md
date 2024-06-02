@@ -54,7 +54,10 @@ Supported commands
     - Show the history of input SQLs
 - `EDIT tablename [WHERE conditions...]`
     - Start an [editor][csvi] to modify the selected records of the table.
-    - In the editor, press `c` to apply changes, `q` or `ESC` to quit without applying changes
+    - In the editor, these keys are bound.
+        - `x` or `d`: set NULL to the current cell
+        - `c`: apply changes
+        - `q` or `ESC`: quit without applying changes
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
 
 - Semicolon `;` is a statement seperator when script is executed.
@@ -110,34 +113,35 @@ How to start
     $ sqlbless sqlite3 :memory:
     $ sqlbless sqlite3 path/to/file.db
 
-- Use
-    - https://github.com/mattn/go-sqlite3 (Windows-386, TDM-GCC is required)
+- The drivers used are
+    - https://github.com/mattn/go-sqlite3 (Windows-386)
     - https://github.com/glebarez/go-sqlite (Linux and Windows-amd64)
 
 ### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
-- Use https://github.com/sijms/go-ora
+- The driver used is https://github.com/sijms/go-ora
 
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
 
-- Use https://github.com/lib/pq
+- The driver used is https://github.com/lib/pq
 
 ### SQL Server
 
     $ sqlbless sqlserver "sqlserver://@localhost?database=master"
     ( Windows authentication )
 
-- Use https://github.com/microsoft/go-mssqldb
+- The driver used is https://github.com/microsoft/go-mssqldb
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database
+    $ sqlbless.exe mysql "user:password@/database?parseTime=true&loc=Asia%2FTokyo"
 
-- Use http://github.com/go-sql-driver/mysql
+- The driver used is http://github.com/go-sql-driver/mysql
+- When both parseTime and loc are not specified, the value of TIMESTAMP is not expressed correctly
 
 ### Common Options
 
@@ -151,5 +155,11 @@ How to start
     - Use TAB as seperator
 - `-f string`
     - Start the script
+- `-submit-enter`
+    - Submit by [Enter] and insert a new line by [Ctrl]-[Enter]
+- `-debug`
+    - Print type-information in the header of `SELECT` and `EDIT`
+- `-help`
+    - Help
 
 [csvi]: https://github.com/hymkor/csvi

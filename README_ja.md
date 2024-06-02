@@ -54,7 +54,10 @@ SQL-Bless は SQL\*Plus や psql のようなコマンドライン用データ�
     - 入力履歴を表示します
 - `EDIT tablename [WHERE conditions...]`
     - 選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します
-    - エディタ中では `c` キーで変更を適用して終了、`q`キーもしくは`ESC`キーで修正を破棄して終了
+    - エディタ中では以下のキーが拡張されます
+        = `x` or `d`: セルに NULL をセットする
+        - `c`: 変更を適用して終了
+        - `q` or `ESC`: 修正を破棄して終了
     - EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、[ご連絡](https://github.com/hymkor/sqlbless/issues/new)いただけるとたすかります。
 - スクリプトを実行する時、セミコロン `;` が文の区切りとなります
 - インタラクティブに SQL を入力する時、セミコロン`;` は無視されます
@@ -109,34 +112,34 @@ scoop install sqlbless
     $ sqlbless sqlite3 :memory:
     $ sqlbless sqlite3 path/to/file.db
 
-- Use
-    - https://github.com/mattn/go-sqlite3 (Windows-386, TDM-GCC is required)
+- 使用ドライバー
+    - https://github.com/mattn/go-sqlite3 (Windows-386)
     - https://github.com/glebarez/go-sqlite (Linux and Windows-amd64)
 
 ### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
-- Use https://github.com/sijms/go-ora
+- 使用ドライバー: https://github.com/sijms/go-ora
 
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
 
-- Use https://github.com/lib/pq
+- 使用ドライバー https://github.com/lib/pq
 
 ### SQL Server
 
     $ sqlbless sqlserver "sqlserver://@localhost?database=master"
     ( Windows authentication )
 
-- Use https://github.com/microsoft/go-mssqldb
+- 使用ドライバー https://github.com/microsoft/go-mssqldb
 
 ### MySQL
 
     $ sqlbless.exe mysql user:password@/database
 
-- Use http://github.com/go-sql-driver/mysql
+- 使用ドライバー http://github.com/go-sql-driver/mysql
 
 ### 共通オプション
 
@@ -150,3 +153,9 @@ scoop install sqlbless
     - タブを区切り文字に使う
 - `-f string`
     - スクリプトを実行する
+- `-submit-enter`
+    - `Enter` で確定し、`Ctrl`-`Enter` で新しい行を挿入するようにする
+- `-debug`
+    - `SELECT` と `EDIT` のヘッダに型情報を表示するようにした
+- `-help`
+    - ヘルプを表示

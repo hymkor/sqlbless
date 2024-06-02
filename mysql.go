@@ -6,35 +6,24 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var mySQLTypeNameToFormat = map[string]string{
+	"DATETIME":  dateTimeFormat,
+	"TIMESTAMP": dateTimeFormat,
+	"TIME":      timeOnlyFormat,
+	"DATE":      dateOnlyFormat,
+}
+
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
-	switch typeName {
-	case "DATETIME", "TIMESTAMP":
+	if format, ok := mySQLTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d %%H:%%i:%%s.%%f')", dt.Format(dateTimeFormat)), nil
+			return fmt.Sprintf("%s '%s'", typeName, dt.Format(format)), nil
 		}
-	case "TIME":
-		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("STR_TO_DATE('%s','%%H:%%i:%%s.%%f')", dt.Format(timeOnlyFormat)), nil
-		}
-	case "DATE":
-		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d')", dt.Format(dateOnlyFormat)), nil
-		}
-	default:
-		return nil
 	}
+	return nil
 }
 
 var mySqlSpec = &DBSpec{

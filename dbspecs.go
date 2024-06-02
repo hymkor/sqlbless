@@ -48,7 +48,7 @@ func parseAnyDateTime(s string) (time.Time, error) {
 }
 
 var dbSpecs = map[string]*DBSpec{
-	"POSTGRES":  postgreSqlSpec,
+	"POSTGRES":  postgresSpec,
 	"ORACLE":    oracleSpec,
 	"SQLSERVER": sqlServerSpec,
 	"MYSQL":     mySqlSpec,

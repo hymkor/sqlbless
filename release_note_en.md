@@ -6,16 +6,17 @@
 * `EDIT` command:
     * Executed SQLs are recorded to spooled file now.
     * Print `\n---\n` before SQL is displayed.
-    * Include the fixes of csvi v1.9.6
-        * Fix: `o` and `O`: inserted column was always the first one of the new line
-        * Fix: `O`: the line of cursor is incorrect before new cell text is input
-        * Header can not be modified now.
-        * Do not create an empty row at the tail
     * When confirming SQL execution, keys other than `y` and `n` are ignored.
     * When SQL fails, ask whether continue(`c`) or abort(`a`)
     * Minimal input check is now performed when entering data into cells in the editor.
     * `x` and `d` store NULL into the current column
     * Fix: `edit` could not be started when no data records were selected.
+    * Support fractional seconds, Oracle TIMESTAMP type, and SQL Server SMALLDATETIME type
+    * Include the fixes of csvi v1.10
+        * Fix: `o` and `O`: inserted column was always the first one of the new line
+        * Fix: `O`: the line of cursor is incorrect before new cell text is input
+        * Header can not be modified now.
+        * Do not create an empty row at the tail
 
 v0.12.0
 =======

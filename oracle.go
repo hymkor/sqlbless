@@ -8,11 +8,15 @@ import (
 )
 
 func oracleTypeNameToConv(typeName string) func(string) (string, error) {
-	var format string
+	var sfmt string
+	var dfmt string
 	if strings.HasPrefix(typeName, "TIMESTAMP") {
-		format = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
+		// sfmt = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
+		sfmt = "TO_TIMESTAMP_TZ('%s','YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
+		dfmt = dateTimeTzFormat
 	} else if typeName == "DATE" {
-		format = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
+		sfmt = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
+		dfmt = dateTimeFormat
 	} else {
 		return nil
 	}
@@ -21,7 +25,7 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf(format, dt.Format(dateTimeFormat)), nil
+		return fmt.Sprintf(sfmt, dt.Format(dfmt)), nil
 	}
 }
 

@@ -11,9 +11,9 @@ $script = `
     "DROP TABLE TESTTBL||" +
     "CREATE TABLE TESTTBL|" +
     "( TESTNO  NUMERIC ,|" +
-    "  DTTM    DATETIME ,|" +
+    "  DTTM    TIMESTAMP(3),|" +
     "  DT      DATE ,|" +
-    "  TM      TIME ,|" +
+    "  TM      TIME(3) ,|" +
     " PRIMARY  KEY (TESTNO) ); ||" +
     "INSERT INTO TESTTBL VALUES|" +
     "(10,STR_TO_DATE('2024-05-25 13:45:33','%Y-%m-%d %H:%i:%s'),|" +
@@ -21,12 +21,12 @@ $script = `
     " STR_TO_DATE('14:53:26','%H:%i:%s')) ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2016-07-08|lr15:54:27|cyy" +
+    "/10|lr2015-06-07 20:21:22.123|lr2016-07-08|lr15:54:27.345|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
     "ROLLBACK||" +
-    "DROP TABLE TESTTBL||" +
+    #"DROP TABLE TESTTBL||" +
     "EXIT ||"
 
 $conn = $null
@@ -50,24 +50,23 @@ Select-Object -skip 1 |
 ForEach-Object {
     $field = ($_ -split ",")
     if ( $field.Length -lt 4 ){
+        Write-Host "NG:" $field.Length
         return
     }
-    if ( $field[1] -ne "2015-06-07 20:21:22" ){
+    if ( $field[1] -ne "2015-06-07 20:21:22.123" ){
+        Write-Host "NG:" $field[1]
         return
     }
     if ( $field[2] -notlike "2016-07-08*" ){
+        Write-Host "NG:" $field[2]
         return
     }
-    if ( $field[3] -notlike "*15:54:27" ){
+    if ( $field[3] -notlike "*15:54:27.345" ){
+        Write-Host "NG:" $field[3]
         return
     }
-    $ok = $true
-}
-
-if ( $ok ){
     Write-Host "--> OK"
     exit 0
-} else {
-    Write-Host "--> NG"
-    exit 1
 }
+Write-Host "--> NG"
+exit 1

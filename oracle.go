@@ -8,25 +8,21 @@ import (
 )
 
 func oracleTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "TIMESTAMP") {
-		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')", dt.Format(dateTimeFormat)), nil
-		}
+	var format string
+	if strings.HasPrefix(typeName, "TIMESTAMP") {
+		format = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
+	} else if typeName == "DATE" {
+		format = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
+	} else {
+		return nil
 	}
-	if strings.Contains(typeName, "DATE") {
-		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')", dt.Format(dateTimeFormat)), nil
+	return func(s string) (string, error) {
+		dt, err := parseAnyDateTime(s)
+		if err != nil {
+			return "", err
 		}
+		return fmt.Sprintf(format, dt.Format(dateTimeFormat)), nil
 	}
-	return nil
 }
 
 var oracleSpec = &DBSpec{

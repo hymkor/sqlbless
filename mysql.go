@@ -2,31 +2,29 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "DATETIME") {
+	switch typeName {
+	case "DATETIME", "TIMESTAMP":
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d %%H:%%i:%%s')", dt.Format(dateTimeFormat)), nil
+			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d %%H:%%i:%%s.%%f')", dt.Format(dateTimeFormat)), nil
 		}
-	}
-	if strings.Contains(typeName, "TIME") {
+	case "TIME":
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("STR_TO_DATE('%s','%%H:%%i:%%s')", dt.Format(timeOnlyFormat)), nil
+			return fmt.Sprintf("STR_TO_DATE('%s','%%H:%%i:%%s.%%f')", dt.Format(timeOnlyFormat)), nil
 		}
-	}
-	if strings.Contains(typeName, "DATE") {
+	case "DATE":
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
@@ -34,8 +32,9 @@ func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 			}
 			return fmt.Sprintf("STR_TO_DATE('%s','%%Y-%%m-%%d')", dt.Format(dateOnlyFormat)), nil
 		}
+	default:
+		return nil
 	}
-	return nil
 }
 
 var mySqlSpec = &DBSpec{

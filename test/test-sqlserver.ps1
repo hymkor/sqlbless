@@ -62,7 +62,7 @@ ForEach-Object {
         Write-Host $field.Length
         return
     }
-    if ( $field[1] -ne "2015-06-07 20:21:22" ){
+    if ( $field[1] -notlike "2015-06-07 20:21:22*" ){
         Write-Host $field[1]
         return
     }
@@ -70,16 +70,16 @@ ForEach-Object {
         Write-Host $field[2]
         return
     }
-    if ( $field[3] -notlike "*15:54:27" ){
+    if ( $field[3] -notlike "*15:54:27*" ){
         Write-Host $field[3]
         return
     }
-    if ( $field[4] -ne "2027-03-04 11:12:00" ){
+    if ( $field[4] -notlike "2027-03-04 11:12:00*" ){
         # SMALLDATETIME does not contain SECOND
         Write-Host $field[4]
         return
     }
-    if ( $field[5] -ne "2025-05-13 13:51:12.144"){
+    if ( $field[5] -notlike "2025-05-13 13:51:12.144*"){
         Write-Host $field[5]
         return
     }

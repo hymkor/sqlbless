@@ -8,16 +8,35 @@ import (
 )
 
 func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
-	if strings.Contains(typeName, "DATETIME") {
+	switch typeName {
+	case "SMALLDATETIME":
+		// SMALLDATETIME: YYYY-MM-DD hh:mm:ss
+		// 120: yyyy-mm-dd hh:mi:ss
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("CONVERT(DATETIME,'%s',120)", dt.Format(dateTimeFormat)), nil
+			return fmt.Sprintf("CONVERT(SMALLDATETIME,'%s',120)", dt.Format("2006-01-02 15:04:05")), nil
 		}
-	}
-	if strings.Contains(typeName, "DATE") {
+	case "DATETIME", "DATETIME2":
+		// datetime      for YYYY-MM-DD hh:mm:ss[.nnn]
+		// datetime2     for YYYY-MM-DD hh:mm:ss[.nnnnnnn]
+		// 121: yyyy-mm-dd hh:mi:ss.mmm
+		// 120: yyyy-mm-dd hh:mi:ss
+		return func(s string) (string, error) {
+			dt, err := parseAnyDateTime(s)
+			if err != nil {
+				return "", err
+			}
+			if dt.Nanosecond() > 0 {
+				return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeFormat)), nil
+			}
+			return fmt.Sprintf("CONVERT(%s,'%s',120)", typeName, dt.Format("2006-01-02 15:04:05")), nil
+		}
+	case "DATE":
+		// DATE: YYYY-MM-DD
+		// 23: yyyy-mm-dd
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
@@ -25,17 +44,24 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 			}
 			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(dateOnlyFormat)), nil
 		}
-	}
-	if strings.Contains(typeName, "TIME") {
+	case "TIME":
+		// TIME: hh:mm:ss[.nnnnnnn]
+		// 114: hh:mi:ss:mmm !!!COLON!!!
+		// 108: hh:mi:ss
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format(timeOnlyFormat)), nil
+			if dt.Nanosecond() > 0 {
+				return fmt.Sprintf("CONVERT(TIME,'%s',114)", strings.Replace(dt.Format(timeOnlyFormat), ".", ":", 1)), nil
+				//return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeFormat)), nil
+			}
+			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format("15:04:05")), nil
 		}
+	default:
+		return nil
 	}
-	return nil
 }
 
 var sqlServerSpec = &DBSpec{

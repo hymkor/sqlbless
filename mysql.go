@@ -43,8 +43,11 @@ var mySqlSpec = &DBSpec{
         select ordinal_position as "ID",
                column_name as "NAME",
                case
-                 when character_maximum_length is null then data_type
-                 else concat(data_type,'(',character_maximum_length,')')
+                 when character_maximum_length is not null then 
+                      concat(data_type,'(',character_maximum_length,')')
+                 when datetime_precision is not null then
+                      concat(data_type,'(',datetime_precision,')')
+                 else data_type
                end as "TYPE",
                case is_nullable
                  when "YES" then 'NULL'

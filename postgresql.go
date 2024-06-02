@@ -51,5 +51,6 @@ var postgresSpec = &DBSpec{
 	SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
-	TypeNameToConv: postgresTypeNameToConv,
+	DisplayDateTimeLayout: dateTimeTzFormat,
+	TypeNameToConv:        postgresTypeNameToConv,
 }

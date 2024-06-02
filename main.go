@@ -468,6 +468,7 @@ func mains(args []string) error {
 	} else {
 		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
 	}
+	session.DumpConfig.TimeLayout = dbSpec.DisplayDateTimeLayout
 	session.DumpConfig.PrintType = *flagPrintType
 
 	ctx := context.Background()

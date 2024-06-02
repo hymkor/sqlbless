@@ -86,6 +86,7 @@ var sqlServerSpec = &DBSpec{
 	   and o.name = @p1
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
-	SqlForTab:      `select * from sys.objects`,
-	TypeNameToConv: sqlServerTypeNameToConv,
+	SqlForTab:             `select * from sys.objects`,
+	DisplayDateTimeLayout: dateTimeFormat,
+	TypeNameToConv:        sqlServerTypeNameToConv,
 }

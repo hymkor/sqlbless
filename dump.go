@@ -13,10 +13,11 @@ import (
 const debugWatchType = false
 
 type RowToCsv struct {
-	Comma     rune
-	UseCRLF   bool
-	Null      string
-	PrintType bool
+	Comma      rune
+	UseCRLF    bool
+	Null       string
+	PrintType  bool
+	TimeLayout string
 }
 
 type _RowsI interface {
@@ -58,10 +59,10 @@ func (cfg RowToCsv) Dump(ctx context.Context, rows _RowsI, w io.Writer) error {
 	csvw.Comma = cfg.Comma
 	csvw.UseCRLF = cfg.UseCRLF
 
-	return rowsToCsv(ctx, rows, cfg.Null, cfg.PrintType, csvw)
+	return rowsToCsv(ctx, rows, cfg.Null, cfg.TimeLayout, cfg.PrintType, csvw)
 }
 
-func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, csvw *csv.Writer) error {
+func rowsToCsv(ctx context.Context, rows _RowsI, null, timeLayout string, printType bool, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
@@ -108,7 +109,7 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, cs
 					continue
 				}
 				if tm, ok := (*p).(time.Time); ok {
-					itemStr[i] = tm.Format(dateTimeTzFormat)
+					itemStr[i] = tm.Format(timeLayout)
 					continue
 				}
 				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {

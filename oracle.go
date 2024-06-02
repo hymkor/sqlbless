@@ -47,6 +47,7 @@ var oracleSpec = &DBSpec{
 	from all_tab_columns
    where table_name = UPPER(:1)
    order by column_id`,
-	SqlForTab:      `select * from tab`,
-	TypeNameToConv: oracleTypeNameToConv,
+	SqlForTab:             `select * from tab`,
+	DisplayDateTimeLayout: dateTimeTzFormat,
+	TypeNameToConv:        oracleTypeNameToConv,
 }

@@ -9,10 +9,11 @@ import (
 )
 
 type DBSpec struct {
-	Usage          string
-	SqlForDesc     string
-	SqlForTab      string
-	TypeNameToConv func(string) func(string) (string, error)
+	Usage                 string
+	SqlForDesc            string
+	SqlForTab             string
+	DisplayDateTimeLayout string
+	TypeNameToConv        func(string) func(string) (string, error)
 }
 
 func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, error) {

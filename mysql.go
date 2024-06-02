@@ -45,6 +45,7 @@ var mySqlSpec = &DBSpec{
           from information_schema.columns
          where table_name = ?
          order by ordinal_position`,
-	SqlForTab:      `select * from information_schema.tables`,
-	TypeNameToConv: mySQLTypeNameToConv,
+	SqlForTab:             `select * from information_schema.tables`,
+	DisplayDateTimeLayout: dateTimeFormat,
+	TypeNameToConv:        mySQLTypeNameToConv,
 }

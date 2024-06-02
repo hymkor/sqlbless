@@ -108,7 +108,7 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null string, printType bool, cs
 					continue
 				}
 				if tm, ok := (*p).(time.Time); ok {
-					itemStr[i] = tm.Format(dateTimeFormat)
+					itemStr[i] = tm.Format(dateTimeTzFormat)
 					continue
 				}
 				if b, ok := (*p).([]byte); ok && utf8.Valid(b) {

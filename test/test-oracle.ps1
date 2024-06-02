@@ -19,7 +19,7 @@ $script = `
     " TO_TIMESTAMP('2024-07-08 17:18:19.8787','YYYY-MM-DD HH24:MI:SS.FF')) ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2024-08-09 10:11:12.7878|cyy" +
+    "/10|lr2015-06-07 20:21:22|lr2024-08-09 10:11:12.7878 +09:00|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -47,12 +47,20 @@ Where-Object { $_ -notlike "#*" } |
 Select-Object -skip 1 |
 ForEach-Object {
     $field = ($_ -split ",")
-    if ( $field.Length -ge 3 -and 
-        $field[1] -eq "2015-06-07 20:21:22" -and
-        $field[2] -eq "2024-08-09 10:11:12.7878" ){
-        Write-Host ("Found {0} and {1} --> OK" -f ($field[1],$field[2]))
-        exit 0
+    if ( $field.Length -lt 3 ){
+        Write-Host $field.Length
+        return
     }
+    if ( $field[1] -ne "2015-06-07 20:21:22 +09:00" ){
+        Write-Host $field[1]
+        return
+    }
+    if ( $field[2] -ne "2024-08-09 10:11:12.7878 +09:00" ){
+        Write-Host $field[2]
+        return
+    }
+    Write-Host ("Found {0} and {1} --> OK" -f ($field[1],$field[2]))
+    exit 0
 }
 Write-Host "--> NG"
 exit 1

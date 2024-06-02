@@ -6,20 +6,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var postgresTypeNameToFormat = map[string]string{
-	"TIMESTAMP": dateTimeFormat,
-	"DATE":      dateOnlyFormat,
-	"TIME":      timeOnlyFormat,
+var postgresTypeNameToFormat = map[string][2]string{
+	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", dateTimeTzFormat},
+	"TIMESTAMP":   [2]string{"TIMESTAMP", dateTimeFormat},
+	"DATE":        [2]string{"DATE", dateOnlyFormat},
+	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", timeTzFormat},
+	"TIME":        [2]string{"TIME", timeTzFormat},
 }
 
 func postgresTypeNameToConv(typeName string) func(string) (string, error) {
-	if format, ok := postgresTypeNameToFormat[typeName]; ok {
+	if f, ok := postgresTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
 			dt, err := parseAnyDateTime(s)
 			if err != nil {
-				return "", fmt.Errorf("postgresql.go: %w", err)
+				return "", err
 			}
-			return fmt.Sprintf("%s '%s'", typeName, dt.Format(format)), nil
+			return fmt.Sprintf("%s '%s'", f[0], dt.Format(f[1])), nil
 		}
 	}
 	return nil

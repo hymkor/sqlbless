@@ -90,7 +90,7 @@ Install
 
 Download the binary package from [Releases](https://github.com/hymkor/sqlbless/releases) and extract the executable.
 
-### Use scoop-installer
+### via Scoop-installer (Windows)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/sqlbless/master/sqlbless.json
@@ -102,6 +102,19 @@ or
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install sqlbless
 ```
+
+### Installing via Go
+
+```
+go install github.com/hymkor/sqlbless@latest
+```
+
++ CGO is required on Windows-386 architecture.
+
+|       | Windows      | Linux
+|-------|--------------|--------
+| 386   | CGO required | PureGo
+| amd64 | PureGo       | PureGo
 
 How to start
 -------------

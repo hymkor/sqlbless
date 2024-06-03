@@ -102,6 +102,19 @@ scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install sqlbless
 ```
 
+### go install でインストールする場合
+
+```
+go install github.com/hymkor/sqlbless@latest
+```
+
++ Windows の 386 アーキテクチャでは CGO が必要になります。
+
+|       | Windows      | Linux
+|-------|--------------|--------
+| 386   | CGO required | PureGo
+| amd64 | PureGo       | PureGo
+
 起動方法
 --------
 

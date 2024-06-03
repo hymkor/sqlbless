@@ -1,3 +1,7 @@
+v0.13.0
+=======
+Jun 4, 2024
+
 * Modify the error message of `desc` with no arguments when no tables exist.  
   `: table not found` → `no tables are found`
 * Change the time format of spooled files:  

@@ -113,6 +113,14 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null, timeLayout string, printT
 					itemStr[i] = null
 					continue
 				}
+				if tm, ok := (*p).(sql.NullTime); ok {
+					if tm.Valid {
+						itemStr[i] = tm.Time.Format(timeLayout)
+					} else {
+						itemStr[i] = null
+					}
+					continue
+				}
 				if tm, ok := (*p).(time.Time); ok {
 					itemStr[i] = tm.Format(timeLayout)
 					continue

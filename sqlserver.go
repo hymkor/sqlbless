@@ -59,6 +59,16 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 			}
 			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format("15:04:05")), nil
 		}
+	case "DATETIMEOFFSET":
+		// DATETIMEOFFSET
+		// 127: yyyy-MM-ddThh:mm:ss.fffZ (スペースなし)
+		return func(s string) (string, error) {
+			dt, err := parseAnyDateTime(s)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("CONVERT(DATETIMEOFFSET,'%s',127)", dt.Format(dateTimeTzLayout)), nil
+		}
 	default:
 		return nil
 	}
@@ -87,6 +97,6 @@ var sqlServerSpec = &DBSpec{
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
 	SqlForTab:             `select * from sys.objects`,
-	DisplayDateTimeLayout: dateTimeLayout,
+	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
 }

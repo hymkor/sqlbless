@@ -16,12 +16,12 @@ $script = `
     "  TM      TIME(3) ,|" +
     " PRIMARY  KEY (TESTNO) ); ||" +
     "INSERT INTO TESTTBL VALUES|" +
-    "(10,STR_TO_DATE('2024-05-25 13:45:33','%Y-%m-%d %H:%i:%s'),|" +
-    " STR_TO_DATE('2024-05-26','%Y-%m-%d'),|"+
-    " STR_TO_DATE('14:53:26','%H:%i:%s')) ||" +
+    "(10,TIMESTAMP '2024-05-25 13:45:33.3+09:00',|" +
+    " DATE '2024-05-26',|"+
+    " TIME '14:53:26.6') ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22.123|lr2016-07-08|lr15:54:27.345|cyy" +
+    "/10|lr2015-06-07 20:21:22.123+09:00|lr2016-07-08|lr15:54:27.345|cyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -53,7 +53,7 @@ ForEach-Object {
         Write-Host "NG:" $field.Length
         return
     }
-    if ( $field[1] -ne "2015-06-07 20:21:22.123" ){
+    if ( $field[1] -ne "2015-06-07 20:21:22.123 +09:00" ){
         Write-Host "NG:" $field[1]
         return
     }

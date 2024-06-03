@@ -117,6 +117,8 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null, timeLayout string, printT
 					continue
 				}
 				itemStr[i] = fmt.Sprint(*p)
+			} else {
+				itemStr[i] = ""
 			}
 		}
 		if err := csvw.Write(itemStr); err != nil {

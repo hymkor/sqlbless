@@ -32,7 +32,7 @@ const (
 )
 
 var (
-	rxDateTimeTz = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? [\-\+]\d\d:\d\d)\s*$`)
+	rxDateTimeTz = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*([\-\+]?)(\d\d?):(\d\d)\s*$`)
 	rxDateTime   = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
 	rxDateOnly   = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
 	rxTimeTz     = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)? [-\+]\d\d:\d\d)\s*$`)
@@ -41,7 +41,8 @@ var (
 
 func parseAnyDateTime(s string) (time.Time, error) {
 	if m := rxDateTimeTz.FindStringSubmatch(s); m != nil {
-		return time.Parse(dateTimeTzLayout, m[1])
+		return time.Parse(dateTimeTzLayout,
+			fmt.Sprintf("%s %s%02s:%02s", m[1], m[2], m[3], m[4]))
 	}
 	if m := rxDateTime.FindStringSubmatch(s); m != nil {
 		return time.Parse(dateTimeLayout, m[1])

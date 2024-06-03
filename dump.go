@@ -10,8 +10,6 @@ import (
 	"unicode/utf8"
 )
 
-const debugWatchType = false
-
 type RowToCsv struct {
 	Comma      rune
 	UseCRLF    bool
@@ -98,12 +96,19 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null, timeLayout string, printT
 		if err := rows.Scan(itemAny...); err != nil {
 			return fmt.Errorf("(sql.Rows) Scan: %w", err)
 		}
+		if printType {
+			for i, a := range itemAny {
+				if p, ok := a.(*any); ok {
+					itemStr[i] = fmt.Sprintf("%T", *p)
+				} else {
+					itemStr[i] = ""
+				}
+			}
+			csvw.Write(itemStr)
+			printType = false
+		}
 		for i, a := range itemAny {
 			if p, ok := a.(*any); ok {
-				if debugWatchType {
-					itemStr[i] = fmt.Sprintf("%[1]v(%[1]T)", *p)
-					continue
-				}
 				if *p == nil {
 					itemStr[i] = null
 					continue

@@ -4,20 +4,25 @@
   `# (2024-05-30 18:15:52)` → `### <2024-05-30 18:46:13> ###`
 * Insert blank line before the message `Spooling to '%s'`
 * `select` and `edit`: implment `-debug` instead of `-print-type` to insert the type-information into the header
-* `EDIT` command:
-    * Executed SQLs are recorded to spooled file now.
-    * Print `\n---\n` before SQL is displayed.
-    * When confirming SQL execution, keys other than `y` and `n` are ignored.
-    * When SQL fails, ask whether continue(`c`) or abort(`a`)
-    * Minimal input check is now performed when entering data into cells in the editor.
-    * `x` and `d` store NULL into the current column
-    * Fix: `edit` could not be started when no data records were selected.
-    * Support fractional seconds, Oracle TIMESTAMP type, and SQL Server SMALLDATETIME type
-    * Include the fixes of csvi v1.10
-        * Fix: `o` and `O`: inserted column was always the first one of the new line
-        * Fix: `O`: the line of cursor is incorrect before new cell text is input
-        * Header can not be modified now.
-        * Do not create an empty row at the tail
+* For types that can store time zones, the time zone is now included in date and time literals
+* Support fractional seconds, Oracle TIMESTAMP type, and SQL Server SMALLDATETIME and DATETIMEOFFSET type
+
+### Changes of EDIT command
+
+* Executed SQLs are recorded to spooled file now.
+* Print `\n---\n` before SQL is displayed.
+* When confirming SQL execution, keys other than `y` and `n` are ignored.
+* When SQL fails, ask whether continue(`c`) or abort(`a`)
+* Minimal input check is now performed when entering data into cells in the editor.
+* `x` and `d` store NULL into the current column
+* Fix: `edit` could not be started when no data records were selected.
+
+### Changes from csvi v1.10
+
+* Fix: `o` and `O`: inserted column was always the first one of the new line
+* Fix: `O`: the line of cursor is incorrect before new cell text is input
+* Header can not be modified now.
+* Do not create an empty row at the tail
 
 v0.12.0
 =======

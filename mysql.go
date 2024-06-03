@@ -8,7 +8,7 @@ import (
 
 var mySQLTypeNameToFormat = map[string]string{
 	"DATETIME":  dateTimeLayout,
-	"TIMESTAMP": dateTimeLayout,
+	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
 	"TIME":      timeOnlyLayout,
 	"DATE":      dateOnlyLayout,
 }
@@ -46,6 +46,6 @@ var mySqlSpec = &DBSpec{
          where table_name = ?
          order by ordinal_position`,
 	SqlForTab:             `select * from information_schema.tables`,
-	DisplayDateTimeLayout: dateTimeLayout,
+	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 }

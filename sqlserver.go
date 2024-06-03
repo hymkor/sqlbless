@@ -30,7 +30,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 				return "", err
 			}
 			if dt.Nanosecond() > 0 {
-				return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeFormat)), nil
+				return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeLayout)), nil
 			}
 			return fmt.Sprintf("CONVERT(%s,'%s',120)", typeName, dt.Format("2006-01-02 15:04:05")), nil
 		}
@@ -42,7 +42,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(dateOnlyFormat)), nil
+			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(dateOnlyLayout)), nil
 		}
 	case "TIME":
 		// TIME: hh:mm:ss[.nnnnnnn]
@@ -54,7 +54,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 				return "", err
 			}
 			if dt.Nanosecond() > 0 {
-				return fmt.Sprintf("CONVERT(TIME,'%s',114)", strings.Replace(dt.Format(timeOnlyFormat), ".", ":", 1)), nil
+				return fmt.Sprintf("CONVERT(TIME,'%s',114)", strings.Replace(dt.Format(timeOnlyLayout), ".", ":", 1)), nil
 				//return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeFormat)), nil
 			}
 			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format("15:04:05")), nil
@@ -87,6 +87,6 @@ var sqlServerSpec = &DBSpec{
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
 	SqlForTab:             `select * from sys.objects`,
-	DisplayDateTimeLayout: dateTimeFormat,
+	DisplayDateTimeLayout: dateTimeLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
 }

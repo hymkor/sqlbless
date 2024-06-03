@@ -13,10 +13,10 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.HasPrefix(typeName, "TIMESTAMP") {
 		// sfmt = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
 		sfmt = "TO_TIMESTAMP_TZ('%s','YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
-		dfmt = dateTimeTzFormat
+		dfmt = dateTimeTzLayout
 	} else if typeName == "DATE" {
 		sfmt = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
-		dfmt = dateTimeFormat
+		dfmt = dateTimeLayout
 	} else {
 		return nil
 	}
@@ -48,6 +48,6 @@ var oracleSpec = &DBSpec{
    where table_name = UPPER(:1)
    order by column_id`,
 	SqlForTab:             `select * from tab`,
-	DisplayDateTimeLayout: dateTimeTzFormat,
+	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        oracleTypeNameToConv,
 }

@@ -7,11 +7,11 @@ import (
 )
 
 var postgresTypeNameToFormat = map[string][2]string{
-	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", dateTimeTzFormat},
-	"TIMESTAMP":   [2]string{"TIMESTAMP", dateTimeFormat},
-	"DATE":        [2]string{"DATE", dateOnlyFormat},
-	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", timeTzFormat},
-	"TIME":        [2]string{"TIME", timeTzFormat},
+	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", dateTimeTzLayout},
+	"TIMESTAMP":   [2]string{"TIMESTAMP", dateTimeLayout},
+	"DATE":        [2]string{"DATE", dateOnlyLayout},
+	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", timeTzLayout},
+	"TIME":        [2]string{"TIME", timeTzLayout},
 }
 
 func postgresTypeNameToConv(typeName string) func(string) (string, error) {
@@ -51,6 +51,6 @@ var postgresSpec = &DBSpec{
 	SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
-	DisplayDateTimeLayout: dateTimeTzFormat,
+	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
 }

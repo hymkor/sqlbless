@@ -7,10 +7,10 @@ import (
 )
 
 var mySQLTypeNameToFormat = map[string]string{
-	"DATETIME":  dateTimeFormat,
-	"TIMESTAMP": dateTimeFormat,
-	"TIME":      timeOnlyFormat,
-	"DATE":      dateOnlyFormat,
+	"DATETIME":  dateTimeLayout,
+	"TIMESTAMP": dateTimeLayout,
+	"TIME":      timeOnlyLayout,
+	"DATE":      dateOnlyLayout,
 }
 
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
@@ -46,6 +46,6 @@ var mySqlSpec = &DBSpec{
          where table_name = ?
          order by ordinal_position`,
 	SqlForTab:             `select * from information_schema.tables`,
-	DisplayDateTimeLayout: dateTimeFormat,
+	DisplayDateTimeLayout: dateTimeLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 }

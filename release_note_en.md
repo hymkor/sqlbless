@@ -3,6 +3,7 @@
 * Change the time format of spooled files:  
   `# (2024-05-30 18:15:52)` → `### <2024-05-30 18:46:13> ###`
 * Insert blank line before the message `Spooling to '%s'`
+* `select` and `edit`: implment `-debug` instead of `-print-type` to insert the type-information into the header
 * `EDIT` command:
     * Executed SQLs are recorded to spooled file now.
     * Print `\n---\n` before SQL is displayed.

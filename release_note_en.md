@@ -1,4 +1,5 @@
 * When the cell validation fails, prompt to modify the input text instead of discarding
+* Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
 
 v0.13.0
 =======

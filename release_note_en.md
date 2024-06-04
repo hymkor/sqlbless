@@ -1,3 +1,5 @@
+* When the cell validation fails, prompt to modify the input text instead of discarding
+
 v0.13.0
 =======
 Jun 4, 2024

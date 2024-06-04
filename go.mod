@@ -7,7 +7,7 @@ toolchain go1.22.2
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.10.0
+	github.com/hymkor/csvi v1.10.1-0.20240604164453-8f590d32fdc3
 	github.com/hymkor/go-multiline-ny v0.14.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
@@ -15,8 +15,8 @@ require (
 	github.com/microsoft/go-mssqldb v1.7.2
 	github.com/nyaosorg/go-readline-ny v1.3.1
 	github.com/sijms/go-ora/v2 v2.8.19
-	golang.org/x/term v0.20.0
-	golang.org/x/text v0.15.0
+	golang.org/x/term v0.21.0
+	golang.org/x/text v0.16.0
 )
 
 require (
@@ -38,7 +38,7 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 	modernc.org/libc v1.51.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect

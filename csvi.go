@@ -98,8 +98,14 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if e.CursorRow.Index() < 1 {
-			return &csvi.CommandResult{}, nil
+		if ss.DumpConfig.PrintType {
+			if e.CursorRow.Index() < 3 {
+				return &csvi.CommandResult{}, nil
+			}
+		} else {
+			if e.CursorRow.Index() < 1 {
+				return &csvi.CommandResult{}, nil
+			}
 		}
 		ce := &csvi.CellValidatedEvent{
 			Text: ss.DumpConfig.Null,

@@ -166,6 +166,11 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 				return s, nil
 			}
 		} else if strings.Contains(name, "INT") ||
+			strings.Contains(name, "FLOAT") ||
+			strings.Contains(name, "DOUBLE") ||
+			name == "YEAR" ||
+			strings.Contains(name, "REAL") ||
+			strings.Contains(name, "SERIAL") ||
 			strings.Contains(name, "NUMBER") ||
 			strings.Contains(name, "NUMERIC") ||
 			strings.Contains(name, "DECIMAL") {

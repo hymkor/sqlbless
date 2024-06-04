@@ -156,7 +156,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			v = func(s string) (string, error) {
 				if s == null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("This Column is NOT NULL")
+						return "", errors.New("column is NOT NULL")
 					}
 					return s, nil
 				}
@@ -175,12 +175,12 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			v = func(s string) (string, error) {
 				if s == null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("This Column is NOT NULL")
+						return "", errors.New("column is NOT NULL")
 					}
 					return s, nil
 				}
 				if _, err := strconv.ParseFloat(s, 64); err != nil {
-					return "", err
+					return "", errors.New("not a number")
 				}
 				return s, nil
 			}
@@ -191,7 +191,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			v = func(s string) (string, error) {
 				if s == null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("This Column is NOT NULL")
+						return "", errors.New("column is NOT NULL")
 					}
 				}
 				return s, nil

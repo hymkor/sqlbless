@@ -1,5 +1,6 @@
 * When the cell validation fails, prompt to modify the input text instead of discarding
 * Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
+* Treat the types including FLOAT, DOUBLE, REAL, SERIAL, YEAR as number
 
 v0.13.0
 =======

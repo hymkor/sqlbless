@@ -8,7 +8,7 @@ require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/hymkor/csvi v1.10.1-0.20240604164453-8f590d32fdc3
-	github.com/hymkor/go-multiline-ny v0.14.0
+	github.com/hymkor/go-multiline-ny v0.14.1-0.20240606080256-8651a65a1662
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-sqlite3 v1.14.22
@@ -37,10 +37,10 @@ require (
 	github.com/nyaosorg/go-windows-mbcs v0.4.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
-	modernc.org/libc v1.51.0 // indirect
+	modernc.org/libc v1.52.1 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
-	modernc.org/sqlite v1.29.10 // indirect
+	modernc.org/sqlite v1.30.0 // indirect
 )

@@ -157,7 +157,8 @@ How to start
 - The driver used is http://github.com/go-sql-driver/mysql
 - When both parseTime and loc are not specified, the value of TIMESTAMP is not expressed correctly
 
-### Common Options
+Common Options
+--------------
 
 - `-crlf`
     - Use CRLF

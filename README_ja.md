@@ -155,7 +155,8 @@ go install github.com/hymkor/sqlbless@latest
 
 - 使用ドライバー http://github.com/go-sql-driver/mysql
 
-### 共通オプション
+共通オプション
+-------------
 
 - `-crlf`
     - 改行コードに CRLF を使う

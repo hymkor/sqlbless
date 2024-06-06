@@ -119,7 +119,9 @@ go install github.com/hymkor/sqlbless@latest
 How to start
 -------------
 
-    $ sqlbless {options} DRIVERNAME "DATASOURCENAME"
+    $ sqlbless {options} [DRIVERNAME] DATASOURCENAME
+
+DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
 
 ### SQLite3
 
@@ -133,26 +135,29 @@ How to start
 ### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
+    $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - The driver used is https://github.com/sijms/go-ora
 
 ### PostgreSQL
 
-    $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
-    $ sqlbless postgres "postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full"
+    $ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
+    $ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+    $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
 
 - The driver used is https://github.com/lib/pq
 
 ### SQL Server
 
-    $ sqlbless sqlserver "sqlserver://@localhost?database=master"
+    $ sqlbless sqlserver sqlserver://@localhost?database=master
+    $ sqlbless sqlserver://@localhost?database=master
     ( Windows authentication )
 
 - The driver used is https://github.com/microsoft/go-mssqldb
 
 ### MySQL
 
-    $ sqlbless.exe mysql "user:password@/database?parseTime=true&loc=Asia%2FTokyo"
+    $ sqlbless.exe mysql user:password@/database?parseTime=true&loc=Asia%2FTokyo
 
 - The driver used is http://github.com/go-sql-driver/mysql
 - When both parseTime and loc are not specified, the value of TIMESTAMP is not expressed correctly

@@ -118,7 +118,9 @@ go install github.com/hymkor/sqlbless@latest
 起動方法
 --------
 
-    $ sqlbless {options} DRIVERNAME "DATASOURCENAME"
+    $ sqlbless {options} [DRIVERNAME] DATASOURCENAME
+
+DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能です。
 
 ### SQLite3
 
@@ -132,26 +134,29 @@ go install github.com/hymkor/sqlbless@latest
 ### Oracle
 
     $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
+    $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - 使用ドライバー: https://github.com/sijms/go-ora
 
 ### PostgreSQL
 
-    $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
-    $ sqlbless postgres "postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full"
+    $ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
+    $ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+    $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
 
 - 使用ドライバー https://github.com/lib/pq
 
 ### SQL Server
 
-    $ sqlbless sqlserver "sqlserver://@localhost?database=master"
+    $ sqlbless sqlserver sqlserver://@localhost?database=master
+    $ sqlbless sqlserver://@localhost?database=master
     ( Windows authentication )
 
 - 使用ドライバー https://github.com/microsoft/go-mssqldb
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database
+    $ sqlbless.exe mysql user:password@/database?parseTime=true&loc=Asia%2FTokyo
 
 - 使用ドライバー http://github.com/go-sql-driver/mysql
 

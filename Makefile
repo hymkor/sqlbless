@@ -16,7 +16,11 @@ EXE=$(shell go env GOEXE)
 
 all:
 	go fmt
+ifeq ($(shell go env GOOS)-$(shell go env GOARCH),windows-386)
+	$(SET) "CGO_ENABLED=1" && go build $(GOOPT)
+else
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
+endif
 
 test:
 ifeq ($(OS),Windows_NT)

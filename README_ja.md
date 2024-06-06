@@ -138,6 +138,7 @@ go install github.com/hymkor/sqlbless@latest
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
+    $ sqlbless postgres "postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full"
 
 - 使用ドライバー https://github.com/lib/pq
 

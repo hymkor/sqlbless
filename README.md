@@ -139,6 +139,7 @@ How to start
 ### PostgreSQL
 
     $ sqlbless postgres "host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable"
+    $ sqlbless postgres "postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full"
 
 - The driver used is https://github.com/lib/pq
 

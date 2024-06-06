@@ -25,13 +25,15 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 | Key | Binding |
 |-----|---------|
 | `Enter`, `Ctrl`-`M` | **Insert a linefeed** |
-| `Ctrl`-`Enter`/`J` | **Execute text as SQL** |
+| `Ctrl`-`Enter`/`J` or `;`+`Enter`[^semicolon] | **Execute SQL** |
 | `Ctrl`-`F`/`B` | Move Cursor forward or backward |
 | `Ctrl`-`N`/`P` | Move Cursor or refer history |
 | `Ctrl`-`C` | Exit with rollback |
 | `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
 | `ALT`-`P`, `Ctrl`-`Up`, `PageUp` | Insert the previous SQL (history)|
 | `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | Insert the next SQL (history) |
+
+[^semicolon]: `;` or the string specfied with the option `-term string`
 
 Supported commands
 ------------------
@@ -60,8 +62,8 @@ Supported commands
         - `q` or `ESC`: quit without applying changes
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
 
-- Semicolon `;` is a statement seperator when script is executed.
-- When sql is input interactively, Semicolon `;` is ignored.
+- `;` (or the string specified with `-term string`) is a statement seperator when script is executed
+- When sql is input interactively, terminator string (`;` or the string specified with `-term string`) is ignored
 
 Example of a spooled file
 --------------------------

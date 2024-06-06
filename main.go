@@ -438,13 +438,13 @@ func findDbSpec(args []string) (*DBSpec, []string, error) {
 		if len(args) < 2 {
 			return nil, nil, errors.New("DSN String is not specified")
 		}
-		return spec, []string{args[0], args[1]}, nil
+		return spec, []string{args[0], strings.Join(args[1:], " ")}, nil
 	}
 	scheme, _, ok := strings.Cut(args[0], ":")
 	if ok {
 		spec, ok = dbSpecs[strings.ToUpper(scheme)]
 		if ok {
-			return spec, []string{scheme, args[0]}, nil
+			return spec, []string{scheme, strings.Join(args, " ")}, nil
 		}
 	}
 	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])

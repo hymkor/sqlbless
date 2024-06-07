@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 	"unicode/utf8"
 )
@@ -82,7 +83,19 @@ func rowsToCsv(ctx context.Context, rows _RowsI, null, timeLayout string, printT
 			return err
 		}
 		for i, c := range ct {
-			itemStr[i] = c.DatabaseTypeName() + "(" + c.ScanType().String() + ")"
+			if c != nil {
+				var buffer strings.Builder
+				buffer.WriteString(c.DatabaseTypeName())
+				if st := c.ScanType(); st != nil {
+					buffer.WriteByte('(')
+					buffer.WriteString(st.String())
+					buffer.WriteByte(')')
+				}
+				itemStr[i] = buffer.String()
+			} else {
+				itemStr[i] = ""
+			}
+
 		}
 		csvw.Write(itemStr)
 	}

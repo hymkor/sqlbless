@@ -150,12 +150,18 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.dbSpec.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
+		if ss.DumpConfig.PrintType {
+			fmt.Println(ss.dbSpec.SqlForTab)
+		}
 		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForTab)
 	} else {
 		if ss.dbSpec.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
 		sql := strings.ReplaceAll(ss.dbSpec.SqlForDesc, "{table_name}", tableName)
+		if ss.DumpConfig.PrintType {
+			fmt.Println(sql)
+		}
 		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
 	}
 	if err != nil {

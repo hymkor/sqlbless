@@ -194,6 +194,16 @@ var (
 	flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
 )
 
+// hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not
+func hasTerm(s, term string) (string, bool) {
+	s = strings.TrimRight(s, " \r\n\t\v")
+	from := len(s) - len(term)
+	if strings.EqualFold(s[from:], term) {
+		return s[:from], true
+	}
+	return s, false
+}
+
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
 	GetKey() (string, error)
@@ -239,10 +249,10 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			buffer.WriteRune(ch)
 			code := buffer.String()
 			term := *flagTerm
-			if strings.HasSuffix(code, term) {
+			if _, ok := hasTerm(code, term); ok {
 				println(code)
 				fmt.Fprintln(script.echo, code)
-				return []string{code[:len(code)-len(term)]}, nil
+				return []string{code}, nil
 			}
 		}
 	}
@@ -316,15 +326,14 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			return err
 		}
-		query := strings.Join(lines, "\n")
-		query = strings.TrimRight(query, " \n\r\t\v")
-		query = strings.TrimSuffix(query, *flagTerm)
+		queryAndTerm := strings.Join(lines, "\n")
+		query, _ := hasTerm(queryAndTerm, *flagTerm)
 
 		if query == "" {
 			continue
 		}
 		if _, ok := commandIn.(*Script); !ok {
-			ss.history.Add(query)
+			ss.history.Add(queryAndTerm)
 		}
 		cmd, arg := cutField(query)
 		switch strings.ToUpper(cmd) {
@@ -552,9 +561,10 @@ func mains(args []string) error {
 			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
 			if last != "" || len(lines) <= 1 {
 				if len(*flagTerm) == 1 {
-					return strings.HasSuffix(last, *flagTerm)
+					_, ok := hasTerm(last, *flagTerm)
+					return ok
 				} else {
-					return last == *flagTerm
+					return strings.EqualFold(last, *flagTerm)
 				}
 			}
 			lines = lines[:len(lines)-1]

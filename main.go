@@ -191,6 +191,7 @@ var (
 	flagScript         = flag.String("f", "", "script file")
 	flagDebug          = flag.Bool("debug", false, "Print type in CSV")
 	flagAuto           = flag.String("auto", "", "autopilot")
+	flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
 )
 
 type CommandIn interface {
@@ -225,23 +226,24 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			fmt.Fprintln(script.echo, code)
 			return []string{code}, err
 		}
-		switch ch {
-		case '\r':
-		case '\'':
+		if ch == '\r' {
+			continue
+		} else if ch == '\'' {
 			quoted ^= 1
-			buffer.WriteByte('\'')
-		case '"':
+		} else if ch == '"' {
 			quoted ^= 2
-			buffer.WriteByte('"')
-		case ';':
-			if quoted == 0 {
-				code := buffer.String()
-				fmt.Fprintln(script.echo, code)
-				return []string{code}, nil
-			}
-			buffer.WriteByte(';')
-		default:
+		}
+		buffer.WriteRune(ch)
+
+		if quoted == 0 {
 			buffer.WriteRune(ch)
+			code := buffer.String()
+			term := *flagTerm
+			if strings.HasSuffix(code, term) {
+				println(code)
+				fmt.Fprintln(script.echo, code)
+				return []string{code[:len(code)-len(term)]}, nil
+			}
 		}
 	}
 }
@@ -314,7 +316,10 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			return err
 		}
-		query := strings.TrimRight(strings.Join(lines, "\n"), "; \n\r\t\v")
+		query := strings.Join(lines, "\n")
+		query = strings.TrimRight(query, " \n\r\t\v")
+		query = strings.TrimSuffix(query, *flagTerm)
+
 		if query == "" {
 			continue
 		}
@@ -544,10 +549,13 @@ func mains(args []string) error {
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		for {
-			last := strings.TrimSpace(lines[len(lines)-1])
+			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
 			if last != "" || len(lines) <= 1 {
-				c, _ := utf8.DecodeLastRuneInString(last)
-				return c == ';'
+				if len(*flagTerm) == 1 {
+					return strings.HasSuffix(last, *flagTerm)
+				} else {
+					return last == *flagTerm
+				}
 			}
 			lines = lines[:len(lines)-1]
 		}

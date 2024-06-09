@@ -1,15 +1,18 @@
 * When the cell validation fails, prompt to modify the input text instead of discarding
-* Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
 * Treat the types including FLOAT, DOUBLE, REAL, SERIAL, YEAR as number
-* Not only the last entry of history, but all modified entries are kept the last value until submit
+* Not only the last entry of history, but all modified entries are kept the last value until the current input is completed.
 * The the 1st command line parameter DRIVERNAME can be omitted when the 2nd parameter DataSourceName contains DRIVERNAME as the prefix
 * To enquote the DATASOURCENAME is now not necessary even when it contains a SPACE
-* Fix: `edit` with `-debug` would panic when ColumnType.ScanType() returned nil
 * `desc`: Display the executed sql when `-debug` is specfied
 * New option `-term STRING` : specfying the terminater of SQL instead of semicolon  
   ( `-term "/"` enables to execute PL/SQL of Oracle )
 * For MySQL, the default setting is now `?parseTime=true&loc=Local`
 * `edit`: column names in SQL are now enclosed in double quotes when they contain spaces
+
+### Fixed bugs
+
+* Fix: `edit` with `-debug` would panic when ColumnType.ScanType() returned nil
+* Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
 
 v0.13.0
 =======

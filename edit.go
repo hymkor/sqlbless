@@ -104,16 +104,23 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (str
 			where.WriteString("\n WHERE  ")
 		}
 		if string(c.Original()) == null {
-			fmt.Fprintf(&where, "%s is NULL", columns[i])
+			fmt.Fprintf(&where, "%s is NULL", doubleQuoteIfNeed(columns[i]))
 		} else {
 			v, err := quoteFunc[i](string(c.Original()))
 			if err != nil {
 				return "", err
 			}
-			fmt.Fprintf(&where, "%s = %s", columns[i], v)
+			fmt.Fprintf(&where, "%s = %s", doubleQuoteIfNeed(columns[i]), v)
 		}
 	}
 	return where.String(), nil
+}
+
+func doubleQuoteIfNeed(s string) string {
+	if strings.Contains(s, " ") {
+		return `"` + s + `"`
+	}
+	return s
 }
 
 func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
@@ -263,7 +270,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 					if c.Text() == null {
 						fmt.Fprintf(&sql, "%s%s = NULL ",
 							del,
-							columns[i])
+							doubleQuoteIfNeed(columns[i]))
 					} else {
 						var v string
 						v, err = quoteFunc[i](c.Text())
@@ -272,7 +279,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 						}
 						fmt.Fprintf(&sql, "%s%s = %s ",
 							del,
-							columns[i],
+							doubleQuoteIfNeed(columns[i]),
 							v)
 					}
 					del = ",\n        "

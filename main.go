@@ -479,7 +479,17 @@ func mains(args []string) error {
 	if err != nil {
 		return err
 	}
-	conn, err := sql.Open(args[0], args[1])
+	dataSourceName := args[1]
+	if dbSpec.DSNFilter != nil {
+		dataSourceName, err = dbSpec.DSNFilter(dataSourceName)
+		if err != nil {
+			return err
+		}
+		if *flagDebug {
+			fmt.Fprintln(os.Stderr, dataSourceName)
+		}
+	}
+	conn, err := sql.Open(args[0], dataSourceName)
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
 	}

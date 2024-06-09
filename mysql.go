@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,6 +27,35 @@ func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	return nil
 }
 
+func mySQLDSNFilter(dsn string) (string, error) {
+	base, param, ok := strings.Cut(dsn, "?")
+	hash := make(map[string][]string)
+	if ok {
+		for _, pair := range strings.Split(param, "&") {
+			left, right, ok := strings.Cut(pair, "=")
+			if ok {
+				hash[left] = append(hash[left], right)
+			}
+		}
+	}
+	if _, ok := hash["parseTime"]; !ok {
+		hash["parseTime"] = []string{"true"}
+	}
+	if _, ok := hash["loc"]; !ok {
+		hash["loc"] = []string{"Local"}
+	}
+	var newdsn strings.Builder
+	newdsn.WriteString(base)
+	delimiter := '?'
+	for key, values := range hash {
+		for _, v := range values {
+			fmt.Fprintf(&newdsn, "%c%s=%s", delimiter, key, v)
+			delimiter = '&'
+		}
+	}
+	return newdsn.String(), nil
+}
+
 var mySqlSpec = &DBSpec{
 	Usage: `sqlbless mysql user:password@/dbname`,
 	SqlForDesc: `
@@ -48,4 +78,5 @@ var mySqlSpec = &DBSpec{
 	SqlForTab:             `select * from information_schema.tables`,
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
+	DSNFilter:             mySQLDSNFilter,
 }

@@ -14,6 +14,7 @@ type DBSpec struct {
 	SqlForTab             string
 	DisplayDateTimeLayout string
 	TypeNameToConv        func(string) func(string) (string, error)
+	DSNFilter             func(string) (string, error)
 }
 
 func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, error) {

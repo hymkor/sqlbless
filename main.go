@@ -472,7 +472,7 @@ func findDbSpec(args []string) (*DBSpec, []string, error) {
 
 func mains(args []string) error {
 	if len(args) < 1 {
-		usage(os.Stdout)
+		flag.Usage()
 		return nil
 	}
 	dbSpec, args, err := findDbSpec(args)
@@ -596,6 +596,16 @@ func writeSignature(w io.Writer) {
 
 func main() {
 	writeSignature(os.Stdout)
+
+	flag.Usage = func() {
+		w := flag.CommandLine.Output()
+		fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Fprintln(w, "Example:")
+		for _, d := range dbSpecs {
+			fmt.Fprintf(w, "  %s\n", d.Usage)
+		}
+	}
 
 	flag.Parse()
 	if err := mains(flag.Args()); err != nil {

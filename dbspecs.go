@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
 	"regexp"
 	"time"
 )
@@ -66,11 +65,4 @@ var dbSpecs = map[string]*DBSpec{
 	"SQLSERVER": sqlServerSpec,
 	"MYSQL":     mySqlSpec,
 	"SQLITE3":   sqliteSpec,
-}
-
-func usage(w io.Writer) {
-	fmt.Fprintln(w, "Usage:")
-	for _, d := range dbSpecs {
-		fmt.Fprintf(w, "  %s\n", d.Usage)
-	}
 }

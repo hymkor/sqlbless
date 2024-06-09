@@ -158,9 +158,10 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database?parseTime=true&loc=Asia%2FTokyo
+    $ sqlbless.exe mysql user:password@/database
 
 - 使用ドライバー http://github.com/go-sql-driver/mysql
+- パラメータ `?parseTime=true&loc=Local` が予め設定されていますが、上書き可能です
 
 共通オプション
 -------------

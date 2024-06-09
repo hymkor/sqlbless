@@ -159,10 +159,10 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database?parseTime=true&loc=Asia%2FTokyo
+    $ sqlbless.exe mysql user:password@/database
 
 - The driver used is http://github.com/go-sql-driver/mysql
-- When both parseTime and loc are not specified, the value of TIMESTAMP is not expressed correctly
+- The `?parseTime=true&loc=Local` parameter is preset, but it can be overridden
 
 Common Options
 --------------

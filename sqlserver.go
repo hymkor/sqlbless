@@ -75,7 +75,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 }
 
 var sqlServerSpec = &DBSpec{
-	Usage: "sqlbless sqlserver://@localhost?database=master",
+	Usage: "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
 	SqlForDesc: `
 	select c.column_id as "ID",
 		   c.name as "NAME",

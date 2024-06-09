@@ -57,7 +57,7 @@ func mySQLDSNFilter(dsn string) (string, error) {
 }
 
 var mySqlSpec = &DBSpec{
-	Usage: `sqlbless mysql user:password@/dbname`,
+	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
 	SqlForDesc: `
         select ordinal_position as "ID",
                column_name as "NAME",

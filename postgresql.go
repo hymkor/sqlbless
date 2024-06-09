@@ -28,7 +28,7 @@ func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 }
 
 var postgresSpec = &DBSpec{
-	Usage: "sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full",
+	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
 	SqlForDesc: `
       select a.attnum as "ID",
              a.attname as "NAME",

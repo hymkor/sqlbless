@@ -8,6 +8,8 @@
 * `desc`: Display the executed sql when `-debug` is specfied
 * New option `-term STRING` : specfying the terminater of SQL instead of semicolon  
   ( `-term "/"` enables to execute PL/SQL of Oracle )
+* For MySQL, the default setting is now `?parseTime=true&loc=Local`
+* `edit`: column names in SQL are now enclosed in double quotes when they contain spaces
 
 v0.13.0
 =======

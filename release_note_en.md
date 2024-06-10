@@ -1,3 +1,7 @@
+v0.14.0
+=======
+Jun 10, 2024
+
 * When the cell validation fails, prompt to modify the input text instead of discarding
 * Treat the types including FLOAT, DOUBLE, REAL, SERIAL, YEAR as number
 * Not only the last entry of history, but all modified entries are kept the last value until the current input is completed.

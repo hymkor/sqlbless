@@ -32,12 +32,12 @@ github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd h1:gbpYu9NMq8jhDVbvlG
 github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd/go.mod h1:kf6iHlnVGwgKolg33glAes7Yg/8iWP8ukqeldJSO7jw=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.10.1-0.20240604164453-8f590d32fdc3 h1:67ELWWicG2YyXIE1XyrM1AgxB57I0JDPUdQa/1PAp78=
-github.com/hymkor/csvi v1.10.1-0.20240604164453-8f590d32fdc3/go.mod h1:Ha3RHAkBxs5tu01siB6x47kUpDR2egQcvEuQAcsE/6k=
+github.com/hymkor/csvi v1.10.1 h1:YzvRfeDW0u+4FtSIFwCodFUtZjbSfOpJKHX+9TVcXbQ=
+github.com/hymkor/csvi v1.10.1/go.mod h1:Ha3RHAkBxs5tu01siB6x47kUpDR2egQcvEuQAcsE/6k=
 github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvIh28VcWDhc=
 github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
-github.com/hymkor/go-multiline-ny v0.14.1-0.20240606080256-8651a65a1662 h1:mR1gpF9HEKL7PnP7482lwc4m7/gKln7Hrn/Yrf6rRbo=
-github.com/hymkor/go-multiline-ny v0.14.1-0.20240606080256-8651a65a1662/go.mod h1:fuN37GmIPtLunNQFPedCbJSF2YNzUdqjdvBxihmoMr8=
+github.com/hymkor/go-multiline-ny v0.15.0 h1:Cp+Hb2IYoPB3ApCGQJGZTQVb+jKCZc4026xBvdQEBPM=
+github.com/hymkor/go-multiline-ny v0.15.0/go.mod h1:fuN37GmIPtLunNQFPedCbJSF2YNzUdqjdvBxihmoMr8=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=

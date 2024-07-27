@@ -11,11 +11,10 @@ require (
 	github.com/hymkor/go-multiline-ny v0.15.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/microsoft/go-mssqldb v1.7.2
-	github.com/nyaosorg/go-readline-ny v1.3.1
+	github.com/nyaosorg/go-readline-ny v1.4.0
 	github.com/sijms/go-ora/v2 v2.8.19
-	golang.org/x/term v0.21.0
+	golang.org/x/term v0.22.0
 	golang.org/x/text v0.16.0
 )
 
@@ -29,18 +28,18 @@ require (
 	github.com/hymkor/go-cursorposition v0.0.3 // indirect
 	github.com/hymkor/go-windows1x-virtualterminal v0.5.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/mattn/go-tty v0.0.5 // indirect
+	github.com/mattn/go-runewidth v0.0.16 // indirect
+	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/nyaosorg/go-readline-skk v0.3.1 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
-	modernc.org/libc v1.52.1 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	modernc.org/libc v1.55.4 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
-	modernc.org/sqlite v1.30.0 // indirect
+	modernc.org/sqlite v1.31.1 // indirect
 )

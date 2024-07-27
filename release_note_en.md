@@ -1,3 +1,7 @@
+v0.15.0
+=======
+Jul 28, 2024
+
 * With the support for windows/386 in modernc.org/sqlite v1.31.0, the SQLite3 driver has been consolidated to github.com/glebarez/go-sqlite. PureGo implementation is now enabled for all architectures.
 
 v0.14.0

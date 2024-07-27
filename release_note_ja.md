@@ -1,3 +1,7 @@
+v0.15.0
+=======
+Jul 28, 2024
+
 * modernc.org/sqlite v1.31.0 での windows/386 対応にともない、SQLite3 ドライバーをgithub.com/glebarez/go-sqlite に一本化。全てのアーキテクチャでPureGo化
 
 v0.14.0

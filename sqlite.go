@@ -1,5 +1,9 @@
 package main
 
+import (
+	_ "github.com/glebarez/go-sqlite/compat"
+)
+
 var sqliteSpec = &DBSpec{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SqlForTab: `

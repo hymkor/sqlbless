@@ -16,11 +16,7 @@ EXE=$(shell go env GOEXE)
 
 all:
 	go fmt
-ifeq ($(shell go env GOOS)-$(shell go env GOARCH),windows-386)
-	$(SET) "CGO_ENABLED=1" && go build $(GOOPT)
-else
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
-endif
 
 test:
 ifeq ($(OS),Windows_NT)
@@ -30,14 +26,14 @@ endif
 	go test -v
 
 _dist:
-	go build $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
-	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=linux" && $(SET) "GOARCH=386"   && $(MAKE) _dist
-	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
-	$(SET) "CGO_ENABLED=1" && $(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _dist
-	$(SET) "CGO_ENABLED=0" && $(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
+	$(SET) "GOOS=linux"   && $(SET) "GOARCH=386"   && $(MAKE) _dist
+	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
+	$(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _dist
+	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)

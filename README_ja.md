@@ -110,13 +110,6 @@ scoop install sqlbless
 go install github.com/hymkor/sqlbless@latest
 ```
 
-+ Windows の 386 アーキテクチャでは CGO が必要になります。
-
-|       | Windows      | Linux
-|-------|--------------|--------
-| 386   | CGO required | PureGo
-| amd64 | PureGo       | PureGo
-
 起動方法
 --------
 
@@ -129,9 +122,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless sqlite3 :memory:
     $ sqlbless sqlite3 path/to/file.db
 
-- 使用ドライバー
-    - https://github.com/mattn/go-sqlite3 (Windows-386)
-    - https://github.com/glebarez/go-sqlite (Linux and Windows-amd64)
+- 使用ドライバ : https://github.com/glebarez/go-sqlite
 
 ### Oracle
 

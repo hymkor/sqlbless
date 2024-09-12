@@ -1,4 +1,4 @@
-package main
+package sqlbless
 
 import (
 	_ "github.com/glebarez/go-sqlite/compat"

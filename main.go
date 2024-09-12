@@ -1,4 +1,4 @@
-package main
+package sqlbless
 
 import (
 	"bufio"
@@ -362,7 +362,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 						ss.spool = fd
 					}
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
-					writeSignature(ss.spool)
+					WriteSignature(ss.spool)
 				}
 			}
 		case "EDIT":
@@ -470,7 +470,7 @@ func findDbSpec(args []string) (*DBSpec, []string, error) {
 	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
 }
 
-func mains(args []string) error {
+func Main(args []string) error {
 	if len(args) < 1 {
 		flag.Usage()
 		return nil
@@ -589,27 +589,17 @@ func mains(args []string) error {
 
 var version string
 
-func writeSignature(w io.Writer) {
+func WriteSignature(w io.Writer) {
 	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
-func main() {
-	writeSignature(os.Stdout)
-
-	flag.Usage = func() {
-		w := flag.CommandLine.Output()
-		fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
-		flag.PrintDefaults()
-		fmt.Fprintln(w, "Example:")
-		for _, d := range dbSpecs {
-			fmt.Fprintf(w, "  %s\n", d.Usage)
-		}
-	}
-
-	flag.Parse()
-	if err := mains(flag.Args()); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+func Usage() {
+	w := flag.CommandLine.Output()
+	fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
+	flag.PrintDefaults()
+	fmt.Fprintln(w, "Example:")
+	for _, d := range dbSpecs {
+		fmt.Fprintf(w, "  %s\n", d.Usage)
 	}
 }

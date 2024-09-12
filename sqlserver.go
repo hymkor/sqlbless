@@ -100,3 +100,7 @@ var sqlServerSpec = &DBSpec{
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
 }
+
+func init() {
+	RegisterDB("SQLSERVER", sqlServerSpec)
+}

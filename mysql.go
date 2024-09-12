@@ -80,3 +80,7 @@ var mySqlSpec = &DBSpec{
 	TypeNameToConv:        mySQLTypeNameToConv,
 	DSNFilter:             mySQLDSNFilter,
 }
+
+func init() {
+	RegisterDB("MYSQL", mySqlSpec)
+}

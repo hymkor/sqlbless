@@ -51,3 +51,7 @@ var oracleSpec = &DBSpec{
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        oracleTypeNameToConv,
 }
+
+func init() {
+	RegisterDB("ORACLE", oracleSpec)
+}

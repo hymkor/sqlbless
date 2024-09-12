@@ -54,3 +54,7 @@ var postgresSpec = &DBSpec{
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
 }
+
+func init() {
+	RegisterDB("POSTGRES", postgresSpec)
+}

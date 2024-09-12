@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -60,9 +61,13 @@ func parseAnyDateTime(s string) (time.Time, error) {
 }
 
 var dbSpecs = map[string]*DBSpec{
-	"POSTGRES":  postgresSpec,
-	"ORACLE":    oracleSpec,
-	"SQLSERVER": sqlServerSpec,
-	"MYSQL":     mySqlSpec,
-	"SQLITE3":   sqliteSpec,
+	// "POSTGRES":  postgresSpec,
+	// "ORACLE":    oracleSpec,
+	// "SQLSERVER": sqlServerSpec,
+	// "MYSQL":     mySqlSpec,
+	// "SQLITE3":   sqliteSpec,
+}
+
+func RegisterDB(name string, setting *DBSpec) {
+	dbSpecs[strings.ToUpper(name)] = setting
 }

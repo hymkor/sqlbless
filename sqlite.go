@@ -13,3 +13,7 @@ var sqliteSpec = &DBSpec{
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
 }
+
+func init() {
+	RegisterDB("SQLITE3", sqliteSpec)
+}

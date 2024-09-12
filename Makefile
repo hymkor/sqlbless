@@ -15,8 +15,8 @@ GOOPT:=-ldflags "-s -w -X main.version=$(VERSION)"
 EXE=$(shell go env GOEXE)
 
 all:
-	go fmt
-	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
+	go fmt ./...
+	$(SET) "CGO_ENABLED=0" && go build $(GOOPT) && go build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)/$(NAME)$(EXE)" $(GOOPT)
 
 test:
 ifeq ($(OS),Windows_NT)
@@ -26,7 +26,7 @@ endif
 	go test -v
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
+	$(MAKE) all
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:

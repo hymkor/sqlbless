@@ -17,11 +17,11 @@ type DBDialect struct {
 	DSNFilter             func(string) (string, error)
 }
 
-func (dbSpec *DBDialect) TryTypeNameToConv(typeName string) func(string) (string, error) {
-	if dbSpec.TypeNameToConv == nil {
+func (D *DBDialect) TryTypeNameToConv(typeName string) func(string) (string, error) {
+	if D.TypeNameToConv == nil {
 		return nil
 	}
-	return dbSpec.TypeNameToConv(typeName)
+	return D.TypeNameToConv(typeName)
 }
 
 const (
@@ -60,8 +60,8 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	return time.Time{}, errors.New("not time format")
 }
 
-var dbSpecs = map[string]*DBDialect{}
+var dbDialect = map[string]*DBDialect{}
 
 func RegisterDB(name string, setting *DBDialect) {
-	dbSpecs[strings.ToUpper(name)] = setting
+	dbDialect[strings.ToUpper(name)] = setting
 }

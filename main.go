@@ -142,23 +142,23 @@ func echoPrefix(spool io.Writer, prefix, query string) {
 }
 
 func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer) error {
-	// fmt.Fprintln(os.Stderr, dbSpec.SqlForDesc)
+	// fmt.Fprintln(os.Stderr, dbDialect.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
 	var err error
 	if tableName == "" {
-		if ss.dbSpec.SqlForTab == "" {
+		if ss.dbDialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
 		if ss.DumpConfig.PrintType {
-			fmt.Println(ss.dbSpec.SqlForTab)
+			fmt.Println(ss.dbDialect.SqlForTab)
 		}
-		rows, err = ss.conn.QueryContext(ctx, ss.dbSpec.SqlForTab)
+		rows, err = ss.conn.QueryContext(ctx, ss.dbDialect.SqlForTab)
 	} else {
-		if ss.dbSpec.SqlForDesc == "" {
+		if ss.dbDialect.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		sql := strings.ReplaceAll(ss.dbSpec.SqlForDesc, "{table_name}", tableName)
+		sql := strings.ReplaceAll(ss.dbDialect.SqlForDesc, "{table_name}", tableName)
 		if ss.DumpConfig.PrintType {
 			fmt.Println(sql)
 		}
@@ -273,7 +273,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
 
 type Session struct {
 	DumpConfig RowToCsv
-	dbSpec     *DBDialect
+	dbDialect  *DBDialect
 	conn       *sql.DB
 	history    *History
 	tx         *sql.Tx
@@ -452,8 +452,8 @@ func (sqlCompletion) List(field []string) (fullnames []string, basenames []strin
 	return
 }
 
-func findDbSpec(args []string) (*DBDialect, []string, error) {
-	spec, ok := dbSpecs[strings.ToUpper(args[0])]
+func findDbDialect(args []string) (*DBDialect, []string, error) {
+	spec, ok := dbDialect[strings.ToUpper(args[0])]
 	if ok {
 		if len(args) < 2 {
 			return nil, nil, errors.New("DSN String is not specified")
@@ -462,7 +462,7 @@ func findDbSpec(args []string) (*DBDialect, []string, error) {
 	}
 	scheme, _, ok := strings.Cut(args[0], ":")
 	if ok {
-		spec, ok = dbSpecs[strings.ToUpper(scheme)]
+		spec, ok = dbDialect[strings.ToUpper(scheme)]
 		if ok {
 			return spec, []string{scheme, strings.Join(args, " ")}, nil
 		}
@@ -475,13 +475,13 @@ func mains(args []string) error {
 		flag.Usage()
 		return nil
 	}
-	dbSpec, args, err := findDbSpec(args)
+	dbDialect, args, err := findDbDialect(args)
 	if err != nil {
 		return err
 	}
 	dataSourceName := args[1]
-	if dbSpec.DSNFilter != nil {
-		dataSourceName, err = dbSpec.DSNFilter(dataSourceName)
+	if dbDialect.DSNFilter != nil {
+		dataSourceName, err = dbDialect.DSNFilter(dataSourceName)
 		if err != nil {
 			return err
 		}
@@ -502,9 +502,9 @@ func mains(args []string) error {
 	var history History
 
 	session := &Session{
-		dbSpec:  dbSpec,
-		conn:    conn,
-		history: &history,
+		dbDialect: dbDialect,
+		conn:      conn,
+		history:   &history,
 	}
 	defer session.Close()
 
@@ -514,7 +514,7 @@ func mains(args []string) error {
 	} else {
 		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
 	}
-	session.DumpConfig.TimeLayout = dbSpec.DisplayDateTimeLayout
+	session.DumpConfig.TimeLayout = dbDialect.DisplayDateTimeLayout
 	session.DumpConfig.PrintType = *flagDebug
 
 	ctx := context.Background()
@@ -599,7 +599,7 @@ func usage() {
 	fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintln(w, "Example:")
-	for _, d := range dbSpecs {
+	for _, d := range dbDialect {
 		fmt.Fprintf(w, "  %s\n", d.Usage)
 	}
 }

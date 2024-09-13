@@ -158,7 +158,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
 		_ct := ct
-		if conv := ss.dbSpec.TryTypeNameToConv(name); conv != nil {
+		if conv := ss.dbDialect.TryTypeNameToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
 				if s == null {

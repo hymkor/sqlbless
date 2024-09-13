@@ -29,7 +29,7 @@ const (
 	DateTimeLayout   = "2006-01-02 15:04:05.999999999"
 	DateOnlyLayout   = "2006-01-02"
 	TimeOnlyLayout   = "15:04:05.999999999"
-	timeTzLayout     = "15:04:05.999999999 -07:00"
+	TimeTzLayout     = "15:04:05.999999999 -07:00"
 )
 
 var (
@@ -52,7 +52,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 		return time.Parse(DateOnlyLayout, m[1])
 	}
 	if m := rxTimeTz.FindStringSubmatch(s); m != nil {
-		return time.Parse(timeTzLayout, m[1])
+		return time.Parse(TimeTzLayout, m[1])
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
 		return time.Parse(TimeOnlyLayout, m[1])

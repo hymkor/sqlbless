@@ -1,11 +1,12 @@
 package main
 
 import (
-	"os"
-	"fmt"
 	"flag"
+	"fmt"
+	"os"
 
 	"github.com/hymkor/sqlbless"
+	_ "github.com/hymkor/sqlbless/sqlite"
 )
 
 func main() {

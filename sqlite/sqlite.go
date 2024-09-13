@@ -1,10 +1,14 @@
-package sqlbless
+package sqlite
 
 import (
 	_ "github.com/glebarez/go-sqlite/compat"
+
+	"github.com/hymkor/sqlbless"
 )
 
-var sqliteSpec = &DBSpec{
+const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
+
+var sqliteSpec = &sqlbless.DBSpec{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SqlForTab: `
 	select 'SCHEMA' AS SCHEMA,* from sqlite_master
@@ -15,5 +19,5 @@ var sqliteSpec = &DBSpec{
 }
 
 func init() {
-	RegisterDB("SQLITE3", sqliteSpec)
+	sqlbless.RegisterDB("SQLITE3", sqliteSpec)
 }

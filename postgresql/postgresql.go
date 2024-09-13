@@ -4,20 +4,22 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
+
+	"github.com/hymkor/sqlbless"
 )
 
 var postgresTypeNameToFormat = map[string][2]string{
-	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", DateTimeTzLayout},
-	"TIMESTAMP":   [2]string{"TIMESTAMP", DateTimeLayout},
-	"DATE":        [2]string{"DATE", DateOnlyLayout},
-	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", timeTzLayout},
-	"TIME":        [2]string{"TIME", timeTzLayout},
+	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", sqlbless.DateTimeTzLayout},
+	"TIMESTAMP":   [2]string{"TIMESTAMP", sqlbless.DateTimeLayout},
+	"DATE":        [2]string{"DATE", sqlbless.DateOnlyLayout},
+	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", sqlbless.TimeTzLayout},
+	"TIME":        [2]string{"TIME", sqlbless.TimeTzLayout},
 }
 
 func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 	if f, ok := postgresTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
-			dt, err := ParseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -27,7 +29,7 @@ func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 	return nil
 }
 
-var postgresSpec = &DBSpec{
+var postgresSpec = &sqlbless.DBSpec{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
 	SqlForDesc: `
       select a.attnum as "ID",
@@ -51,10 +53,10 @@ var postgresSpec = &DBSpec{
 	SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
-	DisplayDateTimeLayout: DateTimeTzLayout,
+	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
 }
 
 func init() {
-	RegisterDB("POSTGRES", postgresSpec)
+	sqlbless.RegisterDB("POSTGRES", postgresSpec)
 }

@@ -8,7 +8,7 @@ import (
 
 const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
 
-var sqliteSpec = &sqlbless.DBSpec{
+var sqliteSpec = &sqlbless.DBDialect{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SqlForTab: `
 	select 'SCHEMA' AS SCHEMA,* from sqlite_master

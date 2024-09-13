@@ -58,7 +58,7 @@ func mySQLDSNFilter(dsn string) (string, error) {
 	return newdsn.String(), nil
 }
 
-var mySqlSpec = &sqlbless.DBSpec{
+var mySqlSpec = &sqlbless.DBDialect{
 	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
 	SqlForDesc: `
         select ordinal_position as "ID",

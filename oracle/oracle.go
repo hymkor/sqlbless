@@ -31,7 +31,7 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 }
 
-var oracleSpec = &sqlbless.DBSpec{
+var oracleSpec = &sqlbless.DBDialect{
 	Usage: "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
 	SqlForDesc: `
   select column_id as "ID",

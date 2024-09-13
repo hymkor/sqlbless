@@ -273,7 +273,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
 
 type Session struct {
 	DumpConfig RowToCsv
-	dbSpec     *DBSpec
+	dbSpec     *DBDialect
 	conn       *sql.DB
 	history    *History
 	tx         *sql.Tx
@@ -452,7 +452,7 @@ func (sqlCompletion) List(field []string) (fullnames []string, basenames []strin
 	return
 }
 
-func findDbSpec(args []string) (*DBSpec, []string, error) {
+func findDbSpec(args []string) (*DBDialect, []string, error) {
 	spec, ok := dbSpecs[strings.ToUpper(args[0])]
 	if ok {
 		if len(args) < 2 {

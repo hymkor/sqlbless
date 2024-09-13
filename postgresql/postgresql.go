@@ -29,7 +29,7 @@ func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 	return nil
 }
 
-var postgresSpec = &sqlbless.DBSpec{
+var postgresSpec = &sqlbless.DBDialect{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
 	SqlForDesc: `
       select a.attnum as "ID",

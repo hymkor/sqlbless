@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type DBSpec struct {
+type DBDialect struct {
 	Usage                 string
 	SqlForDesc            string
 	SqlForTab             string
@@ -17,7 +17,7 @@ type DBSpec struct {
 	DSNFilter             func(string) (string, error)
 }
 
-func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, error) {
+func (dbSpec *DBDialect) TryTypeNameToConv(typeName string) func(string) (string, error) {
 	if dbSpec.TypeNameToConv == nil {
 		return nil
 	}
@@ -60,14 +60,8 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	return time.Time{}, errors.New("not time format")
 }
 
-var dbSpecs = map[string]*DBSpec{
-	// "POSTGRES":  postgresSpec,
-	// "ORACLE":    oracleSpec,
-	// "SQLSERVER": sqlServerSpec,
-	// "MYSQL":     mySqlSpec,
-	// "SQLITE3":   sqliteSpec,
-}
+var dbSpecs = map[string]*DBDialect{}
 
-func RegisterDB(name string, setting *DBSpec) {
+func RegisterDB(name string, setting *DBDialect) {
 	dbSpecs[strings.ToUpper(name)] = setting
 }

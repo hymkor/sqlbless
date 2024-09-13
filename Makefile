@@ -44,4 +44,7 @@ manifest:
 release:
 	gh release create -d --notes "" -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
+get :
+	cd "$(CURDIR)/cmd/sqlbless" && go get -u && go mod tidy
+
 .PHONY: all test dist _dist clean manifest release

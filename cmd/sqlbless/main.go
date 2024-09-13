@@ -7,6 +7,7 @@ import (
 
 	"github.com/hymkor/sqlbless"
 	_ "github.com/hymkor/sqlbless/sqlite"
+	_ "github.com/hymkor/sqlbless/sqlserver"
 )
 
 func main() {

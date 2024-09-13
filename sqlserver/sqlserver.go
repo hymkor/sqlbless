@@ -1,10 +1,12 @@
-package sqlbless
+package sqlserver
 
 import (
 	"fmt"
 	"strings"
 
 	_ "github.com/microsoft/go-mssqldb"
+
+	"github.com/hymkor/sqlbless"
 )
 
 func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
@@ -13,7 +15,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 		// SMALLDATETIME: YYYY-MM-DD hh:mm:ss
 		// 120: yyyy-mm-dd hh:mi:ss
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -25,12 +27,12 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 		// 121: yyyy-mm-dd hh:mi:ss.mmm
 		// 120: yyyy-mm-dd hh:mi:ss
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
 			if dt.Nanosecond() > 0 {
-				return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeLayout)), nil
+				return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(sqlbless.DateTimeLayout)), nil
 			}
 			return fmt.Sprintf("CONVERT(%s,'%s',120)", typeName, dt.Format("2006-01-02 15:04:05")), nil
 		}
@@ -38,23 +40,23 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 		// DATE: YYYY-MM-DD
 		// 23: yyyy-mm-dd
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(dateOnlyLayout)), nil
+			return fmt.Sprintf("CONVERT(DATE,'%s',23)", dt.Format(sqlbless.DateOnlyLayout)), nil
 		}
 	case "TIME":
 		// TIME: hh:mm:ss[.nnnnnnn]
 		// 114: hh:mi:ss:mmm !!!COLON!!!
 		// 108: hh:mi:ss
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
 			if dt.Nanosecond() > 0 {
-				return fmt.Sprintf("CONVERT(TIME,'%s',114)", strings.Replace(dt.Format(timeOnlyLayout), ".", ":", 1)), nil
+				return fmt.Sprintf("CONVERT(TIME,'%s',114)", strings.Replace(dt.Format(sqlbless.TimeOnlyLayout), ".", ":", 1)), nil
 				//return fmt.Sprintf("CONVERT(%s,'%s',121)", typeName, dt.Format(dateTimeFormat)), nil
 			}
 			return fmt.Sprintf("CONVERT(TIME,'%s',108)", dt.Format("15:04:05")), nil
@@ -63,18 +65,18 @@ func sqlServerTypeNameToConv(typeName string) func(string) (string, error) {
 		// DATETIMEOFFSET
 		// 127: yyyy-MM-ddThh:mm:ss.fffZ (スペースなし)
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("CONVERT(DATETIMEOFFSET,'%s',127)", dt.Format(dateTimeTzLayout)), nil
+			return fmt.Sprintf("CONVERT(DATETIMEOFFSET,'%s',127)", dt.Format(sqlbless.DateTimeTzLayout)), nil
 		}
 	default:
 		return nil
 	}
 }
 
-var sqlServerSpec = &DBSpec{
+var sqlServerSpec = &sqlbless.DBSpec{
 	Usage: "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
 	SqlForDesc: `
 	select c.column_id as "ID",
@@ -97,10 +99,10 @@ var sqlServerSpec = &DBSpec{
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
 	SqlForTab:             `select * from sys.objects`,
-	DisplayDateTimeLayout: dateTimeTzLayout,
+	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
 }
 
 func init() {
-	RegisterDB("SQLSERVER", sqlServerSpec)
+	sqlbless.RegisterDB("SQLSERVER", sqlServerSpec)
 }

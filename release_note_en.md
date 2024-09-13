@@ -1,3 +1,5 @@
+* To use as a library, move the code of the main package to cmd/sqlbless
+
 v0.15.0
 =======
 Jul 28, 2024

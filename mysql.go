@@ -8,16 +8,16 @@ import (
 )
 
 var mySQLTypeNameToFormat = map[string]string{
-	"DATETIME":  dateTimeLayout,
+	"DATETIME":  DateTimeLayout,
 	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
-	"TIME":      timeOnlyLayout,
-	"DATE":      dateOnlyLayout,
+	"TIME":      TimeOnlyLayout,
+	"DATE":      DateOnlyLayout,
 }
 
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	if format, ok := mySQLTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
-			dt, err := parseAnyDateTime(s)
+			dt, err := ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -76,7 +76,7 @@ var mySqlSpec = &DBSpec{
          where table_name = ?
          order by ordinal_position`,
 	SqlForTab:             `select * from information_schema.tables`,
-	DisplayDateTimeLayout: dateTimeTzLayout,
+	DisplayDateTimeLayout: DateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 	DSNFilter:             mySQLDSNFilter,
 }

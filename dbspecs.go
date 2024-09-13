@@ -25,10 +25,10 @@ func (dbSpec *DBSpec) TryTypeNameToConv(typeName string) func(string) (string, e
 }
 
 const (
-	dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
-	dateTimeLayout   = "2006-01-02 15:04:05.999999999"
-	dateOnlyLayout   = "2006-01-02"
-	timeOnlyLayout   = "15:04:05.999999999"
+	DateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
+	DateTimeLayout   = "2006-01-02 15:04:05.999999999"
+	DateOnlyLayout   = "2006-01-02"
+	TimeOnlyLayout   = "15:04:05.999999999"
 	timeTzLayout     = "15:04:05.999999999 -07:00"
 )
 
@@ -40,22 +40,22 @@ var (
 	rxTimeOnly   = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
 )
 
-func parseAnyDateTime(s string) (time.Time, error) {
+func ParseAnyDateTime(s string) (time.Time, error) {
 	if m := rxDateTimeTz.FindStringSubmatch(s); m != nil {
-		return time.Parse(dateTimeTzLayout,
+		return time.Parse(DateTimeTzLayout,
 			fmt.Sprintf("%s %s%02s:%02s", m[1], m[2], m[3], m[4]))
 	}
 	if m := rxDateTime.FindStringSubmatch(s); m != nil {
-		return time.Parse(dateTimeLayout, m[1])
+		return time.Parse(DateTimeLayout, m[1])
 	}
 	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
-		return time.Parse(dateOnlyLayout, m[1])
+		return time.Parse(DateOnlyLayout, m[1])
 	}
 	if m := rxTimeTz.FindStringSubmatch(s); m != nil {
 		return time.Parse(timeTzLayout, m[1])
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
-		return time.Parse(timeOnlyLayout, m[1])
+		return time.Parse(TimeOnlyLayout, m[1])
 	}
 	return time.Time{}, errors.New("not time format")
 }

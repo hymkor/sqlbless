@@ -5,19 +5,21 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/hymkor/sqlbless"
 )
 
 var mySQLTypeNameToFormat = map[string]string{
-	"DATETIME":  DateTimeLayout,
+	"DATETIME":  sqlbless.DateTimeLayout,
 	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
-	"TIME":      TimeOnlyLayout,
-	"DATE":      DateOnlyLayout,
+	"TIME":      sqlbless.TimeOnlyLayout,
+	"DATE":      sqlbless.DateOnlyLayout,
 }
 
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	if format, ok := mySQLTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
-			dt, err := ParseAnyDateTime(s)
+			dt, err := sqlbless.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -56,7 +58,7 @@ func mySQLDSNFilter(dsn string) (string, error) {
 	return newdsn.String(), nil
 }
 
-var mySqlSpec = &DBSpec{
+var mySqlSpec = &sqlbless.DBSpec{
 	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
 	SqlForDesc: `
         select ordinal_position as "ID",
@@ -76,11 +78,11 @@ var mySqlSpec = &DBSpec{
          where table_name = ?
          order by ordinal_position`,
 	SqlForTab:             `select * from information_schema.tables`,
-	DisplayDateTimeLayout: DateTimeTzLayout,
+	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 	DSNFilter:             mySQLDSNFilter,
 }
 
 func init() {
-	RegisterDB("MYSQL", mySqlSpec)
+	sqlbless.RegisterDB("MYSQL", mySqlSpec)
 }

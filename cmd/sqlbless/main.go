@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/hymkor/sqlbless"
+	_ "github.com/hymkor/sqlbless/mysql"
 	_ "github.com/hymkor/sqlbless/oracle"
 	_ "github.com/hymkor/sqlbless/postgresql"
 	_ "github.com/hymkor/sqlbless/sqlite"

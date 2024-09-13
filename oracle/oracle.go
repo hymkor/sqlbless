@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	_ "github.com/sijms/go-ora/v2"
+
+	"github.com/hymkor/sqlbless"
 )
 
 func oracleTypeNameToConv(typeName string) func(string) (string, error) {
@@ -13,15 +15,15 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 	if strings.HasPrefix(typeName, "TIMESTAMP") {
 		// sfmt = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
 		sfmt = "TO_TIMESTAMP_TZ('%s','YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
-		dfmt = DateTimeTzLayout
+		dfmt = sqlbless.DateTimeTzLayout
 	} else if typeName == "DATE" {
 		sfmt = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
-		dfmt = DateTimeLayout
+		dfmt = sqlbless.DateTimeLayout
 	} else {
 		return nil
 	}
 	return func(s string) (string, error) {
-		dt, err := ParseAnyDateTime(s)
+		dt, err := sqlbless.ParseAnyDateTime(s)
 		if err != nil {
 			return "", err
 		}
@@ -29,7 +31,7 @@ func oracleTypeNameToConv(typeName string) func(string) (string, error) {
 	}
 }
 
-var oracleSpec = &DBSpec{
+var oracleSpec = &sqlbless.DBSpec{
 	Usage: "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
 	SqlForDesc: `
   select column_id as "ID",
@@ -48,10 +50,10 @@ var oracleSpec = &DBSpec{
    where table_name = UPPER(:1)
    order by column_id`,
 	SqlForTab:             `select * from tab`,
-	DisplayDateTimeLayout: DateTimeTzLayout,
+	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        oracleTypeNameToConv,
 }
 
 func init() {
-	RegisterDB("ORACLE", oracleSpec)
+	sqlbless.RegisterDB("ORACLE", oracleSpec)
 }

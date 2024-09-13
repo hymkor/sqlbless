@@ -107,7 +107,7 @@ scoop install sqlbless
 ### go install でインストールする場合
 
 ```
-go install github.com/hymkor/sqlbless@latest
+go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 ```
 
 起動方法

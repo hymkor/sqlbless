@@ -108,7 +108,7 @@ scoop install sqlbless
 ### Installing via Go
 
 ```
-go install github.com/hymkor/sqlbless@latest
+go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 ```
 
 How to start

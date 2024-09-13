@@ -362,7 +362,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 						ss.spool = fd
 					}
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
-					WriteSignature(ss.spool)
+					writeSignature(ss.spool)
 				}
 			}
 		case "EDIT":
@@ -470,7 +470,7 @@ func findDbSpec(args []string) (*DBSpec, []string, error) {
 	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
 }
 
-func Main(args []string) error {
+func mains(args []string) error {
 	if len(args) < 1 {
 		flag.Usage()
 		return nil
@@ -589,12 +589,12 @@ func Main(args []string) error {
 
 var version string
 
-func WriteSignature(w io.Writer) {
+func writeSignature(w io.Writer) {
 	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
-func Usage() {
+func usage() {
 	w := flag.CommandLine.Output()
 	fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
 	flag.PrintDefaults()
@@ -602,4 +602,13 @@ func Usage() {
 	for _, d := range dbSpecs {
 		fmt.Fprintf(w, "  %s\n", d.Usage)
 	}
+}
+
+func Main() error {
+	writeSignature(os.Stdout)
+
+	flag.Usage = usage
+
+	flag.Parse()
+	return mains(flag.Args())
 }

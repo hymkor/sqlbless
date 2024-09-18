@@ -45,11 +45,12 @@ func usage() {
 	}
 }
 
-func Main() error {
-	writeSignature(os.Stdout)
-
-	flag.Usage = usage
-
+// NewConfigFromFlag returns the constructor of Config from flag variables.
+//
+//	cfgSetup := NewConfigFromFlag()
+//	flag.Parse()
+//	cfg := cfgSetup()
+func NewConfigFromFlag() func() *Config {
 	var (
 		flagCrLf           = flag.Bool("crlf", false, "use CRLF")
 		flagFieldSeperator = flag.String("fs", ",", "Set field separator")
@@ -61,8 +62,28 @@ func Main() error {
 		flagAuto           = flag.String("auto", "", "autopilot")
 		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
 	)
+	flag.Usage = usage
+	return func() *Config {
+		return &Config{
+			Auto:           *flagAuto,
+			Term:           *flagTerm,
+			CrLf:           *flagCrLf,
+			Null:           *flagNullString,
+			Tsv:            *flagTsv,
+			FieldSeperator: *flagFieldSeperator,
+			Debug:          *flagDebug,
+			SubmitByEnter:  *flagSubmitByEnter,
+			Script:         *flagScript,
+		}
+	}
+}
 
+func Main() error {
+	writeSignature(os.Stdout)
+
+	cfgSetup := NewConfigFromFlag()
 	flag.Parse()
+	cfg := cfgSetup()
 	args := flag.Args()
 
 	if len(args) < 1 {
@@ -79,20 +100,10 @@ func Main() error {
 		if err != nil {
 			return err
 		}
-		if *flagDebug {
+		if cfg.Debug {
 			fmt.Fprintln(os.Stderr, dataSourceName)
 		}
 	}
 
-	return Config{
-		Auto:           *flagAuto,
-		Term:           *flagTerm,
-		CrLf:           *flagCrLf,
-		Null:           *flagNullString,
-		Tsv:            *flagTsv,
-		FieldSeperator: *flagFieldSeperator,
-		Debug:          *flagDebug,
-		SubmitByEnter:  *flagSubmitByEnter,
-		Script:         *flagScript,
-	}.Run(args[0], dataSourceName, dbDialect)
+	return cfg.Run(args[0], dataSourceName, dbDialect)
 }

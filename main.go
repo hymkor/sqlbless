@@ -182,18 +182,6 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	}, out)
 }
 
-var (
-	flagCrLf           = flag.Bool("crlf", false, "use CRLF")
-	flagFieldSeperator = flag.String("fs", ",", "Set field separator")
-	flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
-	flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
-	flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
-	flagScript         = flag.String("f", "", "script file")
-	flagDebug          = flag.Bool("debug", false, "Print type in CSV")
-	flagAuto           = flag.String("auto", "", "autopilot")
-	flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
-)
-
 // hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not
 func hasTerm(s, term string) (string, bool) {
 	s = strings.TrimRight(s, " \r\n\t\v")
@@ -608,18 +596,6 @@ func (cfg Config) Run(args []string) error {
 	}, false)
 }
 
-func mains(args []string) error {
-	return Config{
-		Auto:           *flagAuto,
-		Term:           *flagTerm,
-		CrLf:           *flagCrLf,
-		Null:           *flagNullString,
-		Tsv:            *flagTsv,
-		FieldSeperator: *flagFieldSeperator,
-		Debug:          *flagDebug,
-	}.Run(args)
-}
-
 var version string
 
 func writeSignature(w io.Writer) {
@@ -642,6 +618,29 @@ func Main() error {
 
 	flag.Usage = usage
 
+	var (
+		flagCrLf           = flag.Bool("crlf", false, "use CRLF")
+		flagFieldSeperator = flag.String("fs", ",", "Set field separator")
+		flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
+		flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
+		flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
+		flagScript         = flag.String("f", "", "script file")
+		flagDebug          = flag.Bool("debug", false, "Print type in CSV")
+		flagAuto           = flag.String("auto", "", "autopilot")
+		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
+	)
+
 	flag.Parse()
-	return mains(flag.Args())
+
+	return Config{
+		Auto:           *flagAuto,
+		Term:           *flagTerm,
+		CrLf:           *flagCrLf,
+		Null:           *flagNullString,
+		Tsv:            *flagTsv,
+		FieldSeperator: *flagFieldSeperator,
+		Debug:          *flagDebug,
+		SubmitByEnter:  *flagSubmitByEnter,
+		Script:         *flagScript,
+	}.Run(flag.Args())
 }

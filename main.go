@@ -476,26 +476,8 @@ type Config struct {
 	Script         string
 }
 
-func (cfg Config) Run(args []string) error {
-	if len(args) < 1 {
-		flag.Usage()
-		return nil
-	}
-	dbDialect, args, err := findDbDialect(args)
-	if err != nil {
-		return err
-	}
-	dataSourceName := args[1]
-	if dbDialect.DSNFilter != nil {
-		dataSourceName, err = dbDialect.DSNFilter(dataSourceName)
-		if err != nil {
-			return err
-		}
-		if cfg.Debug {
-			fmt.Fprintln(os.Stderr, dataSourceName)
-		}
-	}
-	conn, err := sql.Open(args[0], dataSourceName)
+func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error {
+	conn, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
 	}
@@ -631,6 +613,26 @@ func Main() error {
 	)
 
 	flag.Parse()
+	args := flag.Args()
+
+	if len(args) < 1 {
+		flag.Usage()
+		return nil
+	}
+	dbDialect, args, err := findDbDialect(args)
+	if err != nil {
+		return err
+	}
+	dataSourceName := args[1]
+	if dbDialect.DSNFilter != nil {
+		dataSourceName, err = dbDialect.DSNFilter(dataSourceName)
+		if err != nil {
+			return err
+		}
+		if *flagDebug {
+			fmt.Fprintln(os.Stderr, dataSourceName)
+		}
+	}
 
 	return Config{
 		Auto:           *flagAuto,
@@ -642,5 +644,5 @@ func Main() error {
 		Debug:          *flagDebug,
 		SubmitByEnter:  *flagSubmitByEnter,
 		Script:         *flagScript,
-	}.Run(flag.Args())
+	}.Run(args[0], dataSourceName, dbDialect)
 }

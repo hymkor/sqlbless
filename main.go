@@ -476,7 +476,19 @@ func findDbDialect(args []string) (*DBDialect, []string, error) {
 	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
 }
 
-func mains(args []string) error {
+type Config struct {
+	Auto           string
+	Term           string
+	CrLf           bool
+	Null           string
+	Tsv            bool
+	FieldSeperator string
+	Debug          bool
+	SubmitByEnter  bool
+	Script         string
+}
+
+func (cfg Config) Run(args []string) error {
 	if len(args) < 1 {
 		flag.Usage()
 		return nil
@@ -491,7 +503,7 @@ func mains(args []string) error {
 		if err != nil {
 			return err
 		}
-		if *flagDebug {
+		if cfg.Debug {
 			fmt.Fprintln(os.Stderr, dataSourceName)
 		}
 	}
@@ -511,24 +523,24 @@ func mains(args []string) error {
 		dbDialect: dbDialect,
 		conn:      conn,
 		history:   &history,
-		automatic: *flagAuto != "",
-		term:      *flagTerm,
-		crlf:      *flagCrLf,
+		automatic: cfg.Auto != "",
+		term:      cfg.Term,
+		crlf:      cfg.CrLf,
 	}
 	defer session.Close()
 
-	session.DumpConfig.Null = *flagNullString
-	if *flagTsv {
+	session.DumpConfig.Null = cfg.Null
+	if cfg.Tsv {
 		session.DumpConfig.Comma = '\t'
 	} else {
-		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(*flagFieldSeperator)
+		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
 	}
 	session.DumpConfig.TimeLayout = dbDialect.DisplayDateTimeLayout
-	session.DumpConfig.PrintType = *flagDebug
+	session.DumpConfig.PrintType = cfg.Debug
 
 	ctx := context.Background()
-	if *flagScript != "" {
-		return session.Start(ctx, *flagScript)
+	if cfg.Script != "" {
+		return session.Start(ctx, cfg.Script)
 	}
 
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
@@ -546,14 +558,14 @@ func mains(args []string) error {
 
 	var editor multiline.Editor
 
-	if *flagSubmitByEnter {
+	if cfg.SubmitByEnter {
 		editor.SwapEnter()
 	}
 	var tty getKeyAndSize
-	if *flagAuto != "" {
-		text := strings.ReplaceAll(*flagAuto, "||", "\n") // "||" -> Ctrl-J(Commit)
-		text = strings.ReplaceAll(text, "|", "\r")        // "|" -> Ctrl-M (NewLine)
-		if text[len(text)-1] != '\n' {                    // EOF -> Ctrl-J(Commit)
+	if cfg.Auto != "" {
+		text := strings.ReplaceAll(cfg.Auto, "||", "\n") // "||" -> Ctrl-J(Commit)
+		text = strings.ReplaceAll(text, "|", "\r")       // "|" -> Ctrl-M (NewLine)
+		if text[len(text)-1] != '\n' {                   // EOF -> Ctrl-J(Commit)
 			text = text + "\n"
 		}
 		tty1 := &auto.Pilot{
@@ -579,11 +591,11 @@ func mains(args []string) error {
 		for {
 			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
 			if last != "" || len(lines) <= 1 {
-				if len(*flagTerm) == 1 {
-					_, ok := hasTerm(last, *flagTerm)
+				if len(cfg.Term) == 1 {
+					_, ok := hasTerm(last, cfg.Term)
 					return ok
 				} else {
-					return strings.EqualFold(last, *flagTerm)
+					return strings.EqualFold(last, cfg.Term)
 				}
 			}
 			lines = lines[:len(lines)-1]
@@ -594,6 +606,18 @@ func mains(args []string) error {
 		Editor: &editor,
 		tty:    tty,
 	}, false)
+}
+
+func mains(args []string) error {
+	return Config{
+		Auto:           *flagAuto,
+		Term:           *flagTerm,
+		CrLf:           *flagCrLf,
+		Null:           *flagNullString,
+		Tsv:            *flagTsv,
+		FieldSeperator: *flagFieldSeperator,
+		Debug:          *flagDebug,
+	}.Run(args)
 }
 
 var version string

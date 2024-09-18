@@ -28,11 +28,11 @@ func findDbDialect(args []string) (*DBDialect, []string, error) {
 	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
 }
 
-var version string
+var Version string
 
 func writeSignature(w io.Writer) {
 	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s by %s\n",
-		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+		Version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
 func usage() {

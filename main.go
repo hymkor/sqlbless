@@ -55,7 +55,7 @@ func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) err
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return csvPager(query, ss, *flagAuto != "", func(pOut io.Writer) error {
+	return csvPager(query, ss, ss.automatic, func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return _err
@@ -175,7 +175,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return csvPager(table, ss, *flagAuto != "", func(pOut io.Writer) error {
+	return csvPager(table, ss, ss.automatic, func(pOut io.Writer) error {
 		err := ss.DumpConfig.Dump(ctx, _rows, pOut)
 		rows.Close()
 		return err
@@ -216,6 +216,7 @@ type CommandIn interface {
 type Script struct {
 	br   *bufio.Reader
 	echo io.Writer
+	term string
 }
 
 func (script *Script) GetKey() (string, error) {
@@ -248,7 +249,7 @@ func (script *Script) Read(context.Context) ([]string, error) {
 		if quoted == 0 {
 			buffer.WriteRune(ch)
 			code := buffer.String()
-			term := *flagTerm
+			term := script.term
 			if _, ok := hasTerm(code, term); ok {
 				println(code)
 				fmt.Fprintln(script.echo, code)
@@ -278,6 +279,9 @@ type Session struct {
 	history    *History
 	tx         *sql.Tx
 	spool      FilterSource
+	automatic  bool
+	term       string
+	crlf       bool
 }
 
 func (ss *Session) Close() {
@@ -294,6 +298,7 @@ func (ss *Session) StartFromStdin(ctx context.Context) error {
 	script := &Script{
 		br:   bufio.NewReader(os.Stdin),
 		echo: os.Stderr,
+		term: ss.term,
 	}
 	return ss.Loop(ctx, script, true)
 }
@@ -310,6 +315,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 	script := &Script{
 		br:   bufio.NewReader(fd),
 		echo: os.Stderr,
+		term: ss.term,
 	}
 	return ss.Loop(ctx, script, true)
 }
@@ -327,7 +333,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			return err
 		}
 		queryAndTerm := strings.Join(lines, "\n")
-		query, _ := hasTerm(queryAndTerm, *flagTerm)
+		query, _ := hasTerm(queryAndTerm, ss.term)
 
 		if query == "" {
 			continue
@@ -356,7 +362,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
-					if *flagCrLf {
+					if ss.crlf {
 						ss.spool = newFilter(fd)
 					} else {
 						ss.spool = fd
@@ -505,6 +511,9 @@ func mains(args []string) error {
 		dbDialect: dbDialect,
 		conn:      conn,
 		history:   &history,
+		automatic: *flagAuto != "",
+		term:      *flagTerm,
+		crlf:      *flagCrLf,
 	}
 	defer session.Close()
 

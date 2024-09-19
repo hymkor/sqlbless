@@ -1,3 +1,7 @@
+v0.15.1
+=======
+Sep 19, 2024
+
 * Fix: a panic occured when only an empty input was provided
 * Separate the main package into cmd/sqlbless to allow usage as a library
 

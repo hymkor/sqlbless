@@ -184,7 +184,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 func hasTerm(s, term string) (string, bool) {
 	s = strings.TrimRight(s, " \r\n\t\v")
 	from := len(s) - len(term)
-	if strings.EqualFold(s[from:], term) {
+	if 0 <= from && from < len(s) && strings.EqualFold(s[from:], term) {
 		return s[:from], true
 	}
 	return s, false

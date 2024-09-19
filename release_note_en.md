@@ -1,4 +1,5 @@
-* To use as a library, move the code of the main package to cmd/sqlbless
+* Fix: a panic occured when only an empty input was provided
+* Separate the main package into cmd/sqlbless to allow usage as a library
 
 v0.15.0
 =======

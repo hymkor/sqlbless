@@ -17,8 +17,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/mattn/go-colorable"
+	"github.com/mattn/go-tty"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
@@ -251,7 +253,15 @@ type InteractiveIn struct {
 }
 
 func (i *InteractiveIn) GetKey() (string, error) {
-	return i.Editor.LineEditor.Tty.GetKey()
+	if i.tty != nil {
+		return i.tty.GetKey()
+	}
+	tt, err := tty.Open()
+	if err != nil {
+		return "", err
+	}
+	defer tt.Close()
+	return readline.GetKey(tt)
 }
 
 func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {

@@ -1,3 +1,7 @@
+v0.15.2
+=======
+Sep 21, 2024
+
 * [#3] v0.15.0 以降で y/n の問合せで panic が発生する不具合を修正
 
 [#3]: https://github.com/hymkor/sqlbless/issues/3

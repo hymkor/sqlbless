@@ -1,3 +1,5 @@
+* Show the prompt as `SQL*` instead of `SQL>` during a transaction.
+
 v0.15.2
 =======
 Sep 21, 2024

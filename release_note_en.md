@@ -1,3 +1,7 @@
+* Fix: [#3] panic occurred during y/n prompts since v0.15.0
+
+[#3]: https://github.com/hymkor/sqlbless/issues/3
+
 v0.15.1
 =======
 Sep 19, 2024

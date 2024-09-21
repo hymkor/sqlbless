@@ -321,6 +321,24 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		if ss.spool != nil {
 			fmt.Fprintf(os.Stderr, "\nSpooling to '%s' now\n", ss.spool.Name())
 		}
+		type PromptSetter interface {
+			SetPrompt(func(io.Writer, int) (int, error))
+		}
+		if ps, ok := commandIn.(PromptSetter); ok {
+			ps.SetPrompt(func(w io.Writer, i int) (int, error) {
+				io.WriteString(w, "\x1B[0m")
+				if i <= 0 {
+					if ss.tx != nil {
+						return io.WriteString(w, "SQL* ")
+					}
+					return io.WriteString(w, "SQL> ")
+				}
+				if ss.tx != nil {
+					return fmt.Fprintf(w, "%3d* ", i+1)
+				}
+				return fmt.Fprintf(w, "%3d> ", i+1)
+			})
+		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			if err == io.EOF {
@@ -537,13 +555,6 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
 	editor.SetColoring(&Coloring{})
-	editor.SetPrompt(func(w io.Writer, i int) (int, error) {
-		io.WriteString(w, "\x1B[0m")
-		if i <= 0 {
-			return io.WriteString(w, "SQL> ")
-		}
-		return fmt.Fprintf(w, "%3d> ", i+1)
-	})
 	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
 		Completion: sqlCompletion{},
 	})

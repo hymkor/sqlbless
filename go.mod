@@ -7,7 +7,7 @@ toolchain go1.22.2
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.11.2-0.20241008001805-6f530d33027d
+	github.com/hymkor/csvi v1.12.1-0.20241018160732-2fbb9b13a60f
 	github.com/hymkor/go-multiline-ny v0.15.0
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.13

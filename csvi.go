@@ -167,7 +167,6 @@ func callCsvi(ss *Session, cfg *csvi.Config, csvWriteTo func(pOut io.Writer) err
 	}()
 
 	cfg.Mode = &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)}
-	cfg.CellWidth = 14
 	if ss.DumpConfig.PrintType {
 		cfg.HeaderLines = 3
 	} else {

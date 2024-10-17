@@ -82,9 +82,14 @@ func (_AutoCsvi) Close() error {
 	return nil
 }
 
+const (
+	titlePrefix = "【"
+	titleSuffix = "】"
+)
+
 func csvPager(title string, ss *Session, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
 	cfg := &csvi.Config{
-		Message:  escape0x2400(title),
+		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
 	}
 	if automatic {
@@ -120,10 +125,13 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 	}
 
 	cfg := &csvi.Config{
-		Message: escape0x2400(title),
+		Titles: []string{
+			toOneLine(title, titlePrefix, titleSuffix),
+			"\"c\": Apply changes & quit, \"q\": Discard changes & quit",
+		},
 		KeyMap: map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
 			"c": func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-				if app.YesNo("Apply the changes ? [y/n] ") {
+				if app.YesNo("Apply changes and quit ? [y/n] ") {
 					io.WriteString(app, "y\n")
 					applyChange = true
 					return &csvi.CommandResult{Quit: true}, nil
@@ -145,15 +153,26 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 	return nil, err
 }
 
-func escape0x2400(s string) string {
+func toOneLine(s, prefix, suffix string) string {
+	s = strings.TrimSpace(s)
 	var buf strings.Builder
+	buf.WriteString(prefix)
+	var lastc rune
+	quote := false
 	for _, c := range s {
-		if c < ' ' {
-			buf.WriteRune(0x2400 + c)
+		if c <= ' ' {
+			if lastc > ' ' || quote {
+				buf.WriteRune(' ')
+			}
 		} else {
 			buf.WriteRune(c)
 		}
+		if c == '\'' {
+			quote = !quote
+		}
+		lastc = c
 	}
+	buf.WriteString(suffix)
 	return buf.String()
 }
 

@@ -1,4 +1,5 @@
 * Show the prompt as `SQL*` instead of `SQL>` during a transaction.
+* edit: display SQL and usage on the header
 
 v0.15.2
 =======

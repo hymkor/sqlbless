@@ -31,7 +31,7 @@ func findDbDialect(args []string) (*DBDialect, []string, error) {
 var Version string
 
 func writeSignature(w io.Writer) {
-	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s by %s\n",
+	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s built with %s\n",
 		Version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 

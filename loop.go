@@ -552,6 +552,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 		editor.LineEditor.Tty = tty1
 		tty = tty1
 	}
+	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
 	editor.SetColoring(&Coloring{})

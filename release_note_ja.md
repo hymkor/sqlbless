@@ -1,5 +1,8 @@
 * トランザクション中はプロンプトを `SQL>` ではなく `SQL*` とするようにした
 * edit文: ヘッダに SQL と説明を表示するようにした
+* 履歴を元にした行単位の予想入力のサポート ([go-readline-ny v1.6])
+
+[go-readline-ny v1.6]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.6.0
 
 v0.15.2
 =======

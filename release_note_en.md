@@ -1,5 +1,8 @@
 * Show the prompt as `SQL*` instead of `SQL>` during a transaction.
 * edit: display SQL and usage on the header
+* readline: line-based predictive input support based on history ([go-readline-ny v1.6]).
+
+[go-readline-ny v1.6]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.6.0
 
 v0.15.2
 =======

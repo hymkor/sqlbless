@@ -1,8 +1,13 @@
 * Show the prompt as `SQL*` instead of `SQL>` during a transaction.
 * edit: display SQL and usage on the header
-* readline: line-based predictive input support based on history ([go-readline-ny v1.6]).
-
-[go-readline-ny v1.6]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.6.0
+* Update go-readline-ny to v1.6.2
+    * line-based predictive input support based on history
+    * Fix: on Linux desktop, the second or later lines were missing when pasting multi-lines using the terminal feature
+* Update go-multiline-ny to v0.17.0
+    * Implement the incremental search (Ctrl-R)
+    * Fix: on the legacy terminal of Windows, cursor does not move to the upper line
+    * Fix: on the terminal of Linux desktop, backspace-key could not remove the line feed
+    * Fix: when editing the longer lines than screen height, the number of the lines scrolling was one line short
 
 v0.15.2
 =======

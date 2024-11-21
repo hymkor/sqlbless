@@ -1,4 +1,6 @@
 * Show the prompt as `SQL*` instead of `SQL>` during a transaction.
+* Erase continuation prompts after submiting so that copied prompt does not get in the
+way
 * edit: display SQL and usage on the header
 * Update go-readline-ny to v1.6.2
     * line-based predictive input support based on history

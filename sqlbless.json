@@ -1,16 +1,16 @@
 {
-    "version": "0.15.2",
+    "version": "0.16.0",
     "description": "The Command-line Database Client",
     "homepage": "https://github.com/hymkor/sqlbless",
     "license": "MIT License",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.15.2/sqlbless-v0.15.2-windows-386.zip",
-            "hash": "c007375ccca41586d5513230320d9004264c1a6e13ff594b737ce98736bb4e72"
+            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.16.0/sqlbless-v0.16.0-windows-386.zip",
+            "hash": "71b35e890b3afb90f26514b698b075cd79b661bc1f6032906c054623302872a0"
         },
         "64bit": {
-            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.15.2/sqlbless-v0.15.2-windows-amd64.zip",
-            "hash": "4ed6e258f0a4ef2c8bb236279272988025090e083e9cdd530a04878f0e4710fb"
+            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.16.0/sqlbless-v0.16.0-windows-amd64.zip",
+            "hash": "311b0ca1d9b10f08193547f9eefca627f5cf93320f6cf08478aa525b5ff70bfd"
         }
     },
     "bin": "sqlbless.exe",

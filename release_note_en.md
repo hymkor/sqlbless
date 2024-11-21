@@ -1,3 +1,7 @@
+v0.16.0
+=======
+Nov 21, 2024
+
 * Show the prompt as `SQL*` instead of `SQL>` during a transaction.
 * Erase continuation prompts after submiting so that copied prompt does not get in the
 way

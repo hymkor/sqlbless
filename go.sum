@@ -36,8 +36,8 @@ github.com/hymkor/csvi v1.12.1-0.20241018160732-2fbb9b13a60f h1:PNTiybNlz6DIqUUC
 github.com/hymkor/csvi v1.12.1-0.20241018160732-2fbb9b13a60f/go.mod h1:io8Y3EmnU7Er8mLKEI+elhFeB19FRNhTykPOi37UACk=
 github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvIh28VcWDhc=
 github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
-github.com/hymkor/go-multiline-ny v0.17.0 h1:K4IqGNUmgcHR6s4Da1YNhxpac7co1NybfMbKML21x9Y=
-github.com/hymkor/go-multiline-ny v0.17.0/go.mod h1:JsT8LAGAupb94i31rxEOehTsIWUc6Id+SrSOTPjCUZY=
+github.com/hymkor/go-multiline-ny v0.18.0 h1:6pPiZ50DS6B/N4TBnouJG15iEFKm3x7Fp2CoVBDfZuw=
+github.com/hymkor/go-multiline-ny v0.18.0/go.mod h1:JsT8LAGAupb94i31rxEOehTsIWUc6Id+SrSOTPjCUZY=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=

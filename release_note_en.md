@@ -1,3 +1,7 @@
+* go-multiline-ny v0.18.0
+    * When prefix key(Esc) is pressed, echo it as `Esc-`
+    * Assign Esc → Enter to submit
+
 v0.16.0
 =======
 Nov 21, 2024

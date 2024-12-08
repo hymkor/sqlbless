@@ -404,9 +404,14 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			err = doSelect(ctx, ss, query, os.Stdout)
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
+			isNewTx := (ss.tx == nil)
 			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
 			if err == nil {
 				err = doDML(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
+				if err != nil && isNewTx && ss.tx != nil {
+					ss.tx.Rollback()
+					ss.tx = nil
+				}
 			}
 		case "COMMIT":
 			echo(ss.spool, query)

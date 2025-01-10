@@ -2,6 +2,7 @@
     * When prefix key(Esc) is pressed, echo it as `Esc-`
     * Assign Esc → Enter to submit
 * Modified so that a transaction does not start when an error occurs.
+* Applied colors to input SQL, such as cyan for reserved words and magenta for strings. 
 
 v0.16.0
 =======

@@ -604,7 +604,6 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
-	editor.SetColoring(&Coloring{})
 	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
 		Completion: sqlCompletion{},
 	})

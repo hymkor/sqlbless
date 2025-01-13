@@ -500,11 +500,11 @@ type Config struct {
 	Script         string
 }
 
-type Highlight map[string]struct{}
+type ReservedWordPattern map[string]struct{}
 
 var rxWords = regexp.MustCompile(`\b\w+\b`)
 
-func (h Highlight) FindAllStringIndex(s string, n int) [][]int {
+func (h ReservedWordPattern) FindAllStringIndex(s string, n int) [][]int {
 	matches := rxWords.FindAllStringIndex(s, n)
 	for i := len(matches) - 1; i >= 0; i-- {
 		word := s[matches[i][0]:matches[i][1]]
@@ -516,8 +516,8 @@ func (h Highlight) FindAllStringIndex(s string, n int) [][]int {
 	return matches
 }
 
-func newHighlight(list ...string) Highlight {
-	m := Highlight{}
+func newReservedWordPattern(list ...string) ReservedWordPattern {
+	m := ReservedWordPattern{}
 	for _, word := range list {
 		m[strings.ToUpper(word)] = struct{}{}
 	}
@@ -579,7 +579,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.LineEditor.ResetColor = "\x1B[0m"
 	editor.LineEditor.DefaultColor = "\x1B[39;49;1m"
 	editor.LineEditor.Highlight = []readline.Highlight{
-		{Pattern: newHighlight("ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT", "HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL", "START", "TRUNCATE", "UPDATE", "AND", "FROM", "INTO", "OR", "WHERE"), Sequence: "\x1B[36;49;1m"},
+		{Pattern: newReservedWordPattern("ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT", "HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL", "START", "TRUNCATE", "UPDATE", "AND", "FROM", "INTO", "OR", "WHERE"), Sequence: "\x1B[36;49;1m"},
 		{Pattern: regexp.MustCompile(`[0-9]+`), Sequence: "\x1B[35;49;1m"},
 		{Pattern: regexp.MustCompile(`"[^"]*"|"[^"]*$`), Sequence: "\x1B[31;49;1m"},
 		{Pattern: regexp.MustCompile(`'[^']*'|'[^']*$`), Sequence: "\x1B[35;49;1m"},

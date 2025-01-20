@@ -1,3 +1,7 @@
+v0.17.0
+=======
+Jan 20, 2025
+
 * go-multiline-ny を v0.18.4 , go-readline-ny を v1.7.1 へ更新
     * プリフィックスキー(Esc) が押下された時に、`Esc-` とecho するようにした
     * Esc → Enter キーに入力確定を割り当てた

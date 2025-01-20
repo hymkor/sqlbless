@@ -8,12 +8,12 @@ require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/hymkor/csvi v1.12.1-0.20241018160732-2fbb9b13a60f
-	github.com/hymkor/go-multiline-ny v0.18.2
+	github.com/hymkor/go-multiline-ny v0.18.4
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-tty v0.0.7
 	github.com/microsoft/go-mssqldb v1.7.2
-	github.com/nyaosorg/go-readline-ny v1.7.0
+	github.com/nyaosorg/go-readline-ny v1.7.1
 	github.com/sijms/go-ora/v2 v2.8.22
 	golang.org/x/term v0.28.0
 	golang.org/x/text v0.21.0

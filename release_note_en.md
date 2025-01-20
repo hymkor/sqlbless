@@ -1,4 +1,4 @@
-* go-multiline-ny v0.18.0
+* Update the dependency of go-multiline-ny to v0.18.4 and go-readline-ny to v1.7.1
     * When prefix key(Esc) is pressed, echo it as `Esc-`
     * Assign Esc → Enter to submit
 * Modified so that a transaction does not start when an error occurs.

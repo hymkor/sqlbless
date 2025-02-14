@@ -1,3 +1,5 @@
+* Updated go-readline-ny to v1.9.0 and switched to `using completion.CmdCompletion2`.
+
 v0.17.0
 =======
 Jan 20, 2025

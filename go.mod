@@ -8,20 +8,19 @@ require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/hymkor/csvi v1.12.1-0.20241018160732-2fbb9b13a60f
-	github.com/hymkor/go-multiline-ny v0.18.4
+	github.com/hymkor/go-multiline-ny v0.20.1
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-tty v0.0.7
 	github.com/microsoft/go-mssqldb v1.7.2
-	github.com/nyaosorg/go-readline-ny v1.7.1
+	github.com/nyaosorg/go-readline-ny v1.9.0
 	github.com/sijms/go-ora/v2 v2.8.22
-	golang.org/x/term v0.28.0
-	golang.org/x/text v0.21.0
+	golang.org/x/term v0.29.0
+	golang.org/x/text v0.22.0
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
@@ -32,13 +31,13 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
-	github.com/nyaosorg/go-readline-skk v0.4.2 // indirect
+	github.com/nyaosorg/go-readline-skk v0.5.0 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.3 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	modernc.org/libc v1.61.2 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect

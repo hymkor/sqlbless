@@ -459,17 +459,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 	}
 }
 
-type sqlCompletion struct{}
-
-func (sqlCompletion) Enclosures() string {
-	return `'"`
-}
-
-func (sqlCompletion) Delimiters() string {
-	return ","
-}
-
-func (sqlCompletion) List(field []string) (fullnames []string, basenames []string) {
+func sqlCandidates(field []string) (fullnames []string, basenames []string) {
 	if len(field) <= 1 {
 		fullnames = []string{
 			"ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT",
@@ -485,6 +475,7 @@ func (sqlCompletion) List(field []string) (fullnames []string, basenames []strin
 			"FROM", "INTO",
 		}
 	}
+	basenames = fullnames
 	return
 }
 
@@ -604,8 +595,11 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
-	editor.BindKey(keys.CtrlI, completion.CmdCompletion{
-		Completion: sqlCompletion{},
+	editor.BindKey(keys.CtrlI, &completion.CmdCompletion2{
+		Enclosure:  `'"`,
+		Delimiter:  ",",
+		Postfix:    " ",
+		Candidates: sqlCandidates,
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		for {

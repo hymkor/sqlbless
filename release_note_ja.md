@@ -1,4 +1,5 @@
 * go-readline-ny をv1.9.0 へ更新。completion.CmdCompletion2 を使うようにした
+* go-multiline-ny を v0.20.2 へ更新。コメントにも色(黄色)をつけるようにした
 
 v0.17.0
 =======

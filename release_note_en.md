@@ -1,4 +1,5 @@
 * Updated go-readline-ny to v1.9.0 and switched to `using completion.CmdCompletion2`.
+* Updated go-multiline-ny to v0.20.2 and added yellow syntax highlighting for comments.
 
 v0.17.0
 =======

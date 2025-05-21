@@ -176,3 +176,22 @@ Common Options
     - Help
 
 [csvi]: https://github.com/hymkor/csvi
+
+Acknowledgements
+-----------------
+
+- [emisjerry (emisjerry)](https://github.com/emisjerry) - [#1],[#2],[Movie]
+
+[#1]: https://github.com/hymkor/sqlbless/issues/1
+[#2]: https://github.com/hymkor/sqlbless/issues/2
+[Movie]: https://youtu.be/_cxBQKpfUds
+
+Author
+------
+
+[hymkor (HAYAMA Kaoru)](https://github.com/hymkor)
+
+License
+-------
+
+MIT License

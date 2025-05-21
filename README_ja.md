@@ -173,3 +173,22 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     - `SELECT` と `EDIT` のヘッダに型情報を表示するようにした
 - `-help`
     - ヘルプを表示
+
+Acknowledgements
+-----------------
+
+- [emisjerry (emisjerry)](https://github.com/emisjerry) - [#1],[#2],[Movie]
+
+[#1]: https://github.com/hymkor/sqlbless/issues/1
+[#2]: https://github.com/hymkor/sqlbless/issues/2
+[Movie]: https://youtu.be/_cxBQKpfUds
+
+Author
+------
+
+[hymkor (HAYAMA Kaoru)](https://github.com/hymkor)
+
+License
+-------
+
+MIT License

@@ -21,9 +21,9 @@ import (
 	"github.com/mattn/go-tty"
 
 	"github.com/hymkor/go-multiline-ny"
+	"github.com/hymkor/go-multiline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
-	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
 )
 
@@ -596,7 +596,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
-	editor.BindKey(keys.CtrlI, &completion.CmdCompletion2{
+	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
 		Enclosure:  `'"`,
 		Delimiter:  ",",
 		Postfix:    " ",

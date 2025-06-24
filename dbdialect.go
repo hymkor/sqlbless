@@ -12,6 +12,8 @@ type DBDialect struct {
 	Usage                 string
 	SqlForDesc            string
 	SqlForTab             string
+	TableField            string
+	ColumnField           string
 	DisplayDateTimeLayout string
 	TypeNameToConv        func(string) func(string) (string, error)
 	DSNFilter             func(string) (string, error)

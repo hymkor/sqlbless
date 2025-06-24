@@ -596,11 +596,19 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
+
+	completer := &completeType{
+		conn:        conn,
+		SqlForTab:   dbDialect.SqlForTab,
+		SqlForDesc:  dbDialect.SqlForDesc,
+		TableField:  dbDialect.TableField,
+		ColumnField: dbDialect.ColumnField,
+	}
 	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
-		Enclosure:  `'"`,
+		Enclosure:  `"'`,
 		Delimiter:  ",",
 		Postfix:    " ",
-		Candidates: sqlCandidates,
+		Candidates: completer.getCandidates,
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		for {

@@ -16,6 +16,8 @@ var Dialect = &sqlbless.DBDialect{
 	select 'TEMP_SCHEMA' AS SCHEMA,* FROM sqlite_temp_schema`,
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
+	TableField:            "tbl_name",
+	ColumnField:           "name",
 }
 
 func init() {

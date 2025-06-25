@@ -1,3 +1,5 @@
+* Parameters for the START command are now completed as filenames.
+
 v0.18.0
 =======
 Jun 25, 2025

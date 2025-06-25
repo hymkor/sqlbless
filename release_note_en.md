@@ -1,9 +1,10 @@
-* Updated go-readline-ny to v1.9.0
+* Updated go-readline-ny to v1.9.1
 * Updated go-multiline-ny to v0.21.0
     * Added yellow syntax highlighting for comments.
     * Switched to using `"go-multiline-ny/completion".CmdCompletionOrList`.
 * Added support for table name and column name completion (column name completion works only when the corresponding table name appears to the left of the cursor).
 * Fix duplicate reading of script content in START command
+* Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
 
 v0.17.0
 =======

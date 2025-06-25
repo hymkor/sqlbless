@@ -1,9 +1,10 @@
-* go-readline-ny をv1.9.0 へ更新
+* go-readline-ny をv1.9.1 へ更新
 * go-multiline-ny を v0.21.0 へ更新
     * コメントにも色(黄色)をつけるようにした
     * `"go-multiline-ny/completion".CmdCompletionOrList` を使うようにした
 * テーブル名・カラム名補完をサポート（ただし、カラム名補完はテーブル名がカーソルより左側に登場している時のみ）
 * STARTコマンドの中で、スクリプトの内容を重複して読んでしまう不具合を修正した
+* Go 1.20.14 でビルドし、Windows 7,8, Server2008以降で稼動できるようにした。
 
 v0.17.0
 =======

@@ -55,6 +55,8 @@ var postgresSpec = &sqlbless.DBDialect{
         from pg_tables`,
 	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
+	TableField:            "tablename",
+	ColumnField:           "name",
 }
 
 func init() {

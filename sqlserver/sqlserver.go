@@ -101,6 +101,8 @@ var sqlServerSpec = &sqlbless.DBDialect{
 	SqlForTab:             `select * from sys.objects`,
 	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
+	TableField:            "name",
+	ColumnField:           "name",
 }
 
 func init() {

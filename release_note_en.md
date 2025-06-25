@@ -1,3 +1,7 @@
+v0.18.0
+=======
+Jun 25, 2025
+
 * Updated go-readline-ny to v1.9.1
 * Updated go-multiline-ny to v0.21.0
     * Added yellow syntax highlighting for comments.

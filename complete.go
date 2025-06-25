@@ -13,6 +13,8 @@ type completeType struct {
 	SqlForDesc  string
 	TableField  string
 	ColumnField string
+	tableCache  []string
+	columnCache map[string][]string
 }
 
 func getSqlCommands() []string {
@@ -153,18 +155,27 @@ func queryOneColumn(ctx context.Context, conn canQuery, sqlStr, columnName strin
 }
 
 func (C *completeType) tables() []string {
-	values, _ := queryOneColumn(context.TODO(), C.conn, C.SqlForTab, C.TableField)
-	return values
+	if len(C.tableCache) <= 0 {
+		C.tableCache, _ = queryOneColumn(context.TODO(), C.conn, C.SqlForTab, C.TableField)
+	}
+	return C.tableCache
 }
 
 func (C *completeType) columns(tables []string) (result []string) {
+	if C.columnCache == nil {
+		C.columnCache = map[string][]string{}
+	}
 	ctx := context.TODO()
 	for _, tableName := range tables {
 		if tableName == "," || tableName == "" {
 			continue
 		}
-		sqlStr := strings.ReplaceAll(C.SqlForDesc, "{table_name}", tableName)
-		values, _ := queryOneColumn(ctx, C.conn, sqlStr, C.ColumnField, tableName)
+		values, ok := C.columnCache[tableName]
+		if !ok {
+			sqlStr := strings.ReplaceAll(C.SqlForDesc, "{table_name}", tableName)
+			values, _ = queryOneColumn(ctx, C.conn, sqlStr, C.ColumnField, tableName)
+			C.columnCache[tableName] = values
+		}
 		result = append(result, values...)
 	}
 	return

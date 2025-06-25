@@ -51,7 +51,13 @@ manifest:
 release:
 	gh release create -d --notes "" -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
-get :
-	cd "$(CURDIR)/cmd/sqlbless" && go get -u && go mod tidy
+get:
+	$(GO) get -u
+	$(GO) get golang.org/x/sys@v0.30.0
+	$(GO) get golang.org/x/text@v0.22.0
+	$(GO) get golang.org/x/term@v0.29.0 
+	$(GO) get golang.org/x/exp@v0.0.0-20240531132922-fd00a4e0eefc
+	$(GO) mod tidy
+# cd "$(CURDIR)/cmd/sqlbless" && $(GO) get -u && $(GO) mod tidy
 
 .PHONY: all test dist _dist clean manifest release

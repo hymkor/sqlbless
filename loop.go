@@ -236,7 +236,6 @@ func (script *Script) Read(context.Context) ([]string, error) {
 		buffer.WriteRune(ch)
 
 		if quoted == 0 {
-			buffer.WriteRune(ch)
 			code := buffer.String()
 			term := script.term
 			if _, ok := hasTerm(code, term); ok {

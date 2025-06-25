@@ -17,6 +17,8 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
     - MySQL
 - Allows editing database records directly, similar to a spreadsheet (with the `EDIT` command)
 - Auto commit is disabled.
+- Table name and column name completion
+    - column name completion works only when the corresponding table name appears to the left of the cursor
 
 ![image](./demo.gif)
 
@@ -32,6 +34,7 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 | `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
 | `ALT`-`P`, `Ctrl`-`Up`, `PageUp` | Insert the previous SQL (history)|
 | `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | Insert the next SQL (history) |
+| `TAB` | Table name and column name completion |
 
 [^semicolon]: `;` or the string specfied with the option `-term string`
 

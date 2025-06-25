@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/nyaosorg/go-readline-ny/completion"
 )
 
 type completeType struct {
@@ -93,6 +95,13 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 			nextKeyword = []string{"and", "or"}
 			candidates = func() []string {
 				return C.columns(tableNameInline)
+			}
+		} else if strings.EqualFold(word, "start") {
+			lastKeywordAt = i
+			nextKeyword = nil
+			candidates = func() []string {
+				v, _ := completion.PathComplete(fields[:i+1])
+				return v
 			}
 		} else {
 			if tableListNow && i < len(fields)-1 {

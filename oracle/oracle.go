@@ -52,6 +52,8 @@ var oracleSpec = &sqlbless.DBDialect{
 	SqlForTab:             `select * from tab`,
 	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        oracleTypeNameToConv,
+	TableField:            "tname",
+	ColumnField:           "name",
 }
 
 func init() {

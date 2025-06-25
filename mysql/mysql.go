@@ -81,6 +81,8 @@ var mySqlSpec = &sqlbless.DBDialect{
 	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 	DSNFilter:             mySQLDSNFilter,
+	TableField:            "TABLE_NAME",
+	ColumnField:           "NAME",
 }
 
 func init() {

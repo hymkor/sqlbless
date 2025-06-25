@@ -32,7 +32,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/nyaosorg/go-readline-skk v0.5.0 // indirect
-	github.com/nyaosorg/go-windows-mbcs v0.4.3 // indirect
+	github.com/nyaosorg/go-windows-mbcs v0.4.4 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/crypto v0.29.0 // indirect

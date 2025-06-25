@@ -60,8 +60,8 @@ github.com/nyaosorg/go-readline-ny v1.9.1 h1:TpQyXaNWtCN0TCRgUbGLMN8rKoPiwh2Xq58
 github.com/nyaosorg/go-readline-ny v1.9.1/go.mod h1:54AzdC//M5EzTWRdvUHv2ChuYgp58mRrStTlpxiCmT0=
 github.com/nyaosorg/go-readline-skk v0.5.0 h1:+YWtmWveOV2ovchQAP3AHdTa9yfd9rbFn+/ZyqEfw18=
 github.com/nyaosorg/go-readline-skk v0.5.0/go.mod h1:Fe48AMXOmzDXIz9wDu+BnfnALnrZrU1deema5D70sTA=
-github.com/nyaosorg/go-windows-mbcs v0.4.3 h1:4/qX+VhzvpINp4ptREYgTunMzIRBEasXsZL8uV4JhY4=
-github.com/nyaosorg/go-windows-mbcs v0.4.3/go.mod h1:80D9r2RNEPG2STQVD5tsgGB/SNkT6HS0ZlKufUn/F70=
+github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
+github.com/nyaosorg/go-windows-mbcs v0.4.4/go.mod h1:P610Wyc6LcgDbx2VZhwUQn02XRuwjqGK2l/3wox3auA=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c h1:+mdjkGKdHQG3305AYmdv1U2eRNDiU2ErMBj1gwrq8eQ=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c/go.mod h1:7rwL4CYBLnjLxUqIJNnCWiEdr3bn6IUYi15bNlnbCCU=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

@@ -1,5 +1,8 @@
 * Parameters for the START command are now completed as filenames.
 * EDIT, DESC, \D commands complete a table name now.
+* Update the SKK library: go-readline-skk to v0.6.0:
+    * Enabled conversion and word registration for words containing slashes in the conversion result
+    * Added support for evaluating certain Emacs Lisp forms in conversion results, such as `(concat)`, `(pwd)`, `(substring)`, and `(skk-current-date)` (but not `(lambda)` yet)
 
 v0.18.0
 =======

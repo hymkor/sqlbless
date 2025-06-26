@@ -3,6 +3,8 @@
 * Update the SKK library: go-readline-skk to v0.6.0:
     * Enabled conversion and word registration for words containing slashes in the conversion result
     * Added support for evaluating certain Emacs Lisp forms in conversion results, such as `(concat)`, `(pwd)`, `(substring)`, and `(skk-current-date)` (but not `(lambda)` yet)
+* Update the spread library: csvi to v1.14.0:
+    * Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v0.18.0
 =======

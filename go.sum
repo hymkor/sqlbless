@@ -21,8 +21,8 @@ github.com/golang-sql/sqlexp v0.1.0/go.mod h1:J4ad9Vo8ZCWQ2GMrC4UCQy1JpCbwU9m3EO
 github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd h1:gbpYu9NMq8jhDVbvlGkMFWCjLFlqqEZjEmObmhUy6Vo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.13.1 h1:u2oiS10eyVAZE0XvCY4OjshZFAs92ri0ClGZu7OGSCc=
-github.com/hymkor/csvi v1.13.1/go.mod h1:HDYihMs10HG4sk9cqRvEzKwLAbvXmZsaxmEx7xht6Jo=
+github.com/hymkor/csvi v1.14.0 h1:TZzVJYtwoml62X5CLIHHBntV3IpIwQmM8L0T7aiNIgI=
+github.com/hymkor/csvi v1.14.0/go.mod h1:HDYihMs10HG4sk9cqRvEzKwLAbvXmZsaxmEx7xht6Jo=
 github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvIh28VcWDhc=
 github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
 github.com/hymkor/go-multiline-ny v0.21.0 h1:dGxPlvL2dcJvT4jOSCfaeVvcSptbf5q+Z5F92Uc8l8g=

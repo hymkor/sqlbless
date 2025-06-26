@@ -1,3 +1,7 @@
+v0.19.0
+=======
+Sep 6, 2025
+
 * Parameters for the START command are now completed as filenames.
 * EDIT, DESC, \D commands complete a table name now.
 * Update the SKK library: go-readline-skk to v0.6.0:

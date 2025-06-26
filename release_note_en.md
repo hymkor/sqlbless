@@ -1,4 +1,5 @@
 * Parameters for the START command are now completed as filenames.
+* EDIT, DESC, \D commands complete a table name now.
 
 v0.18.0
 =======

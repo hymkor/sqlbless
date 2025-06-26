@@ -26,6 +26,7 @@ func getSqlCommands() []string {
 		"delete",
 		"desc",
 		"drop",
+		"edit",
 		"exit",
 		"history",
 		"insert",
@@ -47,10 +48,17 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 	lastKeywordAt := 0
 	var nextKeyword []string
 	for i, word := range fields {
-		if strings.EqualFold(word, "from") || strings.EqualFold(word, "table") {
+		if strings.EqualFold(word, "from") || strings.EqualFold(word, "edit") {
 			tableListNow = true
 			lastKeywordAt = i
 			nextKeyword = []string{"where"}
+			candidates = func() []string {
+				return C.tables()
+			}
+		} else if strings.EqualFold(word, "desc") || strings.EqualFold(word, "\\D") || strings.EqualFold(word, "table") {
+			tableListNow = true
+			lastKeywordAt = i
+			nextKeyword = nil
 			candidates = func() []string {
 				return C.tables()
 			}

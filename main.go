@@ -8,10 +8,12 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/hymkor/sqlbless/dbdialect"
 )
 
-func findDbDialect(args []string) (*DBDialect, []string, error) {
-	spec, ok := dbDialect[strings.ToUpper(args[0])]
+func findDbDialect(args []string) (*dbdialect.DBDialect, []string, error) {
+	spec, ok := dbdialect.DbDialects[strings.ToUpper(args[0])]
 	if ok {
 		if len(args) < 2 {
 			return nil, nil, errors.New("DSN String is not specified")
@@ -20,7 +22,7 @@ func findDbDialect(args []string) (*DBDialect, []string, error) {
 	}
 	scheme, _, ok := strings.Cut(args[0], ":")
 	if ok {
-		spec, ok = dbDialect[strings.ToUpper(scheme)]
+		spec, ok = dbdialect.DbDialects[strings.ToUpper(scheme)]
 		if ok {
 			return spec, []string{scheme, strings.Join(args, " ")}, nil
 		}
@@ -40,7 +42,7 @@ func usage() {
 	fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintln(w, "Example:")
-	for _, d := range dbDialect {
+	for _, d := range dbdialect.DbDialects {
 		fmt.Fprintf(w, "  %s\n", d.Usage)
 	}
 }

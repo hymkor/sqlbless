@@ -1,4 +1,4 @@
-package sqlbless
+package dbdialect
 
 import (
 	"errors"
@@ -62,8 +62,8 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	return time.Time{}, errors.New("not time format")
 }
 
-var dbDialect = map[string]*DBDialect{}
+var DbDialects = map[string]*DBDialect{}
 
 func RegisterDB(name string, setting *DBDialect) {
-	dbDialect[strings.ToUpper(name)] = setting
+	DbDialects[strings.ToUpper(name)] = setting
 }

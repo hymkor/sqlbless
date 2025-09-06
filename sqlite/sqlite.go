@@ -3,12 +3,12 @@ package sqlite
 import (
 	_ "github.com/glebarez/go-sqlite/compat"
 
-	"github.com/hymkor/sqlbless"
+	"github.com/hymkor/sqlbless/dbdialect"
 )
 
 const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
 
-var Dialect = &sqlbless.DBDialect{
+var Dialect = &dbdialect.DBDialect{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SqlForTab: `
 	select 'SCHEMA' AS SCHEMA,* from sqlite_master
@@ -21,5 +21,5 @@ var Dialect = &sqlbless.DBDialect{
 }
 
 func init() {
-	sqlbless.RegisterDB("SQLITE3", Dialect)
+	dbdialect.RegisterDB("SQLITE3", Dialect)
 }

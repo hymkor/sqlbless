@@ -25,6 +25,8 @@ import (
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
+
+	"github.com/hymkor/sqlbless/dbdialect"
 )
 
 func cutField(s string) (string, string) {
@@ -270,7 +272,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
 
 type Session struct {
 	DumpConfig RowToCsv
-	dbDialect  *DBDialect
+	dbDialect  *dbdialect.DBDialect
 	conn       *sql.DB
 	history    *History
 	tx         *sql.Tx
@@ -514,7 +516,7 @@ func newReservedWordPattern(list ...string) ReservedWordPattern {
 	return m
 }
 
-func (cfg Config) Run(driver, dataSourceName string, dbDialect *DBDialect) error {
+func (cfg Config) Run(driver, dataSourceName string, dbDialect *dbdialect.DBDialect) error {
 	conn, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)

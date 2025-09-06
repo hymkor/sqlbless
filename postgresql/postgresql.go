@@ -5,21 +5,21 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/hymkor/sqlbless"
+	"github.com/hymkor/sqlbless/dbdialect"
 )
 
 var postgresTypeNameToFormat = map[string][2]string{
-	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", sqlbless.DateTimeTzLayout},
-	"TIMESTAMP":   [2]string{"TIMESTAMP", sqlbless.DateTimeLayout},
-	"DATE":        [2]string{"DATE", sqlbless.DateOnlyLayout},
-	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", sqlbless.TimeTzLayout},
-	"TIME":        [2]string{"TIME", sqlbless.TimeTzLayout},
+	"TIMESTAMPTZ": [2]string{"TIMESTAMP WITH TIME ZONE", dbdialect.DateTimeTzLayout},
+	"TIMESTAMP":   [2]string{"TIMESTAMP", dbdialect.DateTimeLayout},
+	"DATE":        [2]string{"DATE", dbdialect.DateOnlyLayout},
+	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", dbdialect.TimeTzLayout},
+	"TIME":        [2]string{"TIME", dbdialect.TimeTzLayout},
 }
 
 func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 	if f, ok := postgresTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
-			dt, err := sqlbless.ParseAnyDateTime(s)
+			dt, err := dbdialect.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -29,7 +29,7 @@ func postgresTypeNameToConv(typeName string) func(string) (string, error) {
 	return nil
 }
 
-var postgresSpec = &sqlbless.DBDialect{
+var postgresSpec = &dbdialect.DBDialect{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
 	SqlForDesc: `
       select a.attnum as "ID",
@@ -53,12 +53,12 @@ var postgresSpec = &sqlbless.DBDialect{
 	SqlForTab: `
       select schemaname,tablename,tableowner
         from pg_tables`,
-	DisplayDateTimeLayout: sqlbless.DateTimeTzLayout,
+	DisplayDateTimeLayout: dbdialect.DateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
 	TableField:            "tablename",
 	ColumnField:           "name",
 }
 
 func init() {
-	sqlbless.RegisterDB("POSTGRES", postgresSpec)
+	dbdialect.RegisterDB("POSTGRES", postgresSpec)
 }

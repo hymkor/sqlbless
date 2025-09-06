@@ -1,4 +1,4 @@
-package sqlbless
+package spread
 
 import (
 	"errors"
@@ -8,6 +8,13 @@ import (
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 )
+
+type Spread struct {
+	HeaderLines int       // ss.DumpConfig.PrintType ? 3 : 1
+	Comma       byte      // ss.DumpConfig.Comma
+	Null        string    // ss.DumpConfig.Null
+	Spool       io.Writer // ss.spool
+}
 
 type _QuitCsvi struct{}
 
@@ -35,13 +42,13 @@ func (_QuitCsvi) Close() error {
 	return nil
 }
 
-type getKeyAndSize interface {
+type GetKeyAndSize interface {
 	GetKey() (string, error)
 	Size() (int, int, error)
 }
 
 type _AutoCsvi struct {
-	Tty getKeyAndSize
+	Tty GetKeyAndSize
 }
 
 func (_AutoCsvi) Calibrate() error {
@@ -87,7 +94,7 @@ const (
 	titleSuffix = "】"
 )
 
-func csvPager(title string, ss *Session, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
+func (ss *Spread) Pager(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -95,32 +102,26 @@ func csvPager(title string, ss *Session, automatic bool, csvWriteTo func(pOut io
 	if automatic {
 		cfg.Pilot = _QuitCsvi{}
 	}
-	_, err := callCsvi(ss, cfg, csvWriteTo, out)
+	_, err := ss.callCsvi(cfg, csvWriteTo, out)
 	return err
 }
 
-func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) (string, error), tty getKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (spread *Spread) Edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if ss.DumpConfig.PrintType {
-			if e.CursorRow.Index() < 3 {
-				return &csvi.CommandResult{}, nil
-			}
-		} else {
-			if e.CursorRow.Index() < 1 {
-				return &csvi.CommandResult{}, nil
-			}
+		if e.CursorRow.Index() < spread.HeaderLines {
+			return &csvi.CommandResult{}, nil
 		}
 		ce := &csvi.CellValidatedEvent{
-			Text: ss.DumpConfig.Null,
+			Text: spread.Null,
 			Row:  e.CursorRow.Index(),
 			Col:  e.CursorCol,
 		}
 		if _, err := validate(ce); err != nil {
 			return &csvi.CommandResult{Message: err.Error()}, nil
 		}
-		e.CursorRow.Replace(e.CursorCol, ss.DumpConfig.Null, &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)})
+		e.CursorRow.Replace(e.CursorCol, spread.Null, &uncsv.Mode{Comma: spread.Comma})
 		return &csvi.CommandResult{}, nil
 	}
 
@@ -146,7 +147,7 @@ func csvEdit(title string, ss *Session, validate func(*csvi.CellValidatedEvent) 
 	if tty != nil {
 		cfg.Pilot = &_AutoCsvi{Tty: tty}
 	}
-	result, err := callCsvi(ss, cfg, csvWriteTo, out)
+	result, err := spread.callCsvi(cfg, csvWriteTo, out)
 	if applyChange {
 		return result, err
 	}
@@ -176,21 +177,17 @@ func toOneLine(s, prefix, suffix string) string {
 	return buf.String()
 }
 
-func callCsvi(ss *Session, cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (spread *Spread) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
 	var err1 error
 	pIn, pOut := io.Pipe()
 	go func() {
-		err1 = csvWriteTo(tee(pOut, ss.spool))
+		err1 = csvWriteTo(tee(pOut, spread.Spool))
 		pOut.Close()
 	}()
 
-	cfg.Mode = &uncsv.Mode{Comma: byte(ss.DumpConfig.Comma)}
-	if ss.DumpConfig.PrintType {
-		cfg.HeaderLines = 3
-	} else {
-		cfg.HeaderLines = 1
-	}
+	cfg.Mode = &uncsv.Mode{Comma: spread.Comma}
+	cfg.HeaderLines = spread.HeaderLines
 	cfg.FixColumn = true
 	cfg.ProtectHeader = true
 

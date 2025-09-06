@@ -11,7 +11,11 @@ import (
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
+
+	"github.com/hymkor/sqlbless/spread"
 )
+
+type getKeyAndSize = spread.GetKeyAndSize
 
 type typeModified int
 
@@ -123,6 +127,21 @@ func doubleQuoteIfNeed(s string) string {
 	return s
 }
 
+func newSpread(ss *Session) *spread.Spread {
+	var hl int
+	if ss.DumpConfig.PrintType {
+		hl = 3
+	} else {
+		hl = 1
+	}
+	return &spread.Spread{
+		HeaderLines: hl,
+		Comma:       byte(ss.DumpConfig.Comma),
+		Null:        ss.DumpConfig.Null,
+		Spool:       ss.spool,
+	}
+}
+
 func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
 
 	var conn canQuery
@@ -214,7 +233,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	v := func(e *csvi.CellValidatedEvent) (string, error) {
 		return validateFunc[e.Col](e.Text)
 	}
-	editResult, err := csvEdit(command, ss, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
+	editResult, err := newSpread(ss).Edit(command, v, pilot.AutoPilotForCsvi(), func(pOut io.Writer) error {
 		_err := ss.DumpConfig.Dump(ctx, rows, pOut)
 		rows.Close()
 		return _err

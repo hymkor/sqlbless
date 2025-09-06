@@ -1,4 +1,4 @@
-package sqlbless
+package spread
 
 import (
 	"testing"

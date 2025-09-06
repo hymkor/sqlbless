@@ -9,11 +9,11 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 )
 
-type Spread struct {
-	HeaderLines int       // ss.DumpConfig.PrintType ? 3 : 1
-	Comma       byte      // ss.DumpConfig.Comma
-	Null        string    // ss.DumpConfig.Null
-	Spool       io.Writer // ss.spool
+type Viewer struct {
+	HeaderLines int
+	Comma       byte
+	Null        string
+	Spool       io.Writer
 }
 
 type _QuitCsvi struct{}
@@ -94,7 +94,7 @@ const (
 	titleSuffix = "】"
 )
 
-func (ss *Spread) Pager(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
+func (ss *Viewer) View(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -106,22 +106,22 @@ func (ss *Spread) Pager(title string, automatic bool, csvWriteTo func(pOut io.Wr
 	return err
 }
 
-func (spread *Spread) Edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if e.CursorRow.Index() < spread.HeaderLines {
+		if e.CursorRow.Index() < viewer.HeaderLines {
 			return &csvi.CommandResult{}, nil
 		}
 		ce := &csvi.CellValidatedEvent{
-			Text: spread.Null,
+			Text: viewer.Null,
 			Row:  e.CursorRow.Index(),
 			Col:  e.CursorCol,
 		}
 		if _, err := validate(ce); err != nil {
 			return &csvi.CommandResult{Message: err.Error()}, nil
 		}
-		e.CursorRow.Replace(e.CursorCol, spread.Null, &uncsv.Mode{Comma: spread.Comma})
+		e.CursorRow.Replace(e.CursorCol, viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
 		return &csvi.CommandResult{}, nil
 	}
 
@@ -147,7 +147,7 @@ func (spread *Spread) Edit(title string, validate func(*csvi.CellValidatedEvent)
 	if tty != nil {
 		cfg.Pilot = &_AutoCsvi{Tty: tty}
 	}
-	result, err := spread.callCsvi(cfg, csvWriteTo, out)
+	result, err := viewer.callCsvi(cfg, csvWriteTo, out)
 	if applyChange {
 		return result, err
 	}
@@ -177,17 +177,17 @@ func toOneLine(s, prefix, suffix string) string {
 	return buf.String()
 }
 
-func (spread *Spread) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (viewer *Viewer) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
 
 	var err1 error
 	pIn, pOut := io.Pipe()
 	go func() {
-		err1 = csvWriteTo(tee(pOut, spread.Spool))
+		err1 = csvWriteTo(tee(pOut, viewer.Spool))
 		pOut.Close()
 	}()
 
-	cfg.Mode = &uncsv.Mode{Comma: spread.Comma}
-	cfg.HeaderLines = spread.HeaderLines
+	cfg.Mode = &uncsv.Mode{Comma: viewer.Comma}
+	cfg.HeaderLines = viewer.HeaderLines
 	cfg.FixColumn = true
 	cfg.ProtectHeader = true
 

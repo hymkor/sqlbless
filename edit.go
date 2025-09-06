@@ -40,14 +40,14 @@ func continueOrAbort(getKey func() (string, error)) (bool, error) {
 	return ask2("Continue or abort [c/a] ", "cC", "aA", getKey)
 }
 
-func newSpread(ss *Session) *spread.Spread {
+func newViewer(ss *Session) *spread.Viewer {
 	var hl int
 	if ss.DumpConfig.PrintType {
 		hl = 3
 	} else {
 		hl = 1
 	}
-	return &spread.Spread{
+	return &spread.Viewer{
 		HeaderLines: hl,
 		Comma:       byte(ss.DumpConfig.Comma),
 		Null:        ss.DumpConfig.Null,
@@ -55,7 +55,8 @@ func newSpread(ss *Session) *spread.Spread {
 	}
 }
 
-func newEditSession(ss *Session, getKey func() (string, error)) *spread.Editor {
+func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
+
 	var conn canQuery
 	if ss.tx == nil {
 		conn = ss.conn
@@ -68,14 +69,14 @@ func newEditSession(ss *Session, getKey func() (string, error)) *spread.Editor {
 		Failure
 		AbortAll
 	)
+	getKey := pilot.GetKey
 	status := Success
 
-	return &spread.Editor{
-		Spread:    newSpread(ss),
-		CanQuery:  conn,
-		Null:      ss.DumpConfig.Null,
+	editor := &spread.Editor{
+		Viewer:    newViewer(ss),
+		Query:     conn.QueryContext,
 		DBDialect: ss.dbDialect,
-		DML: func(ctx context.Context, dmlSql string) (err error) {
+		Exec: func(ctx context.Context, dmlSql string) (err error) {
 			if status == Failure {
 				if ans, _ := continueOrAbort(getKey); ans {
 					status = Success
@@ -95,22 +96,17 @@ func newEditSession(ss *Session, getKey func() (string, error)) *spread.Editor {
 			}
 			return
 		},
-	}
-}
-
-func doEdit(ctx context.Context, ss_ *Session, command string, pilot CommandIn, out io.Writer) error {
-
-	ss := newEditSession(ss_, pilot.GetKey)
-	ss.Auto = pilot.AutoPilotForCsvi()
-	ss.Dump = func(ctx context.Context, rows *sql.Rows, w io.Writer) error {
-		err := ss_.DumpConfig.Dump(ctx, rows, w)
-		rows.Close()
-		return err
+		Auto: pilot.AutoPilotForCsvi(),
+		Dump: func(ctx context.Context, rows *sql.Rows, w io.Writer) error {
+			err := ss.DumpConfig.Dump(ctx, rows, w)
+			rows.Close()
+			return err
+		},
 	}
 
 	// replace `edit ` to `select * from `
 	_, tableAndWhere := cutField(command)
-	return ss.Edit(ctx, tableAndWhere, out)
+	return editor.Edit(ctx, tableAndWhere, out)
 }
 
 func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {

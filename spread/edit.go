@@ -16,10 +16,6 @@ import (
 	"github.com/hymkor/sqlbless/dbdialect"
 )
 
-type CanQuery interface {
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-}
-
 func cutField(s string) (string, string) {
 	s = strings.TrimLeft(s, " \n\r\t\v")
 	i := 0
@@ -94,13 +90,12 @@ func doubleQuoteIfNeed(s string) string {
 }
 
 type Editor struct {
-	*Spread
-	CanQuery
-	Null string
+	*Viewer
 	*dbdialect.DBDialect
-	DML  func(ctx context.Context, sql string) error
-	Dump func(context.Context, *sql.Rows, io.Writer) error
-	Auto GetKeyAndSize
+	Query func(context.Context, string, ...any) (*sql.Rows, error)
+	Exec  func(context.Context, string) error
+	Dump  func(context.Context, *sql.Rows, io.Writer) error
+	Auto  GetKeyAndSize
 }
 
 func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
@@ -108,7 +103,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 
 	table, _ := cutField(tableAndWhere)
 
-	rows, err := ss.QueryContext(ctx, query)
+	rows, err := ss.Query(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
@@ -184,7 +179,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 		return validateFunc[e.Col](e.Text)
 	}
 
-	editResult, err := ss.Spread.Edit(tableAndWhere, v, ss.Auto, func(w io.Writer) error {
+	editResult, err := ss.Viewer.edit(tableAndWhere, v, ss.Auto, func(w io.Writer) error {
 		return ss.Dump(ctx, rows, w)
 	}, out)
 
@@ -255,7 +250,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		err = ss.DML(ctx, dmlSql)
+		err = ss.Exec(ctx, dmlSql)
 		return true
 	})
 	if err != nil {
@@ -273,7 +268,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 			return false
 		}
 		sql.WriteString(v)
-		err = ss.DML(ctx, sql.String())
+		err = ss.Exec(ctx, sql.String())
 		return true
 	})
 	return err

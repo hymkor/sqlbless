@@ -1,4 +1,4 @@
-package gqcs
+package spread
 
 import (
 	"context"
@@ -14,10 +14,7 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 
 	"github.com/hymkor/sqlbless/dbdialect"
-	"github.com/hymkor/sqlbless/spread"
 )
-
-type getKeyAndSize = spread.GetKeyAndSize
 
 type CanQuery interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
@@ -97,13 +94,13 @@ func doubleQuoteIfNeed(s string) string {
 }
 
 type Editor struct {
-	*spread.Spread
+	*Spread
 	CanQuery
 	Null string
 	*dbdialect.DBDialect
 	DML  func(ctx context.Context, sql string) error
 	Dump func(context.Context, *sql.Rows, io.Writer) error
-	Auto getKeyAndSize
+	Auto GetKeyAndSize
 }
 
 func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {

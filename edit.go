@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hymkor/sqlbless/gqcs"
 	"github.com/hymkor/sqlbless/spread"
 )
 
@@ -56,7 +55,7 @@ func newSpread(ss *Session) *spread.Spread {
 	}
 }
 
-func newEditSession(ss *Session, getKey func() (string, error)) *gqcs.Editor {
+func newEditSession(ss *Session, getKey func() (string, error)) *spread.Editor {
 	var conn canQuery
 	if ss.tx == nil {
 		conn = ss.conn
@@ -71,7 +70,7 @@ func newEditSession(ss *Session, getKey func() (string, error)) *gqcs.Editor {
 	)
 	status := Success
 
-	return &gqcs.Editor{
+	return &spread.Editor{
 		Spread:    newSpread(ss),
 		CanQuery:  conn,
 		Null:      ss.DumpConfig.Null,

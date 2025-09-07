@@ -1,4 +1,4 @@
-package dbdialect
+package dialect
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type DBDialect struct {
+type Entry struct {
 	Usage                 string
 	SqlForDesc            string
 	SqlForTab             string
@@ -19,7 +19,7 @@ type DBDialect struct {
 	DSNFilter             func(string) (string, error)
 }
 
-func (D *DBDialect) TryTypeNameToConv(typeName string) func(string) (string, error) {
+func (D *Entry) TryTypeNameToConv(typeName string) func(string) (string, error) {
 	if D.TypeNameToConv == nil {
 		return nil
 	}
@@ -62,8 +62,21 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	return time.Time{}, errors.New("not time format")
 }
 
-var DbDialects = map[string]*DBDialect{}
+var registry = map[string]*Entry{}
 
-func RegisterDB(name string, setting *DBDialect) {
-	DbDialects[strings.ToUpper(name)] = setting
+func Register(name string, setting *Entry) {
+	registry[strings.ToUpper(name)] = setting
+}
+
+func Find(name string) (*Entry, bool) {
+	r, ok := registry[strings.ToUpper(name)]
+	return r, ok
+}
+
+func Each(yield func(string, *Entry) bool) {
+	for key, val := range registry {
+		if !yield(key, val) {
+			break
+		}
+	}
 }

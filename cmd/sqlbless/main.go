@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/hymkor/sqlbless"
-	_ "github.com/hymkor/sqlbless/dbdialect/mysql"
-	_ "github.com/hymkor/sqlbless/dbdialect/oracle"
-	_ "github.com/hymkor/sqlbless/dbdialect/postgresql"
-	_ "github.com/hymkor/sqlbless/dbdialect/sqlite"
-	_ "github.com/hymkor/sqlbless/dbdialect/sqlserver"
+	_ "github.com/hymkor/sqlbless/dialect/mysql"
+	_ "github.com/hymkor/sqlbless/dialect/oracle"
+	_ "github.com/hymkor/sqlbless/dialect/postgresql"
+	_ "github.com/hymkor/sqlbless/dialect/sqlite"
+	_ "github.com/hymkor/sqlbless/dialect/sqlserver"
 )
 
 func main() {

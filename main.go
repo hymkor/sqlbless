@@ -9,11 +9,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/hymkor/sqlbless/dbdialect"
+	"github.com/hymkor/sqlbless/dialect"
 )
 
-func findDbDialect(args []string) (*dbdialect.DBDialect, []string, error) {
-	spec, ok := dbdialect.DbDialects[strings.ToUpper(args[0])]
+func findDbDialect(args []string) (*dialect.Entry, []string, error) {
+	spec, ok := dialect.Find(args[0])
 	if ok {
 		if len(args) < 2 {
 			return nil, nil, errors.New("DSN String is not specified")
@@ -22,7 +22,7 @@ func findDbDialect(args []string) (*dbdialect.DBDialect, []string, error) {
 	}
 	scheme, _, ok := strings.Cut(args[0], ":")
 	if ok {
-		spec, ok = dbdialect.DbDialects[strings.ToUpper(scheme)]
+		spec, ok = dialect.Find(scheme)
 		if ok {
 			return spec, []string{scheme, strings.Join(args, " ")}, nil
 		}
@@ -42,9 +42,12 @@ func usage() {
 	fmt.Fprintf(w, "Usage: %s {-options} [DRIVERNAME] DATASOURCENAME\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintln(w, "Example:")
-	for _, d := range dbdialect.DbDialects {
-		fmt.Fprintf(w, "  %s\n", d.Usage)
-	}
+	dialect.Each(
+		func(_ string, d *dialect.Entry) bool {
+			fmt.Fprintf(w, "  %s\n", d.Usage)
+			return true
+		},
+	)
 }
 
 // NewConfigFromFlag returns the constructor of Config from flag variables.

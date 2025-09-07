@@ -6,20 +6,20 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/hymkor/sqlbless/dbdialect"
+	"github.com/hymkor/sqlbless/dialect"
 )
 
 var mySQLTypeNameToFormat = map[string]string{
-	"DATETIME":  dbdialect.DateTimeLayout,
+	"DATETIME":  dialect.DateTimeLayout,
 	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
-	"TIME":      dbdialect.TimeOnlyLayout,
-	"DATE":      dbdialect.DateOnlyLayout,
+	"TIME":      dialect.TimeOnlyLayout,
+	"DATE":      dialect.DateOnlyLayout,
 }
 
 func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
 	if format, ok := mySQLTypeNameToFormat[typeName]; ok {
 		return func(s string) (string, error) {
-			dt, err := dbdialect.ParseAnyDateTime(s)
+			dt, err := dialect.ParseAnyDateTime(s)
 			if err != nil {
 				return "", err
 			}
@@ -58,7 +58,7 @@ func mySQLDSNFilter(dsn string) (string, error) {
 	return newdsn.String(), nil
 }
 
-var mySqlSpec = &dbdialect.DBDialect{
+var mySqlSpec = &dialect.Entry{
 	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
 	SqlForDesc: `
         select ordinal_position as "ID",
@@ -78,7 +78,7 @@ var mySqlSpec = &dbdialect.DBDialect{
          where table_name = ?
          order by ordinal_position`,
 	SqlForTab:             `select * from information_schema.tables`,
-	DisplayDateTimeLayout: dbdialect.DateTimeTzLayout,
+	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
 	DSNFilter:             mySQLDSNFilter,
 	TableField:            "TABLE_NAME",
@@ -86,5 +86,5 @@ var mySqlSpec = &dbdialect.DBDialect{
 }
 
 func init() {
-	dbdialect.RegisterDB("MYSQL", mySqlSpec)
+	dialect.Register("MYSQL", mySqlSpec)
 }

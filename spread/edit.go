@@ -13,7 +13,7 @@ import (
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 
-	"github.com/hymkor/sqlbless/dbdialect"
+	"github.com/hymkor/sqlbless/dialect"
 )
 
 func cutField(s string) (string, string) {
@@ -91,11 +91,11 @@ func doubleQuoteIfNeed(s string) string {
 
 type Editor struct {
 	*Viewer
-	*dbdialect.DBDialect
-	Query func(context.Context, string, ...any) (*sql.Rows, error)
-	Exec  func(context.Context, string) error
-	Dump  func(context.Context, *sql.Rows, io.Writer) error
-	Auto  GetKeyAndSize
+	DBDialect *dialect.Entry
+	Query     func(context.Context, string, ...any) (*sql.Rows, error)
+	Exec      func(context.Context, string) error
+	Dump      func(context.Context, *sql.Rows, io.Writer) error
+	Auto      GetKeyAndSize
 }
 
 func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
@@ -122,7 +122,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
 		_ct := ct
-		if conv := ss.TryTypeNameToConv(name); conv != nil {
+		if conv := ss.DBDialect.TryTypeNameToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
 				if s == ss.Null {

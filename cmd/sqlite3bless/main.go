@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/hymkor/sqlbless"
-	"github.com/hymkor/sqlbless/sqlite"
+	"github.com/hymkor/sqlbless/dialect/sqlite"
 )
 
 func mains() error {
@@ -16,9 +16,9 @@ func mains() error {
 	args := flag.Args()
 	cfg := cfgSetup()
 	if len(args) < 1 {
-		return errors.New("Usage: litbless {DBPATH or :memory:}")
+		return errors.New("Usage: sqlite3bless {DBPATH or :memory:}")
 	}
-	return cfg.Run("sqlite3", args[0], sqlite.Dialect)
+	return cfg.Run("sqlite3", args[0], sqlite.Entry)
 }
 
 func main() {

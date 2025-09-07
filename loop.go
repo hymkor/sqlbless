@@ -276,7 +276,7 @@ type Session struct {
 	conn       *sql.DB
 	history    *History
 	tx         *sql.Tx
-	spool      FilterSource
+	spool      writeNameCloser
 	automatic  bool
 	term       string
 	crlf       bool
@@ -389,7 +389,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 					if ss.crlf {
-						ss.spool = newFilter(fd)
+						ss.spool = newLfToCrlf(fd)
 					} else {
 						ss.spool = fd
 					}

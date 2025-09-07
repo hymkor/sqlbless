@@ -6,11 +6,11 @@ import (
 	"golang.org/x/text/transform"
 )
 
-type lfToCrlf struct{}
+type lfToCrlfTransformer struct{}
 
-func (t lfToCrlf) Reset() {}
+func (t lfToCrlfTransformer) Reset() {}
 
-func (f lfToCrlf) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err error) {
+func (f lfToCrlfTransformer) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err error) {
 	for _, c := range src {
 		if c == '\n' {
 			if len(dst) < 2 {
@@ -33,18 +33,18 @@ func (f lfToCrlf) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err er
 	return nDst, nSrc, nil
 }
 
-type FilterSource interface {
+type writeNameCloser interface {
 	Write([]byte) (int, error)
 	Name() string
 	Close() error
 }
 
-type Filter struct {
-	body   FilterSource
+type lfToCrlf struct {
+	body   writeNameCloser
 	filter io.WriteCloser
 }
 
-func (s *Filter) Write(b []byte) (int, error) {
+func (s *lfToCrlf) Write(b []byte) (int, error) {
 	if s.filter != nil {
 		return s.filter.Write(b)
 	} else {
@@ -53,20 +53,20 @@ func (s *Filter) Write(b []byte) (int, error) {
 	}
 }
 
-func (s *Filter) Close() error {
+func (s *lfToCrlf) Close() error {
 	if s.filter != nil {
 		s.filter.Close()
 	}
 	return s.body.Close()
 }
 
-func (s *Filter) Name() string {
+func (s *lfToCrlf) Name() string {
 	return s.body.Name()
 }
 
-func newFilter(fd FilterSource) *Filter {
-	filter := transform.NewWriter(fd, lfToCrlf{})
-	return &Filter{
+func newLfToCrlf(fd writeNameCloser) *lfToCrlf {
+	filter := transform.NewWriter(fd, lfToCrlfTransformer{})
+	return &lfToCrlf{
 		filter: filter,
 		body:   fd,
 	}

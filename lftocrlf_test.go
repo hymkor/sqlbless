@@ -13,7 +13,7 @@ func TestLfToCrLf(t *testing.T) {
 	expect := "hogehoge\r\nahahah\r\nihihi"
 
 	var resultBuffer strings.Builder
-	w := transform.NewWriter(&resultBuffer, lfToCrlf{})
+	w := transform.NewWriter(&resultBuffer, lfToCrlfTransformer{})
 	io.Copy(w, strings.NewReader(source))
 	result := resultBuffer.String()
 

@@ -29,6 +29,7 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
+	"github.com/hymkor/sqlbless/internal/rowstocsv"
 	"github.com/hymkor/sqlbless/internal/sqlcompletion"
 )
 
@@ -274,7 +275,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
 }
 
 type Session struct {
-	DumpConfig RowToCsv
+	DumpConfig rowstocsv.RowToCsv
 	Dialect    *dialect.Entry
 	conn       *sql.DB
 	history    *history.History

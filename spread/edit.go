@@ -91,25 +91,29 @@ func doubleQuoteIfNeed(s string) string {
 
 type Editor struct {
 	*Viewer
-	DBDialect *dialect.Entry
-	Query     func(context.Context, string, ...any) (*sql.Rows, error)
-	Exec      func(context.Context, string) error
-	Dump      func(context.Context, *sql.Rows, io.Writer) error
-	Auto      GetKeyAndSize
+	Dialect *dialect.Entry
+	Query   func(context.Context, string, ...any) (*sql.Rows, error)
+	Exec    func(context.Context, string) error
+	Dump    func(context.Context, *sql.Rows, io.Writer) error
+	Auto    GetKeyAndSize
 }
 
-func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
+func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
 	query := "SELECT * FROM " + tableAndWhere
 
 	table, _ := cutField(tableAndWhere)
 
-	rows, err := ss.Query(ctx, query)
+	rows, err := editor.Query(ctx, query)
 	if err != nil {
-		return fmt.Errorf("query: %[1]w (%[1]T)", err)
+		return err
 	}
+	defer func() {
+		if rows != nil {
+			rows.Close()
+		}
+	}()
 	columns, err := rows.Columns()
 	if err != nil {
-		rows.Close()
 		return err
 	}
 	columnTypes, err := rows.ColumnTypes()
@@ -122,10 +126,10 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
 		_ct := ct
-		if conv := ss.DBDialect.TryTypeNameToConv(name); conv != nil {
+		if conv := editor.Dialect.TryTypeNameToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
-				if s == ss.Null {
+				if s == editor.Null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
 						return "", errors.New("column is NOT NULL")
 					}
@@ -149,7 +153,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 				return s, nil
 			})
 			v = func(s string) (string, error) {
-				if s == ss.Null {
+				if s == editor.Null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
 						return "", errors.New("column is NOT NULL")
 					}
@@ -165,7 +169,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil
 			})
 			v = func(s string) (string, error) {
-				if s == ss.Null {
+				if s == editor.Null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
 						return "", errors.New("column is NOT NULL")
 					}
@@ -179,18 +183,21 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 		return validateFunc[e.Col](e.Text)
 	}
 
-	editResult, err := ss.Viewer.edit(tableAndWhere, v, ss.Auto, func(w io.Writer) error {
-		return ss.Dump(ctx, rows, w)
+	changes, err := editor.Viewer.edit(tableAndWhere, v, editor.Auto, func(w io.Writer) error {
+		err := editor.Dump(ctx, rows, w)
+		rows.Close()
+		rows = nil
+		return err
 	}, out)
 
 	if err != nil && err != io.EOF {
 		return err
 	}
-	if editResult == nil {
+	if changes == nil {
 		return nil
 	}
 
-	editResult.Each(func(row *uncsv.Row) bool {
+	changes.Each(func(row *uncsv.Row) bool {
 		var dmlSql string
 		switch csvRowModified(row) {
 		case notModified:
@@ -202,7 +209,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 				if i > 0 {
 					sql.WriteByte(',')
 				}
-				if c.Text() == ss.Null {
+				if c.Text() == editor.Null {
 					sql.WriteString("NULL")
 				} else {
 					var v string
@@ -224,7 +231,7 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 
 			for i, c := range row.Cell {
 				if c.Modified() {
-					if c.Text() == ss.Null {
+					if c.Text() == editor.Null {
 						fmt.Fprintf(&sql, "%s%s = NULL ",
 							del,
 							doubleQuoteIfNeed(columns[i]))
@@ -243,32 +250,32 @@ func (ss *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer)
 				}
 			}
 			var v string
-			v, err = createWhere(row, columns, quoteFunc, ss.Null)
+			v, err = createWhere(row, columns, quoteFunc, editor.Null)
 			if err != nil {
 				return false
 			}
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		err = ss.Exec(ctx, dmlSql)
+		err = editor.Exec(ctx, dmlSql)
 		return true
 	})
 	if err != nil {
 		return err
 	}
-	editResult.RemovedRows(func(row *uncsv.Row) bool {
+	changes.RemovedRows(func(row *uncsv.Row) bool {
 		if csvRowIsNew(row) {
 			return true
 		}
 		var sql strings.Builder
 		fmt.Fprintf(&sql, "DELETE FROM %s", table)
 		var v string
-		v, err = createWhere(row, columns, quoteFunc, ss.Null)
+		v, err = createWhere(row, columns, quoteFunc, editor.Null)
 		if err != nil {
 			return false
 		}
 		sql.WriteString(v)
-		err = ss.Exec(ctx, sql.String())
+		err = editor.Exec(ctx, sql.String())
 		return true
 	})
 	return err

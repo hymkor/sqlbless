@@ -94,7 +94,7 @@ const (
 	titleSuffix = "】"
 )
 
-func (ss *Viewer) View(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
+func (viewer *Viewer) View(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -102,7 +102,7 @@ func (ss *Viewer) View(title string, automatic bool, csvWriteTo func(pOut io.Wri
 	if automatic {
 		cfg.Pilot = _QuitCsvi{}
 	}
-	_, err := ss.callCsvi(cfg, csvWriteTo, out)
+	_, err := viewer.callCsvi(cfg, csvWriteTo, out)
 	return err
 }
 
@@ -182,7 +182,13 @@ func (viewer *Viewer) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer)
 	var err1 error
 	pIn, pOut := io.Pipe()
 	go func() {
-		err1 = csvWriteTo(tee(pOut, viewer.Spool))
+		var w io.Writer
+		if viewer.Spool != nil {
+			w = io.MultiWriter(pOut, viewer.Spool)
+		} else {
+			w = pOut
+		}
+		err1 = csvWriteTo(w)
 		pOut.Close()
 	}()
 

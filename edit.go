@@ -73,9 +73,9 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	status := Success
 
 	editor := &spread.Editor{
-		Viewer:    newViewer(ss),
-		Query:     conn.QueryContext,
-		DBDialect: ss.dbDialect,
+		Viewer:  newViewer(ss),
+		Query:   conn.QueryContext,
+		Dialect: ss.dbDialect,
 		Exec: func(ctx context.Context, dmlSql string) (err error) {
 			if status == Failure {
 				if ans, _ := continueOrAbort(getKey); ans {
@@ -98,9 +98,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 		},
 		Auto: pilot.AutoPilotForCsvi(),
 		Dump: func(ctx context.Context, rows *sql.Rows, w io.Writer) error {
-			err := ss.DumpConfig.Dump(ctx, rows, w)
-			rows.Close()
-			return err
+			return ss.DumpConfig.Dump(ctx, rows, w)
 		},
 	}
 

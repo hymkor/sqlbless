@@ -28,22 +28,22 @@ type _RowsI interface {
 	Scan(dest ...any) error
 }
 
-type _UnreadRows struct {
+type unreadRows struct {
 	*sql.Rows
 	unread bool
 }
 
-func rowsHasNext(r *sql.Rows) *_UnreadRows {
+func rowsHasNext(r *sql.Rows) (*unreadRows, bool) {
 	if !r.Next() {
-		return nil
+		return nil, false
 	}
-	return &_UnreadRows{
+	return &unreadRows{
 		Rows:   r,
 		unread: true,
-	}
+	}, true
 }
 
-func (r *_UnreadRows) Next() bool {
+func (r *unreadRows) Next() bool {
 	if r.unread {
 		r.unread = false
 		return true

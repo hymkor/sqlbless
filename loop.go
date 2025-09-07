@@ -56,8 +56,8 @@ func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) err
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
-	_rows := rowsHasNext(rows)
-	if _rows == nil {
+	_rows, ok := rowsHasNext(rows)
+	if !ok {
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
@@ -173,8 +173,8 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	if err != nil {
 		return err
 	}
-	_rows := rowsHasNext(rows)
-	if _rows == nil {
+	_rows, ok := rowsHasNext(rows)
+	if !ok {
 		rows.Close()
 		if table == "" {
 			return errors.New("no tables are found")

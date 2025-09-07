@@ -27,6 +27,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/keys"
 
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/internal/history"
 )
 
 func cutField(s string) (string, string) {
@@ -274,7 +275,7 @@ type Session struct {
 	DumpConfig RowToCsv
 	Dialect    *dialect.Entry
 	conn       *sql.DB
-	history    *History
+	history    *history.History
 	tx         *sql.Tx
 	spool      writeNameCloser
 	automatic  bool
@@ -430,7 +431,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			echo(ss.spool, query)
 			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))
 			for i, end := 0, ss.history.Len(); i < end; i++ {
-				text, stamp := ss.history.textAndStamp(i)
+				text, stamp := ss.history.TextAndStamp(i)
 				csvw.Write([]string{
 					strconv.Itoa(i),
 					stamp.Local().Format(time.DateTime),
@@ -527,7 +528,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		return err
 	}
 
-	var history History
+	var history history.History
 
 	session := &Session{
 		Dialect:   dbDialect,

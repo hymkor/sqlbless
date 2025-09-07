@@ -42,18 +42,14 @@ func cutField(s string) (string, string) {
 	return s[:i], s[i:]
 }
 
-type canQuery interface {
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-}
-
 func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) error {
-	var conn canQuery
-	if ss.tx == nil {
-		conn = ss.conn
+	var rows *sql.Rows
+	var err error
+	if ss.tx != nil {
+		rows, err = ss.tx.QueryContext(ctx, query)
 	} else {
-		conn = ss.tx
+		rows, err = ss.conn.QueryContext(ctx, query)
 	}
-	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}

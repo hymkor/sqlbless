@@ -55,14 +55,6 @@ func newViewer(ss *Session) *spread.Viewer {
 }
 
 func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
-
-	var conn canQuery
-	if ss.tx == nil {
-		conn = ss.conn
-	} else {
-		conn = ss.tx
-	}
-
 	const (
 		Success = iota
 		Failure
@@ -73,7 +65,6 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 
 	editor := &spread.Editor{
 		Viewer:  newViewer(ss),
-		Query:   conn.QueryContext,
 		Dialect: ss.Dialect,
 		Exec: func(ctx context.Context, dmlSql string) (err error) {
 			if status == Failure {
@@ -101,6 +92,11 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
 		editor.Auto = a
+	}
+	if ss.tx == nil {
+		editor.Query = ss.conn.QueryContext
+	} else {
+		editor.Query = ss.tx.QueryContext
 	}
 
 	// replace `edit ` to `select * from `

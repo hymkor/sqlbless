@@ -1,4 +1,4 @@
-package sqlbless
+package lftocrlf
 
 import (
 	"io"
@@ -33,18 +33,18 @@ func (f lfToCrlfTransformer) Transform(dst, src []byte, atEOF bool) (nDst, nSrc 
 	return nDst, nSrc, nil
 }
 
-type writeNameCloser interface {
+type WriteNameCloser interface {
 	Write([]byte) (int, error)
 	Name() string
 	Close() error
 }
 
-type lfToCrlf struct {
-	body   writeNameCloser
+type LfToCrlf struct {
+	body   WriteNameCloser
 	filter io.WriteCloser
 }
 
-func (s *lfToCrlf) Write(b []byte) (int, error) {
+func (s *LfToCrlf) Write(b []byte) (int, error) {
 	if s.filter != nil {
 		return s.filter.Write(b)
 	} else {
@@ -53,20 +53,20 @@ func (s *lfToCrlf) Write(b []byte) (int, error) {
 	}
 }
 
-func (s *lfToCrlf) Close() error {
+func (s *LfToCrlf) Close() error {
 	if s.filter != nil {
 		s.filter.Close()
 	}
 	return s.body.Close()
 }
 
-func (s *lfToCrlf) Name() string {
+func (s *LfToCrlf) Name() string {
 	return s.body.Name()
 }
 
-func newLfToCrlf(fd writeNameCloser) *lfToCrlf {
+func New(fd WriteNameCloser) *LfToCrlf {
 	filter := transform.NewWriter(fd, lfToCrlfTransformer{})
-	return &lfToCrlf{
+	return &LfToCrlf{
 		filter: filter,
 		body:   fd,
 	}

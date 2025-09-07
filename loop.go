@@ -28,6 +28,7 @@ import (
 
 	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/history"
+	"github.com/hymkor/sqlbless/internal/lftocrlf"
 )
 
 func cutField(s string) (string, string) {
@@ -277,7 +278,7 @@ type Session struct {
 	conn       *sql.DB
 	history    *history.History
 	tx         *sql.Tx
-	spool      writeNameCloser
+	spool      lftocrlf.WriteNameCloser
 	automatic  bool
 	term       string
 	crlf       bool
@@ -390,7 +391,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
 					if ss.crlf {
-						ss.spool = newLfToCrlf(fd)
+						ss.spool = lftocrlf.New(fd)
 					} else {
 						ss.spool = fd
 					}

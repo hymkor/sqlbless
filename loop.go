@@ -29,6 +29,7 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
+	"github.com/hymkor/sqlbless/internal/sqlcompletion"
 )
 
 func cutField(s string) (string, string) {
@@ -462,26 +463,6 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 	}
 }
 
-func sqlCandidates(field []string) (fullnames []string, basenames []string) {
-	if len(field) <= 1 {
-		fullnames = []string{
-			"ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT",
-			"HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL",
-			"START", "TRUNCATE", "UPDATE", "\\D",
-		}
-	} else if len(field) >= 5 {
-		fullnames = []string{
-			"AND", "FROM", "INTO", "OR", "WHERE",
-		}
-	} else if len(field) >= 3 {
-		fullnames = []string{
-			"FROM", "INTO",
-		}
-	}
-	basenames = fullnames
-	return
-}
-
 type Config struct {
 	Auto           string
 	Term           string
@@ -600,18 +581,11 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	editor.SetHistory(&history)
 	editor.SetWriter(colorable.NewColorableStdout())
 
-	completer := &completeType{
-		conn:        conn,
-		SqlForTab:   dbDialect.SqlForTab,
-		SqlForDesc:  dbDialect.SqlForDesc,
-		TableField:  dbDialect.TableField,
-		ColumnField: dbDialect.ColumnField,
-	}
 	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
 		Enclosure:  `"'`,
 		Delimiter:  ",",
 		Postfix:    " ",
-		Candidates: completer.getCandidates,
+		Candidates: sqlcompletion.New(dbDialect, conn),
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		for {

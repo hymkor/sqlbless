@@ -1,4 +1,4 @@
-package sqlbless
+package sqlcompletion
 
 import (
 	"context"
@@ -7,10 +7,16 @@ import (
 	"strings"
 
 	"github.com/nyaosorg/go-readline-ny/completion"
+
+	"github.com/hymkor/sqlbless/dialect"
 )
 
+type CanQuery interface {
+	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+}
+
 type completeType struct {
-	conn        canQuery
+	Conn        CanQuery
 	SqlForTab   string
 	SqlForDesc  string
 	TableField  string
@@ -124,7 +130,7 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 	return result, result
 }
 
-func queryOneColumn(ctx context.Context, conn canQuery, sqlStr, columnName string, args ...any) ([]string, error) {
+func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName string, args ...any) ([]string, error) {
 	rows, err := conn.QueryContext(ctx, sqlStr, args...)
 	if err != nil {
 		return nil, err
@@ -173,7 +179,7 @@ func queryOneColumn(ctx context.Context, conn canQuery, sqlStr, columnName strin
 
 func (C *completeType) tables() []string {
 	if len(C.tableCache) <= 0 {
-		C.tableCache, _ = queryOneColumn(context.TODO(), C.conn, C.SqlForTab, C.TableField)
+		C.tableCache, _ = queryOneColumn(context.TODO(), C.Conn, C.SqlForTab, C.TableField)
 	}
 	return C.tableCache
 }
@@ -190,10 +196,21 @@ func (C *completeType) columns(tables []string) (result []string) {
 		values, ok := C.columnCache[tableName]
 		if !ok {
 			sqlStr := strings.ReplaceAll(C.SqlForDesc, "{table_name}", tableName)
-			values, _ = queryOneColumn(ctx, C.conn, sqlStr, C.ColumnField, tableName)
+			values, _ = queryOneColumn(ctx, C.Conn, sqlStr, C.ColumnField, tableName)
 			C.columnCache[tableName] = values
 		}
 		result = append(result, values...)
 	}
 	return
+}
+
+func New(d *dialect.Entry, c CanQuery) func([]string) ([]string, []string) {
+	completer := &completeType{
+		Conn:        c,
+		SqlForTab:   d.SqlForTab,
+		SqlForDesc:  d.SqlForDesc,
+		TableField:  d.TableField,
+		ColumnField: d.ColumnField,
+	}
+	return completer.getCandidates
 }

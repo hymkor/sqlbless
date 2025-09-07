@@ -150,18 +150,18 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	var rows *sql.Rows
 	var err error
 	if tableName == "" {
-		if ss.dbDialect.SqlForTab == "" {
+		if ss.Dialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
 		if ss.DumpConfig.PrintType {
-			fmt.Println(ss.dbDialect.SqlForTab)
+			fmt.Println(ss.Dialect.SqlForTab)
 		}
-		rows, err = ss.conn.QueryContext(ctx, ss.dbDialect.SqlForTab)
+		rows, err = ss.conn.QueryContext(ctx, ss.Dialect.SqlForTab)
 	} else {
-		if ss.dbDialect.SqlForDesc == "" {
+		if ss.Dialect.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		sql := strings.ReplaceAll(ss.dbDialect.SqlForDesc, "{table_name}", tableName)
+		sql := strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
 		if ss.DumpConfig.PrintType {
 			fmt.Println(sql)
 		}
@@ -272,7 +272,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
 
 type Session struct {
 	DumpConfig RowToCsv
-	dbDialect  *dialect.Entry
+	Dialect    *dialect.Entry
 	conn       *sql.DB
 	history    *History
 	tx         *sql.Tx
@@ -530,7 +530,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	var history History
 
 	session := &Session{
-		dbDialect: dbDialect,
+		Dialect:   dbDialect,
 		conn:      conn,
 		history:   &history,
 		automatic: cfg.Auto != "",

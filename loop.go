@@ -123,14 +123,6 @@ func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error 
 	return nil
 }
 
-func tee(console, spool io.Writer) io.Writer {
-	if spool != nil {
-		return io.MultiWriter(console, spool)
-	} else {
-		return console
-	}
-}
-
 func echo(spool io.Writer, query string) {
 	echoPrefix(spool, "", query)
 }
@@ -281,6 +273,8 @@ type Session struct {
 	history    *history.History
 	tx         *sql.Tx
 	spool      lftocrlf.WriteNameCloser
+	stdout     io.Writer
+	stderr     io.Writer
 	automatic  bool
 	term       string
 	crlf       bool
@@ -288,11 +282,13 @@ type Session struct {
 
 func (ss *Session) Close() {
 	if ss.tx != nil {
-		txRollback(&ss.tx, tee(os.Stderr, ss.spool))
+		txRollback(&ss.tx, ss.stderr)
 	}
 	if ss.spool != nil {
 		ss.spool.Close()
 		ss.spool = nil
+		ss.stdout = os.Stdout
+		ss.stderr = os.Stderr
 	}
 }
 
@@ -389,6 +385,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 				ss.spool.Close()
 				fmt.Fprintln(os.Stderr, "Spool closed.")
 				ss.spool = nil
+				ss.stdout = os.Stdout
+				ss.stderr = os.Stderr
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
@@ -397,6 +395,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 					} else {
 						ss.spool = fd
 					}
+					ss.stdout = io.MultiWriter(os.Stdout, ss.spool)
+					ss.stderr = io.MultiWriter(os.Stderr, ss.spool)
 					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
 					writeSignature(ss.spool)
 				}
@@ -411,9 +411,9 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
-			err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+			err = txBegin(ctx, ss.conn, &ss.tx, ss.stderr)
 			if err == nil {
-				err = doDML(ctx, ss.tx, query, tee(os.Stdout, ss.spool))
+				err = doDML(ctx, ss.tx, query, ss.stdout)
 				if err != nil && isNewTx && ss.tx != nil {
 					ss.tx.Rollback()
 					ss.tx = nil
@@ -421,10 +421,10 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "COMMIT":
 			echo(ss.spool, query)
-			err = txCommit(&ss.tx, tee(os.Stderr, ss.spool))
+			err = txCommit(&ss.tx, ss.stderr)
 		case "ROLLBACK":
 			echo(ss.spool, query)
-			err = txRollback(&ss.tx, tee(os.Stderr, ss.spool))
+			err = txRollback(&ss.tx, ss.stderr)
 		case "EXIT", "QUIT":
 			return nil
 		case "DESC", "\\D":
@@ -432,7 +432,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			err = ss.desc(ctx, arg, os.Stdout, ss.spool)
 		case "HISTORY":
 			echo(ss.spool, query)
-			csvw := csv.NewWriter(tee(os.Stdout, ss.spool))
+			csvw := csv.NewWriter(ss.stdout)
 			for i, end := 0, ss.history.Len(); i < end; i++ {
 				text, stamp := ss.history.TextAndStamp(i)
 				csvw.Write([]string{
@@ -451,12 +451,12 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			} else {
 				_, err = ss.conn.ExecContext(ctx, query)
 				if err == nil {
-					fmt.Fprintln(tee(os.Stderr, ss.spool), "Ok")
+					fmt.Fprintln(ss.stderr, "Ok")
 				}
 			}
 		}
 		if err != nil {
-			fmt.Fprintln(tee(os.Stderr, ss.spool), err.Error())
+			fmt.Fprintln(ss.stderr, err.Error())
 			if onErrorAbort {
 				return err
 			}
@@ -520,6 +520,8 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		automatic: cfg.Auto != "",
 		term:      cfg.Term,
 		crlf:      cfg.CrLf,
+		stdout:    os.Stdout,
+		stderr:    os.Stderr,
 	}
 	defer session.Close()
 

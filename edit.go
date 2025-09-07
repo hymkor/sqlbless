@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/hymkor/sqlbless/spread"
@@ -86,7 +85,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			}
 
 			if status == AbortAll {
-				echoPrefix(tee(os.Stderr, ss.spool), "(cancel) ", dmlSql)
+				echoPrefix(ss.stderr, "(cancel) ", dmlSql)
 			} else {
 				err = askSqlAndExecute(ctx, ss, getKey, dmlSql)
 				if err != nil {
@@ -118,10 +117,10 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		echoPrefix(ss.spool, "(cancel) ", dmlSql)
 		return nil
 	}
-	err = txBegin(ctx, ss.conn, &ss.tx, tee(os.Stderr, ss.spool))
+	err = txBegin(ctx, ss.conn, &ss.tx, ss.stderr)
 	if err != nil {
 		return err
 	}
 	echo(ss.spool, dmlSql)
-	return doDML(ctx, ss.tx, dmlSql, tee(os.Stdout, ss.spool))
+	return doDML(ctx, ss.tx, dmlSql, ss.stdout)
 }

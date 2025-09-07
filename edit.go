@@ -95,10 +95,12 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			}
 			return
 		},
-		Auto: pilot.AutoPilotForCsvi(),
 		Dump: func(ctx context.Context, rows *sql.Rows, w io.Writer) error {
 			return ss.DumpConfig.Dump(ctx, rows, w)
 		},
+	}
+	if a, ok := pilot.AutoPilotForCsvi(); ok {
+		editor.Auto = a
 	}
 
 	// replace `edit ` to `select * from `

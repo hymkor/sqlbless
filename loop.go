@@ -197,7 +197,7 @@ type CommandIn interface {
 
 	// AutoPilotForCsvi returns Tty object when AutoPilot is enabled.
 	// When disabled, it MUST return nil.
-	AutoPilotForCsvi() getKeyAndSize
+	AutoPilotForCsvi() (getKeyAndSize, bool)
 }
 
 type Script struct {
@@ -210,8 +210,8 @@ func (script *Script) GetKey() (string, error) {
 	return "", io.EOF
 }
 
-func (script *Script) AutoPilotForCsvi() getKeyAndSize {
-	return nil
+func (script *Script) AutoPilotForCsvi() (getKeyAndSize, bool) {
+	return nil, false
 }
 
 func (script *Script) Read(context.Context) ([]string, error) {
@@ -262,8 +262,8 @@ func (i *InteractiveIn) GetKey() (string, error) {
 	return readline.GetKey(tt)
 }
 
-func (i *InteractiveIn) AutoPilotForCsvi() getKeyAndSize {
-	return i.tty
+func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
+	return i.tty, (i.tty != nil)
 }
 
 type Session struct {

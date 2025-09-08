@@ -14,6 +14,7 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/internal/rowstocsv"
 )
 
 func cutField(s string) (string, string) {
@@ -94,7 +95,6 @@ type Editor struct {
 	Dialect *dialect.Entry
 	Query   func(context.Context, string, ...any) (*sql.Rows, error)
 	Exec    func(context.Context, string, ...any) (sql.Result, error)
-	Dump    func(context.Context, *sql.Rows, io.Writer) error
 	Auto    GetKeyAndSize
 }
 
@@ -184,7 +184,12 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 	}
 
 	changes, err := editor.Viewer.edit(tableAndWhere, v, editor.Auto, func(w io.Writer) error {
-		err := editor.Dump(ctx, rows, w)
+		r2c := &rowstocsv.RowToCsv{
+			Null:       editor.Viewer.Null,
+			Comma:      rune(editor.Viewer.Comma),
+			TimeLayout: editor.Dialect.DisplayDateTimeLayout,
+		}
+		err := r2c.Dump(ctx, rows, w)
 		rows.Close()
 		rows = nil
 		return err

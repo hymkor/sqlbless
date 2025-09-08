@@ -80,3 +80,48 @@ func Each(yield func(string, *Entry) bool) {
 		}
 	}
 }
+
+func findFromArgs(args []string) (*Entry, []string, error) {
+	if len(args) <= 0 {
+		return nil, nil, errors.New("too few arguments")
+	}
+	spec, ok := Find(args[0])
+	if ok {
+		if len(args) < 2 {
+			return nil, nil, errors.New("DSN String is not specified")
+		}
+		return spec, []string{args[0], strings.Join(args[1:], " ")}, nil
+	}
+	scheme, _, ok := strings.Cut(args[0], ":")
+	if ok {
+		spec, ok = Find(scheme)
+		if ok {
+			return spec, []string{scheme, strings.Join(args, " ")}, nil
+		}
+	}
+	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
+}
+
+type DBInfo struct {
+	Driver     string
+	DataSource string
+	Dialect    *Entry
+}
+
+func ReadDBInfoFromArgs(args []string) (*DBInfo, error) {
+	entry, args, err := findFromArgs(args)
+	if err != nil {
+		return nil, err
+	}
+	d := &DBInfo{
+		Driver:     args[0],
+		DataSource: args[1],
+		Dialect:    entry,
+	}
+	if entry.DSNFilter != nil {
+		if d.DataSource, err = entry.DSNFilter(d.DataSource); err != nil {
+			return nil, err
+		}
+	}
+	return d, nil
+}

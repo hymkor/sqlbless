@@ -1,34 +1,14 @@
 package sqlbless
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
-	"strings"
 
 	"github.com/hymkor/sqlbless/dialect"
 )
-
-func findDbDialect(args []string) (*dialect.Entry, []string, error) {
-	spec, ok := dialect.Find(args[0])
-	if ok {
-		if len(args) < 2 {
-			return nil, nil, errors.New("DSN String is not specified")
-		}
-		return spec, []string{args[0], strings.Join(args[1:], " ")}, nil
-	}
-	scheme, _, ok := strings.Cut(args[0], ":")
-	if ok {
-		spec, ok = dialect.Find(scheme)
-		if ok {
-			return spec, []string{scheme, strings.Join(args, " ")}, nil
-		}
-	}
-	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
-}
 
 var Version string
 
@@ -95,20 +75,12 @@ func Main() error {
 		flag.Usage()
 		return nil
 	}
-	dbDialect, args, err := findDbDialect(args)
+	d, err := dialect.ReadDBInfoFromArgs(args)
 	if err != nil {
 		return err
 	}
-	dataSourceName := args[1]
-	if dbDialect.DSNFilter != nil {
-		dataSourceName, err = dbDialect.DSNFilter(dataSourceName)
-		if err != nil {
-			return err
-		}
-		if cfg.Debug {
-			fmt.Fprintln(os.Stderr, dataSourceName)
-		}
+	if cfg.Debug {
+		fmt.Fprintln(os.Stderr, d.DataSource)
 	}
-
-	return cfg.Run(args[0], dataSourceName, dbDialect)
+	return cfg.Run(d.Driver, d.DataSource, d.Dialect)
 }

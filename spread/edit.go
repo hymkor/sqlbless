@@ -187,7 +187,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 		r2c := &rowstocsv.RowToCsv{
 			Null:       editor.Viewer.Null,
 			Comma:      rune(editor.Viewer.Comma),
-			TimeLayout: editor.Dialect.DisplayDateTimeLayout,
+			TimeLayout: editor.TimeLayout,
 		}
 		err := r2c.Dump(ctx, rows, w)
 		rows.Close()

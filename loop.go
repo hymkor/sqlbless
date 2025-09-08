@@ -58,11 +58,7 @@ func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) err
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return newViewer(ss).View(query, ss.automatic, func(pOut io.Writer) error {
-		_err := ss.DumpConfig.Dump(ctx, _rows, pOut)
-		rows.Close()
-		return _err
-	}, out)
+	return newViewer(ss).View(query, ss.automatic, _rows, out)
 }
 
 type canExec interface {
@@ -170,11 +166,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return newViewer(ss).View(table, ss.automatic, func(pOut io.Writer) error {
-		err := ss.DumpConfig.Dump(ctx, _rows, pOut)
-		rows.Close()
-		return err
-	}, out)
+	return newViewer(ss).View(table, ss.automatic, _rows, out)
 }
 
 // hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not

@@ -1,15 +1,18 @@
 package spread
 
 import (
+	"context"
 	"errors"
 	"io"
 	"strings"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
+	"github.com/hymkor/sqlbless/internal/rowstocsv"
 )
 
 type Viewer struct {
+	TimeLayout  string
 	HeaderLines int
 	Comma       byte
 	Null        string
@@ -94,13 +97,24 @@ const (
 	titleSuffix = "】"
 )
 
-func (viewer *Viewer) View(title string, automatic bool, csvWriteTo func(pOut io.Writer) error, out io.Writer) error {
+func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.RowsInterface, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
 	}
 	if automatic {
 		cfg.Pilot = _QuitCsvi{}
+	}
+	ctx := context.TODO()
+	csvWriteTo := func(w io.Writer) error {
+		r2c := &rowstocsv.RowToCsv{
+			Null:       viewer.Null,
+			Comma:      rune(viewer.Comma),
+			TimeLayout: viewer.TimeLayout,
+		}
+		err := r2c.Dump(ctx, rows, w)
+		rows.Close()
+		return err
 	}
 	_, err := viewer.callCsvi(cfg, csvWriteTo, out)
 	return err

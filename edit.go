@@ -51,6 +51,7 @@ func newViewer(ss *Session) *spread.Viewer {
 		Comma:       byte(ss.DumpConfig.Comma),
 		Null:        ss.DumpConfig.Null,
 		Spool:       ss.spool,
+		TimeLayout:  ss.Dialect.DisplayDateTimeLayout,
 	}
 }
 

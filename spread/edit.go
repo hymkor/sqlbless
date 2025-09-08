@@ -13,7 +13,6 @@ import (
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 
-	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/rowstocsv"
 )
 
@@ -92,10 +91,10 @@ func doubleQuoteIfNeed(s string) string {
 
 type Editor struct {
 	*Viewer
-	Dialect *dialect.Entry
-	Query   func(context.Context, string, ...any) (*sql.Rows, error)
-	Exec    func(context.Context, string, ...any) (sql.Result, error)
-	Auto    GetKeyAndSize
+	TypeToConv func(string) func(string) (string, error)
+	Query      func(context.Context, string, ...any) (*sql.Rows, error)
+	Exec       func(context.Context, string, ...any) (sql.Result, error)
+	Auto       GetKeyAndSize
 }
 
 func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
@@ -126,7 +125,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
 		_ct := ct
-		if conv := editor.Dialect.TryTypeNameToConv(name); conv != nil {
+		if conv := editor.TypeToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
 				if s == editor.Null {

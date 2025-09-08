@@ -19,7 +19,7 @@ type Entry struct {
 	DSNFilter             func(string) (string, error)
 }
 
-func (D *Entry) TryTypeNameToConv(typeName string) func(string) (string, error) {
+func (D *Entry) TypeToConv(typeName string) func(string) (string, error) {
 	if D.TypeNameToConv == nil {
 		return nil
 	}

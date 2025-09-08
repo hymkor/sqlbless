@@ -93,7 +93,7 @@ type Editor struct {
 	*Viewer
 	Dialect *dialect.Entry
 	Query   func(context.Context, string, ...any) (*sql.Rows, error)
-	Exec    func(context.Context, string) error
+	Exec    func(context.Context, string, ...any) (sql.Result, error)
 	Dump    func(context.Context, *sql.Rows, io.Writer) error
 	Auto    GetKeyAndSize
 }
@@ -257,7 +257,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		err = editor.Exec(ctx, dmlSql)
+		_, err = editor.Exec(ctx, dmlSql)
 		return true
 	})
 	if err != nil {
@@ -275,7 +275,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 			return false
 		}
 		sql.WriteString(v)
-		err = editor.Exec(ctx, sql.String())
+		_, err = editor.Exec(ctx, sql.String())
 		return true
 	})
 	return err

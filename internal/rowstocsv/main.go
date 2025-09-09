@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"time"
-	"unicode/utf8"
 )
 
 type RowToCsv struct {
@@ -28,18 +26,6 @@ type RowsInterface interface {
 	Scan(dest ...any) error
 }
 
-func scanAnyAll(rows interface{ Scan(...any) error }, n int) ([]any, error) {
-	refs := make([]any, n)
-	data := make([]any, n)
-	for i := 0; i < n; i++ {
-		refs[i] = &data[i]
-	}
-	if err := rows.Scan(refs...); err != nil {
-		return nil, err
-	}
-	return data, nil
-}
-
 func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string, printType bool, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
@@ -50,7 +36,13 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 		return err
 	}
 
-	itemStr := make([]string, len(columns))
+	n := len(columns)
+	refs := make([]any, n)
+	nstrs := make([]sql.NullString, n)
+	for i := 0; i < n; i++ {
+		refs[i] = &nstrs[i]
+	}
+	strs := make([]string, len(columns))
 
 	if printType {
 		ct, err := rows.ColumnTypes()
@@ -66,13 +58,13 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 					buffer.WriteString(st.String())
 					buffer.WriteByte(')')
 				}
-				itemStr[i] = buffer.String()
+				strs[i] = buffer.String()
 			} else {
-				itemStr[i] = ""
+				strs[i] = ""
 			}
 
 		}
-		csvw.Write(itemStr)
+		csvw.Write(strs)
 	}
 
 	for rows.Next() {
@@ -81,35 +73,17 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 			return ctx.Err()
 		default:
 		}
-		itemAny, err := scanAnyAll(rows, len(columns))
-		if err != nil {
+		if err := rows.Scan(refs...); err != nil {
 			return err
 		}
-		if printType {
-			for i, v := range itemAny {
-				itemStr[i] = fmt.Sprintf("%T", v)
-			}
-			csvw.Write(itemStr)
-			printType = false
-		}
-		for i, v := range itemAny {
-			if v == nil {
-				itemStr[i] = null
-			} else if tm, ok := v.(sql.NullTime); ok {
-				if tm.Valid {
-					itemStr[i] = tm.Time.Format(timeLayout)
-				} else {
-					itemStr[i] = null
-				}
-			} else if tm, ok := v.(time.Time); ok {
-				itemStr[i] = tm.Format(timeLayout)
-			} else if b, ok := v.([]byte); ok && utf8.Valid(b) {
-				itemStr[i] = string(b)
+		for i, v := range nstrs {
+			if v.Valid {
+				strs[i] = v.String
 			} else {
-				itemStr[i] = fmt.Sprint(v)
+				strs[i] = null
 			}
 		}
-		if err := csvw.Write(itemStr); err != nil {
+		if err := csvw.Write(strs); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)
 		}
 	}

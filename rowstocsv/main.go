@@ -9,15 +9,7 @@ import (
 	"strings"
 )
 
-type RowToCsv struct {
-	Comma      rune
-	UseCRLF    bool
-	Null       string
-	PrintType  bool
-	TimeLayout string
-}
-
-type RowsInterface interface {
+type Source interface {
 	Close() error
 	ColumnTypes() ([]*sql.ColumnType, error)
 	Columns() ([]string, error)
@@ -26,7 +18,7 @@ type RowsInterface interface {
 	Scan(dest ...any) error
 }
 
-func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string, printType bool, csvw *csv.Writer) error {
+func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.NullString) string, debug bool, csvw *csv.Writer) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
@@ -44,12 +36,13 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 	}
 	strs := make([]string, len(columns))
 
-	if printType {
-		ct, err := rows.ColumnTypes()
-		if err != nil {
-			return err
+	columnTypes, err := rows.ColumnTypes()
+	if err != nil {
+		for i := 0; i < n; i++ {
+			columnTypes[i] = nil
 		}
-		for i, c := range ct {
+	} else if debug {
+		for i, c := range columnTypes {
 			if c != nil {
 				var buffer strings.Builder
 				buffer.WriteString(c.DatabaseTypeName())
@@ -77,11 +70,7 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 			return err
 		}
 		for i, v := range nstrs {
-			if v.Valid {
-				strs[i] = v.String
-			} else {
-				strs[i] = null
-			}
+			strs[i] = conv(i, columnTypes[i], v)
 		}
 		if err := csvw.Write(strs); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)
@@ -93,12 +82,35 @@ func rowsToCsv(ctx context.Context, rows RowsInterface, null, timeLayout string,
 	return nil
 }
 
-func (cfg RowToCsv) Dump(ctx context.Context, rows RowsInterface, w io.Writer) error {
+type Config struct {
+	Comma     rune
+	UseCRLF   bool
+	Null      string
+	Debug     bool
+	Conv      func(int, *sql.ColumnType, sql.NullString) string
+	AutoClose bool
+}
+
+func (cfg Config) defaultConv(_ int, _ *sql.ColumnType, v sql.NullString) string {
+	if v.Valid {
+		return v.String
+	}
+	return cfg.Null
+}
+
+func (cfg Config) Dump(ctx context.Context, rows Source, w io.Writer) error {
 	csvw := csv.NewWriter(w)
 	defer csvw.Flush()
 
 	csvw.Comma = cfg.Comma
 	csvw.UseCRLF = cfg.UseCRLF
 
-	return rowsToCsv(ctx, rows, cfg.Null, cfg.TimeLayout, cfg.PrintType, csvw)
+	conv := cfg.defaultConv
+	if cfg.Conv != nil {
+		conv = cfg.Conv
+	}
+	if cfg.AutoClose {
+		defer rows.Close()
+	}
+	return dump(ctx, rows, conv, cfg.Debug, csvw)
 }

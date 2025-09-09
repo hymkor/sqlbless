@@ -8,11 +8,10 @@ import (
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
-	"github.com/hymkor/sqlbless/internal/rowstocsv"
+	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
 type Viewer struct {
-	TimeLayout  string
 	HeaderLines int
 	Comma       byte
 	Null        string
@@ -97,7 +96,7 @@ const (
 	titleSuffix = "】"
 )
 
-func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.RowsInterface, out io.Writer) error {
+func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.Source, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -107,14 +106,11 @@ func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.RowsInte
 	}
 	ctx := context.TODO()
 	csvWriteTo := func(w io.Writer) error {
-		r2c := &rowstocsv.RowToCsv{
-			Null:       viewer.Null,
-			Comma:      rune(viewer.Comma),
-			TimeLayout: viewer.TimeLayout,
-		}
-		err := r2c.Dump(ctx, rows, w)
-		rows.Close()
-		return err
+		return rowstocsv.Config{
+			Null:      viewer.Null,
+			Comma:     rune(viewer.Comma),
+			AutoClose: true,
+		}.Dump(ctx, rows, w)
 	}
 	_, err := viewer.callCsvi(cfg, csvWriteTo, out)
 	return err

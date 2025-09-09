@@ -41,7 +41,7 @@ func continueOrAbort(getKey func() (string, error)) (bool, error) {
 
 func newViewer(ss *Session) *spread.Viewer {
 	var hl int
-	if ss.DumpConfig.PrintType {
+	if ss.DumpConfig.Debug {
 		hl = 3
 	} else {
 		hl = 1
@@ -51,7 +51,6 @@ func newViewer(ss *Session) *spread.Viewer {
 		Comma:       byte(ss.DumpConfig.Comma),
 		Null:        ss.DumpConfig.Null,
 		Spool:       ss.spool,
-		TimeLayout:  ss.Dialect.DisplayDateTimeLayout,
 	}
 }
 

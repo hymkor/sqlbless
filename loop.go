@@ -29,8 +29,8 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
-	"github.com/hymkor/sqlbless/internal/rowstocsv"
 	"github.com/hymkor/sqlbless/internal/sqlcompletion"
+	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
 func cutField(s string) (string, string) {
@@ -141,7 +141,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.Dialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
-		if ss.DumpConfig.PrintType {
+		if ss.DumpConfig.Debug {
 			fmt.Println(ss.Dialect.SqlForTab)
 		}
 		rows, err = ss.conn.QueryContext(ctx, ss.Dialect.SqlForTab)
@@ -150,7 +150,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 			return errors.New("DESC TABLE: not supported")
 		}
 		sql := strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
-		if ss.DumpConfig.PrintType {
+		if ss.DumpConfig.Debug {
 			fmt.Println(sql)
 		}
 		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
@@ -255,7 +255,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 }
 
 type Session struct {
-	DumpConfig rowstocsv.RowToCsv
+	DumpConfig rowstocsv.Config
 	Dialect    *dialect.Entry
 	conn       *sql.DB
 	history    *history.History
@@ -519,8 +519,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	} else {
 		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
 	}
-	session.DumpConfig.TimeLayout = dbDialect.DisplayDateTimeLayout
-	session.DumpConfig.PrintType = cfg.Debug
+	session.DumpConfig.Debug = cfg.Debug
 
 	ctx := context.Background()
 	if cfg.Script != "" {

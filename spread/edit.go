@@ -13,7 +13,7 @@ import (
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 
-	"github.com/hymkor/sqlbless/internal/rowstocsv"
+	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
 func cutField(s string) (string, string) {
@@ -183,13 +183,11 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 	}
 
 	changes, err := editor.Viewer.edit(tableAndWhere, v, editor.Auto, func(w io.Writer) error {
-		r2c := &rowstocsv.RowToCsv{
-			Null:       editor.Viewer.Null,
-			Comma:      rune(editor.Viewer.Comma),
-			TimeLayout: editor.TimeLayout,
-		}
-		err := r2c.Dump(ctx, rows, w)
-		rows.Close()
+		err := rowstocsv.Config{
+			Null:      editor.Viewer.Null,
+			Comma:     rune(editor.Viewer.Comma),
+			AutoClose: true,
+		}.Dump(ctx, rows, w)
 		rows = nil
 		return err
 	}, out)

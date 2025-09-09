@@ -39,7 +39,7 @@ func NewConfigFromFlag() func() *Config {
 	var (
 		flagCrLf           = flag.Bool("crlf", false, "use CRLF")
 		flagFieldSeperator = flag.String("fs", ",", "Set field separator")
-		flagNullString     = flag.String("null", "<NULL>", "Set a string representing NULL")
+		flagNullString     = flag.String("null", "\u2400", "Set a string representing NULL")
 		flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
 		flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
 		flagScript         = flag.String("f", "", "script file")

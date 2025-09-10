@@ -1,3 +1,12 @@
+* Bug Fixes
+  * Fixed an issue where the `EDIT` command failed to update tables containing date columns in SQLite3 databases.
+* Application Changes
+  * Changed the representation of `NULL` from `<NULL>` to the Unicode character U+2400 (&#x2044;, SYMBOL FOR NULL).
+  * In the `EDIT` command, setting a non-string cell to an empty string now results in `NULL`.
+* Library Changes
+  * Refactored the codebase: split the main package `"sqlbless"` into subpackages `"dialect"`, `"rowstocsv"`, and `"spread"`.
+  * Moved the database-specific customization packages under `"dialect"`.
+
 v0.19.0
 =======
 Sep 6, 2025

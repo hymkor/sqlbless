@@ -141,7 +141,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.Dialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
-		if ss.DumpConfig.Debug {
+		if ss.Debug {
 			fmt.Println(ss.Dialect.SqlForTab)
 		}
 		rows, err = ss.conn.QueryContext(ctx, ss.Dialect.SqlForTab)
@@ -150,7 +150,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 			return errors.New("DESC TABLE: not supported")
 		}
 		sql := strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
-		if ss.DumpConfig.Debug {
+		if ss.Debug {
 			fmt.Println(sql)
 		}
 		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
@@ -255,17 +255,17 @@ func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 }
 
 type Session struct {
-	DumpConfig rowstocsv.Config
-	Dialect    *dialect.Entry
-	conn       *sql.DB
-	history    *history.History
-	tx         *sql.Tx
-	spool      lftocrlf.WriteNameCloser
-	stdout     io.Writer
-	stderr     io.Writer
-	automatic  bool
-	term       string
-	crlf       bool
+	rowstocsv.Config
+	Dialect   *dialect.Entry
+	conn      *sql.DB
+	history   *history.History
+	tx        *sql.Tx
+	spool     lftocrlf.WriteNameCloser
+	stdout    io.Writer
+	stderr    io.Writer
+	automatic bool
+	term      string
+	crlf      bool
 }
 
 func (ss *Session) Close() {
@@ -513,14 +513,12 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	}
 	defer session.Close()
 
-	session.DumpConfig.Null = cfg.Null
+	session.Null = cfg.Null
 	if cfg.Tsv {
-		session.DumpConfig.Comma = '\t'
+		session.Comma = '\t'
 	} else {
-		session.DumpConfig.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
+		session.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
 	}
-	session.DumpConfig.Debug = cfg.Debug
-
 	ctx := context.Background()
 	if cfg.Script != "" {
 		return session.Start(ctx, cfg.Script)

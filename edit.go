@@ -41,15 +41,15 @@ func continueOrAbort(getKey func() (string, error)) (bool, error) {
 
 func newViewer(ss *Session) *spread.Viewer {
 	var hl int
-	if ss.DumpConfig.Debug {
+	if ss.Debug {
 		hl = 3
 	} else {
 		hl = 1
 	}
 	return &spread.Viewer{
 		HeaderLines: hl,
-		Comma:       byte(ss.DumpConfig.Comma),
-		Null:        ss.DumpConfig.Null,
+		Comma:       byte(ss.Comma),
+		Null:        ss.Null,
 		Spool:       ss.spool,
 	}
 }

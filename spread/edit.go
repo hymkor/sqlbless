@@ -128,11 +128,11 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 		if conv := editor.TypeToConv(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
-				if s == editor.Null {
+				if s == editor.Null || s == "" {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
 						return "", errors.New("column is NOT NULL")
 					}
-					return s, nil
+					return editor.Null, nil
 				}
 				if _, err := conv(s); err != nil {
 					return "", err
@@ -152,11 +152,11 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 				return s, nil
 			})
 			v = func(s string) (string, error) {
-				if s == editor.Null {
+				if s == editor.Null || s == "" {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
 						return "", errors.New("column is NOT NULL")
 					}
-					return s, nil
+					return editor.Null, nil
 				}
 				if _, err := strconv.ParseFloat(s, 64); err != nil {
 					return "", errors.New("not a number")

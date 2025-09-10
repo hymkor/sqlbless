@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 )
 
 type Source interface {
@@ -30,9 +31,9 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 
 	n := len(columns)
 	refs := make([]any, n)
-	nstrs := make([]sql.NullString, n)
+	data := make([]any, n)
 	for i := 0; i < n; i++ {
-		refs[i] = &nstrs[i]
+		refs[i] = &data[i]
 	}
 	strs := make([]string, len(columns))
 
@@ -69,8 +70,19 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 		if err := rows.Scan(refs...); err != nil {
 			return err
 		}
-		for i, v := range nstrs {
-			strs[i] = conv(i, columnTypes[i], v)
+		for i, v := range data {
+			var ns sql.NullString
+			if stamp, ok := v.(time.Time); ok {
+				ns.String = stamp.Format("2006-01-02 15:04:05.999999999 -07:00")
+				ns.Valid = true
+			} else if b, ok := v.([]byte); ok {
+				ns.String = string(b)
+				ns.Valid = true
+			} else if v != nil {
+				ns.String = fmt.Sprint(v)
+				ns.Valid = true
+			}
+			strs[i] = conv(i, columnTypes[i], ns)
 		}
 		if err := csvw.Write(strs); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)

@@ -96,7 +96,7 @@ const (
 	titleSuffix = "】"
 )
 
-func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.Source, out io.Writer) error {
+func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, rows rowstocsv.Source, out io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -104,7 +104,6 @@ func (viewer *Viewer) View(title string, automatic bool, rows rowstocsv.Source, 
 	if automatic {
 		cfg.Pilot = _QuitCsvi{}
 	}
-	ctx := context.TODO()
 	csvWriteTo := func(w io.Writer) error {
 		return rowstocsv.Config{
 			Null:      viewer.Null,

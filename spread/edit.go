@@ -183,10 +183,33 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 	}
 
 	changes, err := editor.Viewer.edit(tableAndWhere, v, editor.Auto, func(w io.Writer) error {
+		/*
+			convs := make([]func(string) (string, error), len(columnTypes))
+			for i := 0; i < len(convs); i++ {
+				f := editor.TypeToConv(strings.ToUpper(columnTypes[i].DatabaseTypeName()))
+				if f != nil {
+					convs[i] = f
+				} else {
+					convs[i] = func(s string) (string, error) { return s, nil }
+				}
+			}
+		*/
 		err := rowstocsv.Config{
 			Null:      editor.Viewer.Null,
 			Comma:     rune(editor.Viewer.Comma),
 			AutoClose: true,
+			/*
+				Conv: func(i int, ct *sql.ColumnType, v sql.NullString) string {
+					if !v.Valid {
+						return editor.Viewer.Null
+					}
+					s, err := convs[i](v.String)
+					if err != nil {
+						return v.String
+					}
+					return s
+				},
+			*/
 		}.Dump(ctx, rows, w)
 		rows = nil
 		return err

@@ -32,7 +32,6 @@ const (
 	DateOnlyLayout   = "2006-01-02"
 	TimeOnlyLayout   = "15:04:05.999999999"
 	TimeTzLayout     = "15:04:05.999999999 -07:00"
-	SQLiteLayout     = "2006-01-02T15:04:05Z"
 )
 
 var (
@@ -41,7 +40,6 @@ var (
 	rxDateOnly   = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
 	rxTimeTz     = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)? [-\+]\d\d:\d\d)\s*$`)
 	rxTimeOnly   = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
-	rxSQLiteLike = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z)\s*$`)
 )
 
 func ParseAnyDateTime(s string) (time.Time, error) {
@@ -60,9 +58,6 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
 		return time.Parse(TimeOnlyLayout, m[1])
-	}
-	if m := rxSQLiteLike.FindStringSubmatch(s); m != nil {
-		return time.Parse(SQLiteLayout, m[1])
 	}
 	return time.Time{}, errors.New("not time format")
 }

@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	_ "github.com/microsoft/go-mssqldb"
+	_ "github.com/microsoft/go-mssqldb/namedpipe"
+	_ "github.com/microsoft/go-mssqldb/sharedmemory"
 
 	"github.com/hymkor/sqlbless/dialect"
 )

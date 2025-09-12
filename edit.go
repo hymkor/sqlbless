@@ -117,5 +117,6 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		return err
 	}
 	echo(ss.spool, dmlSql)
-	return doDML(ctx, ss.tx, dmlSql, ss.stdout)
+	_, err = doDML(ctx, ss.tx, dmlSql, ss.stdout)
+	return err
 }

@@ -65,17 +65,17 @@ type canExec interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
-func doDML(ctx context.Context, conn canExec, query string, w io.Writer) error {
+func doDML(ctx context.Context, conn canExec, query string, w io.Writer) (int64, error) {
 	result, err := conn.ExecContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("exec: %[1]w (%[1]T)", err)
+		return 0, fmt.Errorf("exec: %[1]w (%[1]T)", err)
 	}
 	count, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("RowsAffected: %[1]w (%[1]T)", err)
+		return 0, fmt.Errorf("RowsAffected: %[1]w (%[1]T)", err)
 	}
 	fmt.Fprintf(w, "%d record(s) updated.\n", count)
-	return nil
+	return count, nil
 }
 
 func txCommit(tx **sql.Tx, w io.Writer) error {
@@ -401,8 +401,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			isNewTx := (ss.tx == nil)
 			err = txBegin(ctx, ss.conn, &ss.tx, ss.stderr)
 			if err == nil {
-				err = doDML(ctx, ss.tx, query, ss.stdout)
-				if err != nil && isNewTx && ss.tx != nil {
+				count, err := doDML(ctx, ss.tx, query, ss.stdout)
+				if (err != nil || count == 0) && isNewTx && ss.tx != nil {
 					ss.tx.Rollback()
 					ss.tx = nil
 				}

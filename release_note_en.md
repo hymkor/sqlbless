@@ -3,6 +3,7 @@
 * Application Changes
   * Changed the representation of `NULL` from `<NULL>` to the Unicode character U+2400 (&#x2044;, SYMBOL FOR NULL).
   * In the `EDIT` command, setting a non-string cell to an empty string now results in `NULL`.
+  * If the first DML affected zero rows, the transaction is not started and the prompt remains `SQL>`.
 * Library Changes
   * Refactored the codebase: split the main package `"sqlbless"` into subpackages `"dialect"`, `"rowstocsv"`, and `"spread"`.
   * Moved the database-specific customization packages under `"dialect"`.

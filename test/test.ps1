@@ -42,16 +42,16 @@ function DB-Test($arg1,$arg2){
 }
 
 function main($dblst){
-    Get-Content "tstdblst" | ForEach-Object {
-        if ( $_ -notlike "#*" ){
-            # Write-Host ("LINE: {0}" -f $_)
-            $spec = ($_ -split "\|")
-            if ( $spec.Length -lt 2 ){
-                Write-Error ("too few argument: {0}: {1}" -f ($dblst,$_))
-                exit 1
-            }
-            DB-Test $spec[0] $spec[1]
+    Get-Content "connections.txt" |
+    Where-Object{ $_ -notlike "#*" } |
+    ForEach-Object {
+        $spec = ($_ -split "\|")
+        if ( $spec.Length -lt 2 ){
+            Write-Host ("LINE: {0}" -f $_)
+            Write-Error ("too few argument: {0}: {1}" -f ($dblst,$_))
+            exit 1
         }
+        DB-Test $spec[0] $spec[1]
     }
 }
 main $args[0]

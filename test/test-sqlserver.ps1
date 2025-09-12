@@ -39,7 +39,9 @@ $script = `
     "EXIT ||"
 
 $conn = $null
-Get-Content .\tstdblst | Where-Object { $_ -notlike "#*" -and $_ -like "*sqlserver*" } | ForEach-Object {
+Get-Content .\connections.txt |
+Where-Object { $_ -notlike "#*" -and $_ -like "*sqlserver*" } |
+ForEach-Object {
     $field = ($_ -split "\|")
     $conn = $field[1]
     Write-Host "Found $conn"

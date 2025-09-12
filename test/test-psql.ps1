@@ -29,7 +29,9 @@ $script = `
     "EXIT ||"
 
 $conn = $null
-Get-Content .\tstdblst | Where-Object { $_ -like "*postgres*" } | ForEach-Object {
+Get-Content .\connections.txt |
+Where-Object { $_ -notlike "#*" -and $_ -like "*postgres*" } |
+ForEach-Object {
     $field = ($_ -split "\|")
     $conn = $field[1]
     Write-Host "Found $conn"

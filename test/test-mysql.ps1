@@ -30,7 +30,9 @@ $script = `
     "EXIT ||"
 
 $conn = $null
-Get-Content .\tstdblst | Where-Object { $_ -like "*mysql*" } | ForEach-Object {
+Get-Content .\connections.txt |
+Where-Object { $_ -like "*mysql*" } |
+ForEach-Object {
     $field = ($_ -split "\|")
     $conn = $field[1]
     Write-Host "Found $conn"

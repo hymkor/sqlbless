@@ -1,5 +1,5 @@
 # This is a sample. Please copy it as `tstdblst` and change parameters
 oracle|oracle://system:PASSWORD@localhost:PORT/xepdb1
-sqlserver|sqlserver://@localhost?database=master
+sqlserver|Server=localhost\SQLEXPRESS01;Database=master;Trusted_Connection=True;protocol=lpc;
 postgres|host=127.0.0.1 port=5432 user=postgres dbname=postgres sslmode=disable
 mysql|user:password@/database?parseTime=true&loc=Asia%2FTokyo

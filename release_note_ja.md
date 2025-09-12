@@ -1,5 +1,10 @@
 * 不具合修正
     * EDIT コマンドで、SQLite3 データベースで日付カラムを含むテーブルに対する更新が失敗していた
+    * SQL Server で共有メモリ接続ができなかった問題を修正
+        * 必要なサブパッケージ `"github.com/microsoft/go-mssqldb/sharedmemory"` が import されていなかった
+        * 共有メモリ接続を行う場合は、接続文字列にパラメータ `protocol=lpc` を指定する必要があります  
+          例: `Server=localhost\SQLEXPRESS01;Database=master;Trusted_Connection=True;protocol=lpc;`  
+          参考: https://github.com/microsoft/go-mssqldb/issues/96
 * アプリ仕様変更
     * NULL を`<NULL>` と表現していたのを Unicode U+2400 (&#x2400;, SYMBOL FOR NULL) を用いるようにした
     * EDIT コマンドで非文字列系セルを0文字にした時、NULL とするようにした。

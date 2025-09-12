@@ -1,5 +1,10 @@
 * Bug Fixes
   * Fixed an issue where the `EDIT` command failed to update tables containing date columns in SQLite3 databases.
+  * Fixed an issue where shared memory connections to SQL Server were not working
+    * The required subpackage `"github.com/microsoft/go-mssqldb/sharedmemory"` was not imported
+    * When using shared memory connections, the connection string must include the parameter `protocol=lpc`  
+          Example: `server=localhost\SQLEXPRESS01;database=master;trusted_connection=yes;protocol=lpc;`  
+          Ref: https://github.com/microsoft/go-mssqldb/issues/96
 * Application Changes
   * Changed the representation of `NULL` from `<NULL>` to the Unicode character U+2400 (&#x2044;, SYMBOL FOR NULL).
   * In the `EDIT` command, setting a non-string cell to an empty string now results in `NULL`.

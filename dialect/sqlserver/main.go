@@ -100,7 +100,7 @@ var sqlServerSpec = &dialect.Entry{
 	   and o.name = @p1
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
-	SqlForTab:             `select * from sys.objects`,
+	SqlForTab:             `select * from sys.tables`,
 	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        sqlServerTypeNameToConv,
 	TableField:            "name",

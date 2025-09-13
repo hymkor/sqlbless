@@ -51,11 +51,13 @@ var postgresSpec = &dialect.Entry{
          and a.attisdropped is false
        order by a.attnum`,
 	SqlForTab: `
-      select schemaname,tablename,tableowner
-        from pg_tables`,
+      select *
+        from information_schema.tables
+       where table_type = 'BASE TABLE'
+         and table_schema not in ('pg_catalog', 'information_schema')`,
 	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
-	TableField:            "tablename",
+	TableField:            "table_name",
 	ColumnField:           "name",
 }
 

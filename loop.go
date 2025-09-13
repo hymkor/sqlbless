@@ -137,6 +137,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
 	var err error
+	var title string
 	if tableName == "" {
 		if ss.Dialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
@@ -144,6 +145,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.Debug {
 			fmt.Println(ss.Dialect.SqlForTab)
 		}
+		title = "Tables"
 		rows, err = ss.conn.QueryContext(ctx, ss.Dialect.SqlForTab)
 	} else {
 		if ss.Dialect.SqlForDesc == "" {
@@ -153,6 +155,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		if ss.Debug {
 			fmt.Println(sql)
 		}
+		title = tableName
 		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
 	}
 	if err != nil {
@@ -166,7 +169,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return newViewer(ss).View(ctx, table, ss.automatic, _rows, out)
+	return newViewer(ss).View(ctx, title, ss.automatic, _rows, out)
 }
 
 // hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not

@@ -13,13 +13,15 @@ const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
 var Entry = &dialect.Entry{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SqlForTab: `
-	select 'SCHEMA' AS SCHEMA,* from sqlite_master
+	select      'master' AS schema,name,rootpage,sql FROM sqlite_master
+	where type = 'table'
 	union all
-	select 'TEMP_SCHEMA' AS SCHEMA,* FROM sqlite_temp_schema`,
+	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
+	where type = 'temp_schema'`,
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        typeNameToConv,
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
-	TableField:            "tbl_name",
+	TableField:            "name",
 	ColumnField:           "name",
 }
 

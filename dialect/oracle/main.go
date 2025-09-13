@@ -49,7 +49,7 @@ var oracleSpec = &dialect.Entry{
 	from all_tab_columns
    where table_name = UPPER(:1)
    order by column_id`,
-	SqlForTab:             `select * from tab`,
+	SqlForTab:             `select * from tab where tname not like 'BIN$%'`,
 	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        oracleTypeNameToConv,
 	TableField:            "tname",

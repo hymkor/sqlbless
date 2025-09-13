@@ -146,8 +146,10 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
 ### SQL Server
 
     $ sqlbless sqlserver sqlserver://@localhost?database=master
-    $ sqlbless sqlserver://@localhost?database=master
-    ( Windows authentication )
+
+( Windows authentication )
+
+    $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
 
 - The driver used is https://github.com/microsoft/go-mssqldb
 

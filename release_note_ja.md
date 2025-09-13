@@ -5,10 +5,12 @@
         * 共有メモリ接続を行う場合は、接続文字列にパラメータ `protocol=lpc` を指定する必要があります  
           例: `Server=localhost\SQLEXPRESS01;Database=master;Trusted_Connection=True;protocol=lpc;`  
           参考: https://github.com/microsoft/go-mssqldb/issues/96
+    * テーブル名なしの `DESC`, `\D` コマンドで、タイトルが空になっていた
 * アプリ仕様変更
     * NULL を`<NULL>` と表現していたのを Unicode U+2400 (&#x2400;, SYMBOL FOR NULL) を用いるようにした
     * EDIT コマンドで非文字列系セルを0文字にした時、NULL とするようにした。
     * 最初の DML が更新行ゼロだった場合は、トランザクションを開始せずプロンプトを SQL> のままにした。
+    * テーブル名なしの `DESC`, `\D` コマンドや、テーブル名補完では、ユーザーテーブル以外のオブジェクトは出さないようにした
 * ライブラリ仕様変更
     * 全体をリファクタリングし、メインパッケージ `"sqlbless"` からサブパッケージ `"dialect"`, `"rowstocsv"`,`"spread"` にコードを分離した
     * DB ごとのカスタマイズパッケージのパスを `"dialect"` の下へ移動

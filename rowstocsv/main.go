@@ -19,13 +19,13 @@ type Source interface {
 	Scan(dest ...any) error
 }
 
-func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.NullString) string, debug bool, csvw *csv.Writer) error {
+func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.NullString) string, debug bool, write func([]string) error) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
 	}
 
-	if err := csvw.Write(columns); err != nil {
+	if err := write(columns); err != nil {
 		return err
 	}
 
@@ -58,7 +58,7 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 			}
 
 		}
-		csvw.Write(strs)
+		write(strs)
 	}
 
 	for rows.Next() {
@@ -84,7 +84,7 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 			}
 			strs[i] = conv(i, columnTypes[i], ns)
 		}
-		if err := csvw.Write(strs); err != nil {
+		if err := write(strs); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)
 		}
 	}
@@ -124,5 +124,5 @@ func (cfg Config) Dump(ctx context.Context, rows Source, w io.Writer) error {
 	if cfg.AutoClose {
 		defer rows.Close()
 	}
-	return dump(ctx, rows, conv, cfg.Debug, csvw)
+	return dump(ctx, rows, conv, cfg.Debug, csvw.Write)
 }

@@ -1,3 +1,7 @@
+v0.20.0
+=======
+Sep 14, 2025
+
 * Bug Fixes
   * Fixed an issue where the `EDIT` command failed to update tables containing date columns in SQLite3 databases.
   * Fixed an issue where shared memory connections to SQL Server were not working

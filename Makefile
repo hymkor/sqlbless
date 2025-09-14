@@ -60,4 +60,8 @@ get:
 	$(GO) mod tidy
 # cd "$(CURDIR)/cmd/sqlbless" && $(GO) get -u && $(GO) mod tidy
 
-.PHONY: all test dist _dist clean manifest release
+docs:
+	minipage -readme-to-index README.md    > docs/index.html
+	minipage -readme-to-index README_ja.md > docs/index_ja.html
+
+.PHONY: all test dist _dist clean manifest release docs

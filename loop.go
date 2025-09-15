@@ -42,7 +42,7 @@ func cutField(s string) (string, string) {
 	return s[:i], s[i:]
 }
 
-func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) error {
+func doSelect(ctx context.Context, ss *Session, query string) error {
 	var rows *sql.Rows
 	var err error
 	if ss.tx != nil {
@@ -58,7 +58,7 @@ func doSelect(ctx context.Context, ss *Session, query string, out io.Writer) err
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return newViewer(ss).View(ctx, query, ss.automatic, _rows, out)
+	return newViewer(ss).View(ctx, query, ss.automatic, _rows, ss.termOut)
 }
 
 type canExec interface {
@@ -132,7 +132,7 @@ func echoPrefix(spool io.Writer, prefix, query string) {
 	}
 }
 
-func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer) error {
+func (ss *Session) desc(ctx context.Context, table string) error {
 	// fmt.Fprintln(os.Stderr, dbDialect.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows
@@ -169,7 +169,7 @@ func (ss *Session) desc(ctx context.Context, table string, out, spool io.Writer)
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return newViewer(ss).View(ctx, title, ss.automatic, _rows, out)
+	return newViewer(ss).View(ctx, title, ss.automatic, _rows, ss.termOut)
 }
 
 // hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not
@@ -259,34 +259,34 @@ func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 
 type Session struct {
 	rowstocsv.Config
-	Dialect   *dialect.Entry
-	conn      *sql.DB
-	history   *history.History
-	tx        *sql.Tx
-	spool     lftocrlf.WriteNameCloser
-	stdout    io.Writer
-	stderr    io.Writer
-	automatic bool
-	term      string
-	crlf      bool
+	Dialect         *dialect.Entry
+	conn            *sql.DB
+	history         *history.History
+	tx              *sql.Tx
+	spool           lftocrlf.WriteNameCloser
+	stdOut, termOut io.Writer
+	stdErr, termErr io.Writer
+	automatic       bool
+	term            string
+	crlf            bool
 }
 
 func (ss *Session) Close() {
 	if ss.tx != nil {
-		txRollback(&ss.tx, ss.stderr)
+		txRollback(&ss.tx, ss.stdErr)
 	}
 	if ss.spool != nil {
 		ss.spool.Close()
 		ss.spool = nil
-		ss.stdout = os.Stdout
-		ss.stderr = os.Stderr
+		ss.stdOut = ss.termOut
+		ss.stdErr = ss.termErr
 	}
 }
 
 func (ss *Session) StartFromStdin(ctx context.Context) error {
 	script := &Script{
 		br:   bufio.NewReader(os.Stdin),
-		echo: os.Stderr,
+		echo: ss.stdErr,
 		term: ss.term,
 	}
 	return ss.Loop(ctx, script, true)
@@ -303,7 +303,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 	defer fd.Close()
 	script := &Script{
 		br:   bufio.NewReader(fd),
-		echo: os.Stderr,
+		echo: ss.stdErr,
 		term: ss.term,
 	}
 	return ss.Loop(ctx, script, true)
@@ -312,7 +312,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort bool) error {
 	for {
 		if ss.spool != nil {
-			fmt.Fprintf(os.Stderr, "\nSpooling to '%s' now\n", ss.spool.Name())
+			fmt.Fprintf(ss.termErr, "\nSpooling to '%s' now\n", ss.spool.Name())
 		}
 		type PromptSetter interface {
 			SetPrompt(func(io.Writer, int) (int, error))
@@ -366,18 +366,18 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			fname, _ := cutField(arg)
 			if fname == "" {
 				if ss.spool != nil {
-					fmt.Fprintf(os.Stderr, "Spooling to '%s' now\n", ss.spool.Name())
+					fmt.Fprintf(ss.termErr, "Spooling to '%s' now\n", ss.spool.Name())
 				} else {
-					fmt.Fprintln(os.Stderr, "Not Spooling")
+					fmt.Fprintln(ss.termErr, "Not Spooling")
 				}
 				continue
 			}
 			if ss.spool != nil {
 				ss.spool.Close()
-				fmt.Fprintln(os.Stderr, "Spool closed.")
+				fmt.Fprintln(ss.termErr, "Spool closed.")
 				ss.spool = nil
-				ss.stdout = os.Stdout
-				ss.stderr = os.Stderr
+				ss.stdOut = ss.termOut
+				ss.stdErr = ss.termErr
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
@@ -386,25 +386,25 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 					} else {
 						ss.spool = fd
 					}
-					ss.stdout = io.MultiWriter(os.Stdout, ss.spool)
-					ss.stderr = io.MultiWriter(os.Stderr, ss.spool)
-					fmt.Fprintf(os.Stderr, "Spool to %s\n", fname)
+					ss.stdOut = io.MultiWriter(ss.termOut, ss.spool)
+					ss.stdErr = io.MultiWriter(ss.termErr, ss.spool)
+					fmt.Fprintf(ss.termErr, "Spool to %s\n", fname)
 					writeSignature(ss.spool)
 				}
 			}
 		case "EDIT":
 			echo(ss.spool, query)
-			err = doEdit(ctx, ss, query, commandIn, os.Stdout)
+			err = doEdit(ctx, ss, query, commandIn)
 
 		case "SELECT":
 			echo(ss.spool, query)
-			err = doSelect(ctx, ss, query, os.Stdout)
+			err = doSelect(ctx, ss, query)
 		case "DELETE", "INSERT", "UPDATE":
 			echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
-			err = txBegin(ctx, ss.conn, &ss.tx, ss.stderr)
+			err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
 			if err == nil {
-				count, err := doDML(ctx, ss.tx, query, ss.stdout)
+				count, err := doDML(ctx, ss.tx, query, ss.stdOut)
 				if (err != nil || count == 0) && isNewTx && ss.tx != nil {
 					ss.tx.Rollback()
 					ss.tx = nil
@@ -412,18 +412,18 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		case "COMMIT":
 			echo(ss.spool, query)
-			err = txCommit(&ss.tx, ss.stderr)
+			err = txCommit(&ss.tx, ss.stdErr)
 		case "ROLLBACK":
 			echo(ss.spool, query)
-			err = txRollback(&ss.tx, ss.stderr)
+			err = txRollback(&ss.tx, ss.stdErr)
 		case "EXIT", "QUIT":
 			return nil
 		case "DESC", "\\D":
 			echo(ss.spool, query)
-			err = ss.desc(ctx, arg, os.Stdout, ss.spool)
+			err = ss.desc(ctx, arg)
 		case "HISTORY":
 			echo(ss.spool, query)
-			csvw := csv.NewWriter(ss.stdout)
+			csvw := csv.NewWriter(ss.stdOut)
 			for i, end := 0, ss.history.Len(); i < end; i++ {
 				text, stamp := ss.history.TextAndStamp(i)
 				csvw.Write([]string{
@@ -442,12 +442,12 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			} else {
 				_, err = ss.conn.ExecContext(ctx, query)
 				if err == nil {
-					fmt.Fprintln(ss.stderr, "Ok")
+					fmt.Fprintln(ss.stdErr, "Ok")
 				}
 			}
 		}
 		if err != nil {
-			fmt.Fprintln(ss.stderr, err.Error())
+			fmt.Fprintln(ss.stdErr, err.Error())
 			if onErrorAbort {
 				return err
 			}
@@ -492,6 +492,11 @@ func newReservedWordPattern(list ...string) ReservedWordPattern {
 }
 
 func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
+	disabler := colorable.EnableColorsStdout(nil)
+	defer disabler()
+	termOut := colorable.NewColorableStdout()
+	termErr := colorable.NewColorableStderr()
+
 	conn, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
@@ -511,8 +516,10 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		automatic: cfg.Auto != "",
 		term:      cfg.Term,
 		crlf:      cfg.CrLf,
-		stdout:    os.Stdout,
-		stderr:    os.Stderr,
+		stdOut:    termOut,
+		termOut:   termOut,
+		stdErr:    termErr,
+		termErr:   termErr,
 	}
 	defer session.Close()
 
@@ -536,9 +543,6 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()
-
-	disabler := colorable.EnableColorsStdout(nil)
-	defer disabler()
 
 	var editor multiline.Editor
 
@@ -570,7 +574,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	}
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(&history)
-	editor.SetWriter(colorable.NewColorableStdout())
+	editor.SetWriter(termOut)
 
 	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
 		Enclosure:  `"'`,

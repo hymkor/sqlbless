@@ -96,7 +96,7 @@ const (
 	titleSuffix = "】"
 )
 
-func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, rows rowstocsv.Source, out io.Writer) error {
+func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, rows rowstocsv.Source, termOut io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
@@ -111,11 +111,11 @@ func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, ro
 			AutoClose: true,
 		}.Dump(ctx, rows, w)
 	}
-	_, err := viewer.callCsvi(cfg, csvWriteTo, out)
+	_, err := viewer.callCsvi(cfg, csvWriteTo, termOut)
 	return err
 }
 
-func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, termOut io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
@@ -156,7 +156,7 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	if tty != nil {
 		cfg.Pilot = &_AutoCsvi{Tty: tty}
 	}
-	result, err := viewer.callCsvi(cfg, csvWriteTo, out)
+	result, err := viewer.callCsvi(cfg, csvWriteTo, termOut)
 	if applyChange {
 		return result, err
 	}
@@ -186,7 +186,7 @@ func toOneLine(s, prefix, suffix string) string {
 	return buf.String()
 }
 
-func (viewer *Viewer) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, out io.Writer) (*csvi.Result, error) {
+func (viewer *Viewer) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer) error, termOut io.Writer) (*csvi.Result, error) {
 
 	var err1 error
 	pIn, pOut := io.Pipe()
@@ -206,7 +206,7 @@ func (viewer *Viewer) callCsvi(cfg *csvi.Config, csvWriteTo func(pOut io.Writer)
 	cfg.FixColumn = true
 	cfg.ProtectHeader = true
 
-	result, err2 := cfg.Edit(pIn, out)
+	result, err2 := cfg.Edit(pIn, termOut)
 	pIn.Close()
 	return result, errors.Join(err1, err2)
 }

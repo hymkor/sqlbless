@@ -97,7 +97,7 @@ type Editor struct {
 	Auto       GetKeyAndSize
 }
 
-func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Writer) error {
+func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io.Writer) error {
 	query := "SELECT * FROM " + tableAndWhere
 
 	table, _ := cutField(tableAndWhere)
@@ -190,7 +190,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, out io.Wri
 		}.Dump(ctx, rows, w)
 		rows = nil
 		return err
-	}, out)
+	}, termOut)
 
 	if err != nil && err != io.EOF {
 		return err

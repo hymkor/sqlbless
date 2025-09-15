@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/hymkor/sqlbless/spread"
@@ -54,7 +53,7 @@ func newViewer(ss *Session) *spread.Viewer {
 	}
 }
 
-func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, out io.Writer) error {
+func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) error {
 	const (
 		Success = iota
 		Failure
@@ -76,7 +75,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 			}
 
 			if status == AbortAll {
-				echoPrefix(ss.stderr, "(cancel) ", dmlSql)
+				echoPrefix(ss.stdErr, "(cancel) ", dmlSql)
 			} else {
 				err = askSqlAndExecute(ctx, ss, getKey, dmlSql)
 				if err != nil {
@@ -98,7 +97,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn, o
 
 	// replace `edit ` to `select * from `
 	_, tableAndWhere := cutField(command)
-	return editor.Edit(ctx, tableAndWhere, out)
+	return editor.Edit(ctx, tableAndWhere, ss.termOut)
 }
 
 func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
@@ -112,11 +111,11 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		echoPrefix(ss.spool, "(cancel) ", dmlSql)
 		return nil
 	}
-	err = txBegin(ctx, ss.conn, &ss.tx, ss.stderr)
+	err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
 	if err != nil {
 		return err
 	}
 	echo(ss.spool, dmlSql)
-	_, err = doDML(ctx, ss.tx, dmlSql, ss.stdout)
+	_, err = doDML(ctx, ss.tx, dmlSql, ss.stdOut)
 	return err
 }

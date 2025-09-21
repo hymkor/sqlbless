@@ -63,8 +63,8 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 	status := Success
 
 	editor := &spread.Editor{
-		Viewer:     newViewer(ss),
-		TypeToConv: ss.Dialect.TypeToConv,
+		Viewer: newViewer(ss),
+		Entry:  ss.Dialect,
 		Exec: func(ctx context.Context, dmlSql string, args ...any) (rv sql.Result, err error) {
 			if status == Failure {
 				if ans, _ := continueOrAbort(getKey); ans {
@@ -77,8 +77,9 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 			if status == AbortAll {
 				echoPrefix(ss.stdErr, "(cancel) ", dmlSql)
 			} else {
-				err = askSqlAndExecute(ctx, ss, getKey, dmlSql)
+				err = askSqlAndExecute(ctx, ss, getKey, dmlSql, args)
 				if err != nil {
+					echoPrefix(ss.stdErr, "(error) ", err.Error())
 					status = Failure
 					err = nil
 				}
@@ -100,15 +101,37 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 	return editor.Edit(ctx, tableAndWhere, ss.termOut)
 }
 
-func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string) error {
+func joinAny(args []any) string {
+	if len(args) <= 0 {
+		return ""
+	}
+	var b strings.Builder
+	for i, v := range args {
+		if n, ok := v.(sql.NamedArg); ok {
+			fmt.Fprintf(&b, "(%s) %#v\n", n.Name, n.Value)
+		} else {
+			fmt.Fprintf(&b, "(%d) %#v\n", i+1, v)
+		}
+	}
+	return b.String()
+}
+
+func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string, args []any) error {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
+	argsString := joinAny(args)
+	if argsString != "" {
+		fmt.Println(argsString)
+	}
 	answer, err := ask2("Execute? [y/n] ", "yY", "nN", getKey)
 	if err != nil {
 		return err
 	}
 	if !answer {
 		echoPrefix(ss.spool, "(cancel) ", dmlSql)
+		if argsString != "" {
+			echoPrefix(ss.spool, "(args)", argsString)
+		}
 		return nil
 	}
 	err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
@@ -116,6 +139,9 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		return err
 	}
 	echo(ss.spool, dmlSql)
-	_, err = doDML(ctx, ss.tx, dmlSql, ss.stdOut)
+	if argsString != "" {
+		echoPrefix(ss.spool, "(args)", argsString)
+	}
+	_, err = doDML(ctx, ss.tx, dmlSql, args, ss.stdOut)
 	return err
 }

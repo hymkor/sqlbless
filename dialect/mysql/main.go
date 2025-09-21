@@ -16,14 +16,19 @@ var mySQLTypeNameToFormat = map[string]string{
 	"DATE":      dialect.DateOnlyLayout,
 }
 
-func mySQLTypeNameToConv(typeName string) func(string) (string, error) {
-	if format, ok := mySQLTypeNameToFormat[typeName]; ok {
-		return func(s string) (string, error) {
-			dt, err := dialect.ParseAnyDateTime(s)
+func mySQLTypeNameToConv(typeName string) func(string) (any, error) {
+	if typeName == "TIME" {
+		return func(s string) (any, error) {
+			tm, err := dialect.ParseAnyDateTime(s)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			return fmt.Sprintf("%s '%s'", typeName, dt.Format(format)), nil
+			return tm.Format("15:04:05.999999999"), nil
+		}
+	}
+	if _, ok := mySQLTypeNameToFormat[typeName]; ok {
+		return func(s string) (any, error) {
+			return dialect.ParseAnyDateTime(s)
 		}
 	}
 	return nil
@@ -84,6 +89,7 @@ var mySqlSpec = &dialect.Entry{
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
 	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        mySQLTypeNameToConv,
+	PlaceHolder:           &dialect.PlaceHolderQuestion{},
 	DSNFilter:             mySQLDSNFilter,
 	TableField:            "TABLE_NAME",
 	ColumnField:           "NAME",

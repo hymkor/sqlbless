@@ -16,17 +16,28 @@ var postgresTypeNameToFormat = map[string][2]string{
 	"TIME":        [2]string{"TIME", dialect.TimeTzLayout},
 }
 
-func postgresTypeNameToConv(typeName string) func(string) (string, error) {
-	if f, ok := postgresTypeNameToFormat[typeName]; ok {
-		return func(s string) (string, error) {
-			dt, err := dialect.ParseAnyDateTime(s)
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("%s '%s'", f[0], dt.Format(f[1])), nil
+func postgresTypeNameToConv(typeName string) func(string) (any, error) {
+	if _, ok := postgresTypeNameToFormat[typeName]; ok {
+		return func(s string) (any, error) {
+			return dialect.ParseAnyDateTime(s)
 		}
 	}
 	return nil
+}
+
+type placeHolder struct {
+	values []any
+}
+
+func (ph *placeHolder) Make(v any) string {
+	ph.values = append(ph.values, v)
+	return fmt.Sprintf("$%d", len(ph.values))
+}
+
+func (ph *placeHolder) Values() (result []any) {
+	result = ph.values
+	ph.values = ph.values[:0]
+	return
 }
 
 var postgresSpec = &dialect.Entry{
@@ -57,6 +68,7 @@ var postgresSpec = &dialect.Entry{
          and table_schema not in ('pg_catalog', 'information_schema')`,
 	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
 	TypeNameToConv:        postgresTypeNameToConv,
+	PlaceHolder:           &placeHolder{},
 	TableField:            "table_name",
 	ColumnField:           "name",
 }

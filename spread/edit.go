@@ -13,6 +13,7 @@ import (
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
 
+	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
@@ -61,7 +62,7 @@ func csvRowIsNew(row *uncsv.Row) bool {
 	return true
 }
 
-func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (string, error), null string) (string, error) {
+func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (any, error), null string, holder dialect.PlaceHolder) (string, error) {
 	var where strings.Builder
 	for i, c := range row.Cell {
 		if i > 0 {
@@ -76,7 +77,7 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (str
 			if err != nil {
 				return "", err
 			}
-			fmt.Fprintf(&where, "%s = %s", doubleQuoteIfNeed(columns[i]), v)
+			fmt.Fprintf(&where, "%s = %s", doubleQuoteIfNeed(columns[i]), holder.Make(v))
 		}
 	}
 	return where.String(), nil
@@ -91,10 +92,31 @@ func doubleQuoteIfNeed(s string) string {
 
 type Editor struct {
 	*Viewer
-	TypeToConv func(string) func(string) (string, error)
-	Query      func(context.Context, string, ...any) (*sql.Rows, error)
-	Exec       func(context.Context, string, ...any) (sql.Result, error)
-	Auto       GetKeyAndSize
+	*dialect.Entry
+	Query func(context.Context, string, ...any) (*sql.Rows, error)
+	Exec  func(context.Context, string, ...any) (sql.Result, error)
+	Auto  GetKeyAndSize
+}
+
+type placeHolder struct {
+	maker  func(int) string
+	values []any
+}
+
+func newPlaceHolder(maker func(int) string) *placeHolder {
+	return &placeHolder{maker: maker}
+}
+
+func (ph *placeHolder) Make(value any) string {
+	s := ph.maker(len(ph.values))
+	ph.values = append(ph.values, value)
+	return s
+}
+
+func (ph *placeHolder) Values() []any {
+	result := ph.values
+	ph.values = ph.values[:0]
+	return result
 }
 
 func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io.Writer) error {
@@ -119,7 +141,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 	if err != nil {
 		return err
 	}
-	quoteFunc := make([]func(string) (string, error), 0, len(columnTypes))
+	quoteFunc := make([]func(string) (any, error), 0, len(columnTypes))
 	validateFunc := make([]func(string) (string, error), 0, len(columnTypes))
 	for _, ct := range columnTypes {
 		name := strings.ToUpper(ct.DatabaseTypeName())
@@ -148,7 +170,14 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			strings.Contains(name, "NUMBER") ||
 			strings.Contains(name, "NUMERIC") ||
 			strings.Contains(name, "DECIMAL") {
-			quoteFunc = append(quoteFunc, func(s string) (string, error) {
+			quoteFunc = append(quoteFunc, func(s string) (any, error) {
+				if strings.ContainsRune(s, '.') {
+					if v, err := strconv.ParseFloat(s, 64); err == nil {
+						return v, nil
+					}
+				} else if v, err := strconv.ParseInt(s, 0, 64); err == nil {
+					return v, nil
+				}
 				return s, nil
 			})
 			v = func(s string) (string, error) {
@@ -164,8 +193,8 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 				return s, nil
 			}
 		} else {
-			quoteFunc = append(quoteFunc, func(s string) (string, error) {
-				return "'" + strings.ReplaceAll(s, "'", "''") + "'", nil
+			quoteFunc = append(quoteFunc, func(s string) (any, error) {
+				return s, nil
 			})
 			v = func(s string) (string, error) {
 				if s == editor.Null {
@@ -200,6 +229,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 	}
 
 	changes.Each(func(row *uncsv.Row) bool {
+		holder := editor.PlaceHolder
 		var dmlSql string
 		switch csvRowModified(row) {
 		case notModified:
@@ -214,12 +244,12 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 				if c.Text() == editor.Null {
 					sql.WriteString("NULL")
 				} else {
-					var v string
+					var v any
 					v, err = quoteFunc[i](c.Text())
 					if err != nil {
 						return false
 					}
-					sql.WriteString(v)
+					sql.WriteString(holder.Make(v))
 				}
 			}
 			sql.WriteString(")\n")
@@ -238,7 +268,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 							del,
 							doubleQuoteIfNeed(columns[i]))
 					} else {
-						var v string
+						var v any
 						v, err = quoteFunc[i](c.Text())
 						if err != nil {
 							return false
@@ -246,20 +276,20 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 						fmt.Fprintf(&sql, "%s%s = %s ",
 							del,
 							doubleQuoteIfNeed(columns[i]),
-							v)
+							holder.Make(v))
 					}
 					del = ",\n        "
 				}
 			}
 			var v string
-			v, err = createWhere(row, columns, quoteFunc, editor.Null)
+			v, err = createWhere(row, columns, quoteFunc, editor.Null, holder)
 			if err != nil {
 				return false
 			}
 			sql.WriteString(v)
 			dmlSql = sql.String()
 		}
-		_, err = editor.Exec(ctx, dmlSql)
+		_, err = editor.Exec(ctx, dmlSql, holder.Values()...)
 		return true
 	})
 	if err != nil {
@@ -269,15 +299,16 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 		if csvRowIsNew(row) {
 			return true
 		}
+		holder := editor.PlaceHolder
 		var sql strings.Builder
 		fmt.Fprintf(&sql, "DELETE FROM %s", table)
 		var v string
-		v, err = createWhere(row, columns, quoteFunc, editor.Null)
+		v, err = createWhere(row, columns, quoteFunc, editor.Null, holder)
 		if err != nil {
 			return false
 		}
 		sql.WriteString(v)
-		_, err = editor.Exec(ctx, sql.String())
+		_, err = editor.Exec(ctx, sql.String(), holder.Values())
 		return true
 	})
 	return err

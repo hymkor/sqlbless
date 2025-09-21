@@ -1,7 +1,6 @@
 package sqlbless
 
 import (
-	"fmt"
 	"strings"
 
 	_ "github.com/sijms/go-ora/v2"
@@ -9,26 +8,13 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
-func oracleTypeNameToConv(typeName string) func(string) (string, error) {
-	var sfmt string
-	var dfmt string
-	if strings.HasPrefix(typeName, "TIMESTAMP") {
-		// sfmt = "TO_TIMESTAMP('%s','YYYY-MM-DD HH24:MI:SS.FF')"
-		sfmt = "TO_TIMESTAMP_TZ('%s','YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
-		dfmt = dialect.DateTimeTzLayout
-	} else if typeName == "DATE" {
-		sfmt = "TO_DATE('%s','YYYY-MM-DD HH24:MI:SS')"
-		dfmt = dialect.DateTimeLayout
-	} else {
-		return nil
-	}
-	return func(s string) (string, error) {
-		dt, err := dialect.ParseAnyDateTime(s)
-		if err != nil {
-			return "", err
+func oracleTypeNameToConv(typeName string) func(string) (any, error) {
+	if strings.HasPrefix(typeName, "TIMESTAMP") || typeName == "DATE" {
+		return func(s string) (any, error) {
+			return dialect.ParseAnyDateTime(s)
 		}
-		return fmt.Sprintf(sfmt, dt.Format(dfmt)), nil
 	}
+	return nil
 }
 
 var oracleSpec = &dialect.Entry{
@@ -54,6 +40,7 @@ var oracleSpec = &dialect.Entry{
 	TypeNameToConv:        oracleTypeNameToConv,
 	TableField:            "tname",
 	ColumnField:           "name",
+	PlaceHolder:           &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
 }
 
 func init() {

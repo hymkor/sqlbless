@@ -65,8 +65,8 @@ type canExec interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
-func doDML(ctx context.Context, conn canExec, query string, w io.Writer) (int64, error) {
-	result, err := conn.ExecContext(ctx, query)
+func doDML(ctx context.Context, conn canExec, query string, args []any, w io.Writer) (int64, error) {
+	result, err := conn.ExecContext(ctx, query, args...)
 	if err != nil {
 		return 0, fmt.Errorf("exec: %[1]w (%[1]T)", err)
 	}
@@ -404,7 +404,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			isNewTx := (ss.tx == nil)
 			err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
 			if err == nil {
-				count, err := doDML(ctx, ss.tx, query, ss.stdOut)
+				count, err := doDML(ctx, ss.tx, query, nil, ss.stdOut)
 				if (err != nil || count == 0) && isNewTx && ss.tx != nil {
 					ss.tx.Rollback()
 					ss.tx = nil

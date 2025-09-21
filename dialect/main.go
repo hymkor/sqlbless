@@ -6,7 +6,14 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"database/sql"
 )
+
+type PlaceHolder interface {
+	Make(any) string
+	Values() []any
+}
 
 type Entry struct {
 	Usage                 string
@@ -15,11 +22,12 @@ type Entry struct {
 	TableField            string
 	ColumnField           string
 	DisplayDateTimeLayout string
-	TypeNameToConv        func(string) func(string) (string, error)
+	PlaceHolder           PlaceHolder
+	TypeNameToConv        func(string) func(string) (any, error)
 	DSNFilter             func(string) (string, error)
 }
 
-func (D *Entry) TypeToConv(typeName string) func(string) (string, error) {
+func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {
 	if D.TypeNameToConv == nil {
 		return nil
 	}
@@ -129,4 +137,38 @@ func ReadDBInfoFromArgs(args []string) (*DBInfo, error) {
 		}
 	}
 	return d, nil
+}
+
+type PlaceHolderQuestion struct {
+	values []any
+}
+
+func (ph *PlaceHolderQuestion) Make(v any) string {
+	ph.values = append(ph.values, v)
+	return "?"
+}
+
+func (ph *PlaceHolderQuestion) Values() (result []any) {
+	result = ph.values
+	ph.values = ph.values[:0]
+	return
+}
+
+type PlaceHolderName struct {
+	Prefix string
+	Format string
+	values []any
+}
+
+func (ph *PlaceHolderName) Make(v any) string {
+	ph.values = append(ph.values, v)
+	return fmt.Sprintf("%s%s%d", ph.Prefix, ph.Format, len(ph.values))
+}
+
+func (ph *PlaceHolderName) Values() (result []any) {
+	for i, v := range ph.values {
+		result = append(result, sql.Named(fmt.Sprintf("%s%d", ph.Format, i+1), v))
+	}
+	ph.values = ph.values[:0]
+	return
 }

@@ -1,8 +1,6 @@
 package sqlite
 
 import (
-	"fmt"
-
 	_ "github.com/glebarez/go-sqlite/compat"
 
 	"github.com/hymkor/sqlbless/dialect"
@@ -20,28 +18,54 @@ var Entry = &dialect.Entry{
 	where type = 'temp_schema'`,
 	DisplayDateTimeLayout: dateTimeTzLayout,
 	TypeNameToConv:        typeNameToConv,
+	PlaceHolder:           &placeHolder{},
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
 	TableField:            "name",
 	ColumnField:           "name",
 }
 
-var typeNameToFormat = map[string]string{
-	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
-	"TIME":      dialect.TimeOnlyLayout,
-	"DATE":      dialect.DateOnlyLayout,
+var typeNameToHolder = map[string]string{
+	"TIMESTAMP": "timestamp(?)", // "2006-01-02 15:04:05.999999999-07:00"
+	"TIME":      "time(?)",      // dialect.TimeOnlyLayout
+	"DATE":      "date(?)",      // dialect.DateOnlyLayout
+	"DATETIME":  "datetime(?)",  // dialect.DateTimeLayout
 }
 
-func typeNameToConv(typeName string) func(string) (string, error) {
-	if format, ok := typeNameToFormat[typeName]; ok {
-		return func(s string) (string, error) {
+func typeNameToConv(typeName string) func(string) (any, error) {
+	if holder, ok := typeNameToHolder[typeName]; ok {
+		return func(s string) (any, error) {
 			dt, err := dialect.ParseAnyDateTime(s)
 			if err != nil {
-				return "", err
+				return s, nil
 			}
-			return fmt.Sprintf("'%s'", dt.Format(format)), nil
+			return &withHolder{holder: holder, value: dt}, nil
 		}
 	}
 	return nil
+}
+
+type withHolder struct {
+	holder string
+	value  any
+}
+
+type placeHolder struct {
+	values []any
+}
+
+func (ph *placeHolder) Make(v any) string {
+	if w, ok := v.(*withHolder); ok {
+		ph.values = append(ph.values, w.value)
+		return w.holder
+	}
+	ph.values = append(ph.values, v)
+	return "?"
+}
+
+func (ph *placeHolder) Values() (result []any) {
+	result = ph.values
+	ph.values = ph.values[:0]
+	return
 }
 
 func init() {

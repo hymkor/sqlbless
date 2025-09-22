@@ -19,6 +19,39 @@ type Source interface {
 	Scan(dest ...any) error
 }
 
+func anyToNullString(v any) sql.NullString {
+	var ns sql.NullString
+	if stamp, ok := v.(time.Time); ok {
+		ns.String = stamp.Format("2006-01-02 15:04:05.999999999 -07:00")
+		ns.Valid = true
+	} else if b, ok := v.([]byte); ok {
+		ns.String = string(b)
+		ns.Valid = true
+	} else if v != nil {
+		ns.String = fmt.Sprint(v)
+		ns.Valid = true
+	}
+	return ns
+}
+
+func rawByteToNullString(v sql.RawBytes) sql.NullString {
+	var ns sql.NullString
+	if v != nil {
+		ns.String = string(v)
+		ns.Valid = true
+	}
+	return ns
+}
+
+func makeBuffers[T any](n int) ([]any, []T) {
+	refs := make([]any, n)
+	data := make([]T, n)
+	for i := 0; i < n; i++ {
+		refs[i] = &data[i]
+	}
+	return refs, data
+}
+
 func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.NullString) string, debug bool, write func([]string) error) error {
 	columns, err := rows.Columns()
 	if err != nil {
@@ -30,11 +63,8 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 	}
 
 	n := len(columns)
-	refs := make([]any, n)
-	data := make([]any, n)
-	for i := 0; i < n; i++ {
-		refs[i] = &data[i]
-	}
+	refs, data := makeBuffers[any](n)
+	//refs, data := makeBuffers[sql.RawBytes](n)
 	strs := make([]string, len(columns))
 
 	columnTypes, err := rows.ColumnTypes()
@@ -71,17 +101,8 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 			return err
 		}
 		for i, v := range data {
-			var ns sql.NullString
-			if stamp, ok := v.(time.Time); ok {
-				ns.String = stamp.Format("2006-01-02 15:04:05.999999999 -07:00")
-				ns.Valid = true
-			} else if b, ok := v.([]byte); ok {
-				ns.String = string(b)
-				ns.Valid = true
-			} else if v != nil {
-				ns.String = fmt.Sprint(v)
-				ns.Valid = true
-			}
+			ns := anyToNullString(v)
+			// ns := rawByteToNullString(v)
 			strs[i] = conv(i, columnTypes[i], ns)
 		}
 		if err := write(strs); err != nil {

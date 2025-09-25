@@ -1,6 +1,8 @@
 package sqlite
 
 import (
+	"strings"
+
 	_ "github.com/glebarez/go-sqlite/compat"
 
 	"github.com/hymkor/sqlbless/dialect"
@@ -25,7 +27,7 @@ var Entry = &dialect.Entry{
 }
 
 var typeNameToHolder = map[string]string{
-	"TIMESTAMP": "timestamp(?)", // "2006-01-02 15:04:05.999999999-07:00"
+	"TIMESTAMP": "datetime(?)",  // "2006-01-02 15:04:05.999999999-07:00"
 	"TIME":      "time(?)",      // dialect.TimeOnlyLayout
 	"DATE":      "date(?)",      // dialect.DateOnlyLayout
 	"DATETIME":  "datetime(?)",  // dialect.DateTimeLayout
@@ -60,6 +62,13 @@ func (ph *placeHolder) Make(v any) string {
 	}
 	ph.values = append(ph.values, v)
 	return "?"
+}
+
+func (ph *placeHolder) NormalizeColumnForWhere(v any, s string) string {
+	if w, ok := v.(*withHolder); ok {
+		return strings.ReplaceAll(w.holder, "?", s)
+	}
+	return s
 }
 
 func (ph *placeHolder) Values() (result []any) {

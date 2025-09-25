@@ -77,7 +77,11 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (any
 			if err != nil {
 				return "", err
 			}
-			fmt.Fprintf(&where, "%s = %s", doubleQuoteIfNeed(columns[i]), holder.Make(v))
+			c := doubleQuoteIfNeed(columns[i])
+			if h, ok := holder.(interface{ NormalizeColumnForWhere(any, string) string }); ok {
+				c = h.NormalizeColumnForWhere(v, c)
+			}
+			fmt.Fprintf(&where, "%s = %s", c, holder.Make(v))
 		}
 	}
 	return where.String(), nil

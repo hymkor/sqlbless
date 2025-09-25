@@ -1,3 +1,12 @@
+* `edit` command
+    * Changed to use placeholders for value specification
+    * Modified SQLite3 datetime column updates to normalize values in `WHERE` clauses according to column type:
+        * `DATETIME` / `TIMESTAMP` columns → `datetime()`
+        * `DATE` columns → `date()`
+        * `TIME` columns → `time()`
+      This ensures updates work regardless of whether ISO8601 strings contain `T` or `Z`
+    * Aligned behavior with other commands: if the number of affected rows is zero, no transaction is started and the prompt remains at `SQL>`
+
 v0.20.0
 =======
 Sep 14, 2025

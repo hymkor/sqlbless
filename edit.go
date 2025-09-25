@@ -134,6 +134,7 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 		}
 		return nil
 	}
+	isNewTx := (ss.tx == nil)
 	err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
 	if err != nil {
 		return err
@@ -142,6 +143,10 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 	if argsString != "" {
 		echoPrefix(ss.spool, "(args)", argsString)
 	}
-	_, err = doDML(ctx, ss.tx, dmlSql, args, ss.stdOut)
+	count, err := doDML(ctx, ss.tx, dmlSql, args, ss.stdOut)
+	if (err != nil || count == 0) && isNewTx && ss.tx != nil {
+		ss.tx.Rollback()
+		ss.tx = nil
+	}
 	return err
 }

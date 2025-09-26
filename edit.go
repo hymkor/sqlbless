@@ -64,8 +64,12 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 	status := Success
 
 	editor := &spread.Editor{
-		Viewer: newViewer(ss),
-		Entry:  ss.Dialect,
+		Viewer: &spread.Viewer{
+			HeaderLines: 1,
+			Comma:       byte(ss.Comma),
+			Null:        ss.Null,
+		},
+		Entry: ss.Dialect,
 		Exec: func(ctx context.Context, dmlSql string, args ...any) (rv sql.Result, err error) {
 			if status == Failure {
 				if ans, _ := continueOrAbort(getKey); ans {

@@ -113,13 +113,16 @@ func echo(spool io.Writer, query string) {
 
 func echoPrefix(spool io.Writer, prefix, query string) {
 	if spool != nil {
-		next := true
 		fmt.Fprintf(spool, "### <%s> ###\n", time.Now().Local().Format(time.DateTime))
-		query = query + ";"
-		for next {
+		query = strings.TrimRight(query, "\n")
+		for {
 			var line string
+			var next bool
 			line, query, next = strings.Cut(query, "\n")
 			fmt.Fprintf(spool, "# %s%s\n", prefix, line)
+			if !next {
+				break
+			}
 		}
 	}
 }

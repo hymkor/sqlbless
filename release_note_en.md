@@ -9,8 +9,9 @@
     * Removed the behavior where the `edit` command wrote the pre-edit SELECT results to the spool destination.  
       ( The `select` command continues to output to the spool destination as before. )
 * In command-line input, pressing Enter alone previously did not terminate input unless the last line ended with a semicolon. This has been changed so that if the input line begins with one of the following command names, it is executed immediately without requiring a semicolon.
-    * `DESC`, `EDIT`, `EXIT`, `HISTORY`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
+    * `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
 * Added the `-spool FILENAME` option to enable spooling from startup.
+* Added the `host` command to execute operating system commands.
 
 v0.20.0
 =======

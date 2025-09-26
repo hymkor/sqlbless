@@ -1,7 +1,6 @@
 * `edit` コマンド
     * 値の指定にプレースホルダーを利用するよう変更
     * SQLite3 の日時列更新において、列の型に応じて以下の関数で正規化して比較するよう変更
-
         * `DATETIME` / `TIMESTAMP` 列 → `datetime()`
         * `DATE` 列 → `date()`
         * `TIME` 列 → `time()`
@@ -10,8 +9,9 @@
     * `edit` コマンドで、編集前の SELECT 結果を spool 先に出力していた動作を廃止  
       ( `select` コマンドについては、従来どおり spool 先にも出力する動作を維持 )
 * コマンドライン入力で Enter のみを押下した場合、従来は末尾にセミコロンがなければ入力継続とみなしていたが、入力行が以下のコマンド名で始まる場合は、セミコロンがなくても即時に実行するように変更した。
-    * `DESC`, `EDIT`, `EXIT`, `HISTORY`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
+    * `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
 * 起動時からスプール可能にする `-spool FILENAME` オプションを追加。
+* OSコマンドを実行する `host` コマンドを追加。
 
 v0.20.0
 =======

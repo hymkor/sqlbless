@@ -27,10 +27,10 @@ var Entry = &dialect.Entry{
 }
 
 var typeNameToHolder = map[string]string{
-	"TIMESTAMP": "datetime(?)",  // "2006-01-02 15:04:05.999999999-07:00"
-	"TIME":      "time(?)",      // dialect.TimeOnlyLayout
-	"DATE":      "date(?)",      // dialect.DateOnlyLayout
-	"DATETIME":  "datetime(?)",  // dialect.DateTimeLayout
+	"TIMESTAMP": "datetime(?)", // "2006-01-02 15:04:05.999999999-07:00"
+	"TIME":      "time(?)",     // dialect.TimeOnlyLayout
+	"DATE":      "date(?)",     // dialect.DateOnlyLayout
+	"DATETIME":  "datetime(?)", // dialect.DateTimeLayout
 }
 
 func typeNameToConv(typeName string) func(string) (any, error) {

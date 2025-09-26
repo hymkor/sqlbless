@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-<style type="text/css"><!--
+<style type="text/css">
 /* light */
 .markdown-body {
   color-scheme: light;
@@ -1136,7 +1136,6 @@ a.permalink:hover{
   text-decoration: underline;
 }
 
-// -->
 </style>
 </head><body>
 <div class="main markdown-body">
@@ -1144,10 +1143,12 @@ a.permalink:hover{
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
 <p>SQL-Bless は SQL*Plus や psql のようなコマンドライン用データベースクライアントです。</p>
 <ul>
-<li>Emacs風キーバインドで複数行のSQLをインラインで編集可能
+<li>複数行の SQL 入力を編集するための Emacs 風キーバインド
 <ul>
-<li>Enter キーは改行を挿入するのみ</li>
-<li>Ctrl-Enter (Ctrl-J) で入力内容を実行</li>
+<li>Enter キーはデフォルトで改行を挿入します</li>
+<li>↑(上)矢印キーまたは Ctrl-P でカーソルを前の行に移動して編集できます</li>
+<li>Ctrl-J または Ctrl-Enter を押すと、入力を即時に実行します</li>
+<li>Enter キー単独の場合でも、最終行がセミコロンで終わっている場合や、最初の単語が <code>EXIT</code> や <code>QUIT</code> といったコマンドの場合は入力が実行されます <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
 </ul>
 </li>
 <li>SELECT結果は CSV 形式で保存</li>
@@ -1168,7 +1169,7 @@ a.permalink:hover{
 </ul>
 </li>
 </ul>
-<p><img src="./demo.gif" alt="image"></p>
+<p><img src="./demo.gif" alt="image" /></p>
 <p><a href="https://github.com/emisjerry">@emisjerry</a> さんによる <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">紹介動画</a></p>
 <table>
 <thead>
@@ -1183,7 +1184,7 @@ a.permalink:hover{
 <td><strong>改行を挿入</strong></td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
+<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
 <td><strong>SQLを実行</strong></td>
 </tr>
 <tr>
@@ -1392,10 +1393,13 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <h2 id="license">License</h2>
 <p>MIT License</p>
 <div class="footnotes" role="doc-endnotes">
-<hr>
+<hr />
 <ol>
 <li id="fn:1">
-<p><code>;</code> もしくは <code>-term string</code> で指定された文字列&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p><code>EXIT</code> や <code>QUIT</code> で入力集結になるのは v0.21以降&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><code>;</code> もしくは <code>-term string</code> で指定された文字列&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>

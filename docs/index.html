@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-<style type="text/css"><!--
+<style type="text/css">
 /* light */
 .markdown-body {
   color-scheme: light;
@@ -1136,7 +1136,6 @@ a.permalink:hover{
   text-decoration: underline;
 }
 
-// -->
 </style>
 </head><body>
 <div class="main markdown-body">
@@ -1144,10 +1143,12 @@ a.permalink:hover{
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
 <p>The SQL-Bless is a command-line database client like SQL*Plus or psql.</p>
 <ul>
-<li>Emacs-like keybindings for inline editing of multiple lines of SQL.
+<li>Emacs-like keybindings for editing multi-line SQL input.
 <ul>
-<li>The action of <code>Enter</code> key will only insert a line feed code.</li>
-<li>Press <code>Ctrl-J</code> or <code>Ctrl</code>-<code>Enter</code> to execute the input.</li>
+<li>Pressing Enter inserts a line break by default.</li>
+<li>Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.</li>
+<li>Press Ctrl-J or Ctrl-Enter to execute the input immediately.</li>
+<li>When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a command such as <code>EXIT</code> or <code>QUIT</code>.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
 </ul>
 </li>
 <li>Save the result of SELECT in CSV format</li>
@@ -1168,7 +1169,7 @@ a.permalink:hover{
 </ul>
 </li>
 </ul>
-<p><img src="./demo.gif" alt="image"></p>
+<p><img src="./demo.gif" alt="image" /></p>
 <p><a href="https://www.youtube.com/watch?v=_cxBQKpfUds">Video</a> by <a href="https://github.com/emisjerry">@emisjerry</a></p>
 <table>
 <thead>
@@ -1183,7 +1184,7 @@ a.permalink:hover{
 <td><strong>Insert a linefeed</strong></td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
+<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
 <td><strong>Execute SQL</strong></td>
 </tr>
 <tr>
@@ -1407,10 +1408,13 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <h2 id="license">License</h2>
 <p>MIT License</p>
 <div class="footnotes" role="doc-endnotes">
-<hr>
+<hr />
 <ol>
 <li id="fn:1">
-<p><code>;</code> or the string specfied with the option <code>-term string</code>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>Starting with v0.21, typing only <code>EXIT</code> or <code>QUIT</code> also terminates the input.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><code>;</code> or the string specfied with the option <code>-term string</code>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>

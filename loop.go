@@ -22,6 +22,7 @@ import (
 
 	"github.com/hymkor/go-multiline-ny"
 	"github.com/hymkor/go-multiline-ny/completion"
+	"github.com/hymkor/go-shellcommand"
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
@@ -184,6 +185,7 @@ var oneLineCommands = map[string]struct{}{
 	`EDIT`:    o,
 	`EXIT`:    o,
 	`HISTORY`: o,
+	`HOST`:    o,
 	`QUIT`:    o,
 	`REM`:     o,
 	`SPOOL`:   o,
@@ -379,6 +381,11 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		switch strings.ToUpper(cmd) {
 		case "REM":
 			// nothing to do
+		case "HOST":
+			process, err := shellcommand.System(arg)
+			if err == nil {
+				process.Wait()
+			}
 		case "SPOOL":
 			fname, _ := misc.CutField(arg)
 			if fname == "" {

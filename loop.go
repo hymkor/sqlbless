@@ -482,6 +482,7 @@ type Config struct {
 	Debug          bool
 	SubmitByEnter  bool
 	Script         string
+	SpoolFilename  string
 }
 
 type ReservedWordPattern map[string]struct{}
@@ -524,6 +525,19 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		return err
 	}
 
+	var spool lftocrlf.WriteNameCloser
+	if fn := cfg.SpoolFilename; fn != "" &&
+		!strings.EqualFold(fn, os.DevNull) &&
+		!strings.EqualFold(fn, "off") {
+
+		fd, err := os.OpenFile(fn, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+		} else {
+			spool = fd
+		}
+	}
+
 	var history history.History
 
 	session := &Session{
@@ -537,6 +551,7 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		termOut:   termOut,
 		stdErr:    termErr,
 		termErr:   termErr,
+		spool:     spool,
 	}
 	defer session.Close()
 

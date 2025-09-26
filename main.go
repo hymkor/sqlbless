@@ -46,6 +46,7 @@ func NewConfigFromFlag() func() *Config {
 		flagDebug          = flag.Bool("debug", false, "Print type in CSV")
 		flagAuto           = flag.String("auto", "", "autopilot")
 		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
+		flagSpool          = flag.String("spool", os.DevNull, "Spool filename")
 	)
 	flag.Usage = usage
 	return func() *Config {
@@ -59,6 +60,7 @@ func NewConfigFromFlag() func() *Config {
 			Debug:          *flagDebug,
 			SubmitByEnter:  *flagSubmitByEnter,
 			Script:         *flagScript,
+			SpoolFilename:  *flagSpool,
 		}
 	}
 }

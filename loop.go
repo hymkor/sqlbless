@@ -30,17 +30,9 @@ import (
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
 	"github.com/hymkor/sqlbless/internal/sqlcompletion"
+	"github.com/hymkor/sqlbless/misc"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
-
-func cutField(s string) (string, string) {
-	s = strings.TrimLeft(s, " \n\r\t\v")
-	i := 0
-	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
-		i++
-	}
-	return s[:i], s[i:]
-}
 
 func doSelect(ctx context.Context, ss *Session, query string) error {
 	var rows *sql.Rows
@@ -358,12 +350,12 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		if _, ok := commandIn.(*Script); !ok {
 			ss.history.Add(queryAndTerm)
 		}
-		cmd, arg := cutField(query)
+		cmd, arg := misc.CutField(query)
 		switch strings.ToUpper(cmd) {
 		case "REM":
 			// nothing to do
 		case "SPOOL":
-			fname, _ := cutField(arg)
+			fname, _ := misc.CutField(arg)
 			if fname == "" {
 				if ss.spool != nil {
 					fmt.Fprintf(ss.termErr, "Spooling to '%s' now\n", ss.spool.Name())
@@ -433,7 +425,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			csvw.Flush()
 		case "START":
-			fname, _ := cutField(arg)
+			fname, _ := misc.CutField(arg)
 			err = ss.Start(ctx, fname)
 		default:
 			echo(ss.spool, query)

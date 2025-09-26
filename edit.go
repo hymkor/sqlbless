@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hymkor/sqlbless/misc"
 	"github.com/hymkor/sqlbless/spread"
 )
 
@@ -97,7 +98,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 	}
 
 	// replace `edit ` to `select * from `
-	_, tableAndWhere := cutField(command)
+	_, tableAndWhere := misc.CutField(command)
 	return editor.Edit(ctx, tableAndWhere, ss.termOut)
 }
 

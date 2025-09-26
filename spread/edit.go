@@ -14,17 +14,9 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/misc"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
-
-func cutField(s string) (string, string) {
-	s = strings.TrimLeft(s, " \n\r\t\v")
-	i := 0
-	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
-		i++
-	}
-	return s[:i], s[i:]
-}
 
 type typeModified int
 
@@ -126,7 +118,7 @@ func (ph *placeHolder) Values() []any {
 func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io.Writer) error {
 	query := "SELECT * FROM " + tableAndWhere
 
-	table, _ := cutField(tableAndWhere)
+	table, _ := misc.CutField(tableAndWhere)
 
 	rows, err := editor.Query(ctx, query)
 	if err != nil {

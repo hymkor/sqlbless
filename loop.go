@@ -174,6 +174,28 @@ func hasTerm(s, term string) (string, bool) {
 	return s, false
 }
 
+var o = struct{}{}
+
+var oneLineCommands = map[string]struct{}{
+	`DESC`:    o,
+	`EDIT`:    o,
+	`EXIT`:    o,
+	`HISTORY`: o,
+	`QUIT`:    o,
+	`REM`:     o,
+	`SPOOL`:   o,
+	`START`:   o,
+	`\D`:      o,
+}
+
+func isOneLineCommand(cmdLine string) bool {
+	first, _ := misc.CutField(cmdLine)
+	first = strings.ToUpper(first)
+	first = strings.TrimRight(first, ";")
+	_, ok := oneLineCommands[first]
+	return ok
+}
+
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
 	GetKey() (string, error)
@@ -575,6 +597,9 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 		Candidates: sqlcompletion.New(dbDialect, conn),
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
+		if len(lines) > 0 && isOneLineCommand(lines[0]) {
+			return true
+		}
 		for {
 			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
 			if last != "" || len(lines) <= 1 {

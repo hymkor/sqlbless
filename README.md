@@ -9,7 +9,7 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
     - Pressing Enter inserts a line break by default.
     - Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.
     - Press Ctrl-J or Ctrl-Enter to execute the input immediately.
-    - When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a command such as `EXIT` or `QUIT`.[^exitquit]
+    - When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a non-SQL command such as `EXIT` or `QUIT`.
 - Save the result of SELECT in CSV format
 - Supported RDBMS
     - SQLite3
@@ -21,8 +21,6 @@ The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 - Auto commit is disabled.
 - Table name and column name completion
     - column name completion works only when the corresponding table name appears to the left of the cursor
-
-[^exitquit]: Starting with v0.21, typing only `EXIT` or `QUIT` also terminates the input.
 
 ![image](./demo.gif)
 

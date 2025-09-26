@@ -142,7 +142,7 @@ func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, e
 	}
 	echo(ss.spool, dmlSql)
 	if argsString != "" {
-		echoPrefix(ss.spool, "(args)", argsString)
+		echo(ss.spool, argsString)
 	}
 	count, err := doDML(ctx, ss.tx, dmlSql, args, ss.stdOut)
 	if (err != nil || count == 0) && isNewTx && ss.tx != nil {

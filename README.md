@@ -68,6 +68,8 @@ Supported commands
         - `c`: apply changes
         - `q` or `ESC`: quit without applying changes
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
+- `HOST command-line`
+    - Executes an operating system command.
 
 - `;` (or the string specified with `-term string`) is a statement seperator when script is executed
 - When sql is input interactively, terminator string (`;` or the string specified with `-term string`) is ignored

@@ -170,9 +170,9 @@ Common Options
 - `-crlf`
     - Use CRLF
 - `-fs string`
-    - Set a field separator (default `","`)
+    - Set a field separator (default: `","`)
 - `-null string`
-    - Set a string representing NULL (default `"<NULL>"`)
+    - Set a string representing NULL (default: &#x2400;)
 - `-tsv`
     - Use TAB as seperator
 - `-f string`
@@ -181,6 +181,8 @@ Common Options
     - Submit by [Enter] and insert a new line by [Ctrl]-[Enter]
 - `-debug`
     - Print type-information in the header of `SELECT` and `EDIT`
+- `-spool filename`
+    - Spool to filename from startup
 - `-help`
     - Help
 

@@ -170,9 +170,9 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
 - `-crlf`
     - 改行コードに CRLF を使う
 - `-fs string`
-    - 区切り文字を指定する(default `","`)
+    - 区切り文字を指定する(default: `","`)
 - `-null string`
-    - NULLを表現する文字列を指定(default `"<NULL>"`)
+    - NULLを表現する文字列を指定(default: &#x2400;)
 - `-tsv`
     - タブを区切り文字に使う
 - `-f string`
@@ -181,6 +181,8 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     - `Enter` で確定し、`Ctrl`-`Enter` で新しい行を挿入するようにする
 - `-debug`
     - `SELECT` と `EDIT` のヘッダに型情報を表示するようにした
+- `-spool filename`
+    - 指定したファイルに起動時からスプールする
 - `-help`
     - ヘルプを表示
 

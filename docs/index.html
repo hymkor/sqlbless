@@ -1148,7 +1148,7 @@ a.permalink:hover{
 <li>Pressing Enter inserts a line break by default.</li>
 <li>Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.</li>
 <li>Press Ctrl-J or Ctrl-Enter to execute the input immediately.</li>
-<li>When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a command such as <code>EXIT</code> or <code>QUIT</code>.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a non-SQL command such as <code>EXIT</code> or <code>QUIT</code>.</li>
 </ul>
 </li>
 <li>Save the result of SELECT in CSV format</li>
@@ -1184,7 +1184,7 @@ a.permalink:hover{
 <td><strong>Insert a linefeed</strong></td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
+<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
 <td><strong>Execute SQL</strong></td>
 </tr>
 <tr>
@@ -1278,6 +1278,12 @@ a.permalink:hover{
 </ul>
 </li>
 <li>
+<p><code>HOST command-line</code></p>
+<ul>
+<li>Executes an operating system command.</li>
+</ul>
+</li>
+<li>
 <p><code>;</code> (or the string specified with <code>-term string</code>) is a statement seperator when script is executed</p>
 </li>
 <li>
@@ -1365,12 +1371,12 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </li>
 <li><code>-fs string</code>
 <ul>
-<li>Set a field separator (default <code>&quot;,&quot;</code>)</li>
+<li>Set a field separator (default: <code>&quot;,&quot;</code>)</li>
 </ul>
 </li>
 <li><code>-null string</code>
 <ul>
-<li>Set a string representing NULL (default <code>&quot;&lt;NULL&gt;&quot;</code>)</li>
+<li>Set a string representing NULL (default: ␀)</li>
 </ul>
 </li>
 <li><code>-tsv</code>
@@ -1393,6 +1399,11 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li>Print type-information in the header of <code>SELECT</code> and <code>EDIT</code></li>
 </ul>
 </li>
+<li><code>-spool filename</code>
+<ul>
+<li>Spool to filename from startup</li>
+</ul>
+</li>
 <li><code>-help</code>
 <ul>
 <li>Help</li>
@@ -1411,10 +1422,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <hr />
 <ol>
 <li id="fn:1">
-<p>Starting with v0.21, typing only <code>EXIT</code> or <code>QUIT</code> also terminates the input.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-<li id="fn:2">
-<p><code>;</code> or the string specfied with the option <code>-term string</code>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p><code>;</code> or the string specfied with the option <code>-term string</code>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>

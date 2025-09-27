@@ -30,8 +30,8 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
+	"github.com/hymkor/sqlbless/internal/misc"
 	"github.com/hymkor/sqlbless/internal/sqlcompletion"
-	"github.com/hymkor/sqlbless/misc"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
 

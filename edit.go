@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hymkor/sqlbless/misc"
+	"github.com/hymkor/sqlbless/internal/misc"
 	"github.com/hymkor/sqlbless/spread"
 )
 

@@ -1,3 +1,7 @@
+v0.21.0
+=======
+Sep 27, 2025
+
 * `edit` command
     * Changed to use placeholders for value specification
     * Modified SQLite3 datetime column updates to normalize values in `WHERE` clauses according to column type:

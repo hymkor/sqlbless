@@ -1,3 +1,7 @@
+* On `edit` command, added key-bindings
+    * `ESC` + `y`: Apply changes and exit.
+    * `ESC` + `n`: Discard changes and exit.
+
 v0.21.0
 =======
 Sep 27, 2025

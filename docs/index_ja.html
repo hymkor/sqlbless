@@ -1217,7 +1217,7 @@ a.permalink:hover{
 </tr>
 </tbody>
 </table>
-<h2 id="heading">サポートコマンド</h2>
+<h2 id="%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89">サポートコマンド</h2>
 <ul>
 <li>
 <p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code></p>
@@ -1290,7 +1290,7 @@ a.permalink:hover{
 <p>インタラクティブに SQL を入力する時、セミコロン<code>;</code> もしくは<code>-term string</code> で指定された文字列は無視されます</p>
 </li>
 </ul>
-<h2 id="heading-1">スプールファイルの例</h2>
+<h2 id="%E3%82%B9%E3%83%97%E3%83%BC%E3%83%AB%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BE%8B">スプールファイルの例</h2>
 <pre><code class="language-CSV"># (2023-04-17 22:52:16)
 # select *
 #   from tab
@@ -1308,19 +1308,19 @@ AQ$_QUEUES,TABLE,&lt;NULL&gt;
  where rownum &lt; 5&quot;
 2,2023-04-17 22:52:20,history
 </code></pre>
-<h2 id="heading-2">インストール</h2>
+<h2 id="%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">インストール</h2>
 <p>バイナリパッケージを<a href="https://github.com/hymkor/sqlbless/releases">Releases</a>よりダウンロードして、実行ファイルを展開してください。</p>
-<h3 id="scoop-">scoop インストーラーを使用する場合</h3>
+<h3 id="scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">scoop インストーラーを使用する場合</h3>
 <pre><code>scoop install https://raw.githubusercontent.com/hymkor/sqlbless/master/sqlbless.json
 </code></pre>
 <p>or</p>
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install sqlbless
 </code></pre>
-<h3 id="go-install-">go install でインストールする場合</h3>
+<h3 id="go-install-%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">go install でインストールする場合</h3>
 <pre><code>go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 </code></pre>
-<h2 id="heading-3">起動方法</h2>
+<h2 id="%E8%B5%B7%E5%8B%95%E6%96%B9%E6%B3%95">起動方法</h2>
 <pre><code>$ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 </code></pre>
 <p>DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能です。</p>
@@ -1362,7 +1362,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li>使用ドライバー <a href="http://github.com/go-sql-driver/mysql">http://github.com/go-sql-driver/mysql</a></li>
 <li>パラメータ <code>?parseTime=true&amp;loc=Local</code> が予め設定されていますが、上書き可能です</li>
 </ul>
-<h2 id="heading-4">共通オプション</h2>
+<h2 id="%E5%85%B1%E9%80%9A%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">共通オプション</h2>
 <ul>
 <li><code>-crlf</code>
 <ul>
@@ -1427,4 +1427,33 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </ol>
 </div>
 </div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#sql-bless">SQL-Bless</a>
+<ul>
+<li><a href="#%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89">サポートコマンド</a></li>
+<li><a href="#%E3%82%B9%E3%83%97%E3%83%BC%E3%83%AB%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BE%8B">スプールファイルの例</a></li>
+<li><a href="#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">インストール</a>
+<ul>
+<li><a href="#scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">scoop インストーラーを使用する場合</a></li>
+<li><a href="#go-install-%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">go install でインストールする場合</a></li>
+</ul>
+</li>
+<li><a href="#%E8%B5%B7%E5%8B%95%E6%96%B9%E6%B3%95">起動方法</a>
+<ul>
+<li><a href="#sqlite3">SQLite3</a></li>
+<li><a href="#oracle">Oracle</a></li>
+<li><a href="#postgresql">PostgreSQL</a></li>
+<li><a href="#sql-server">SQL Server</a></li>
+<li><a href="#mysql">MySQL</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%B1%E9%80%9A%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">共通オプション</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
 </body></html>

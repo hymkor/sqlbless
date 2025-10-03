@@ -4,20 +4,59 @@ import (
 	"io"
 	"strings"
 	"testing"
-
-	"golang.org/x/text/transform"
 )
 
+type writer struct {
+	w       io.Writer
+	crIsCut bool
+}
+
+func (this *writer) Write(b []byte) (int, error) {
+	var n int
+	var err error
+	n, this.crIsCut, err = write(this.w, this.crIsCut, b)
+	return n, err
+}
+
 func TestLfToCrLf(t *testing.T) {
-	source := "hogehoge\nahahah\nihihi"
-	expect := "hogehoge\r\nahahah\r\nihihi"
+	type tc struct {
+		source []string
+		expect string
+	}
 
-	var resultBuffer strings.Builder
-	w := transform.NewWriter(&resultBuffer, lfToCrlfTransformer{})
-	io.Copy(w, strings.NewReader(source))
-	result := resultBuffer.String()
+	cases := []tc{
+		tc{ // LF to CRLF
+			source: []string{"foo\nbar\nbaz"},
+			expect: "foo\r\nbar\r\nbaz",
+		},
+		tc{ // CRLF to CRLF
+			source: []string{"foo\r\nbar\r\nbaz"},
+			expect: "foo\r\nbar\r\nbaz",
+		},
+		tc{ // CR""LF to CRLF
+			source: []string{"foo\r", "\nbar\nbaz"},
+			expect: "foo\r\nbar\r\nbaz",
+		},
+		tc{ // CR to CR
+			source: []string{"foo\r", "bar\nbaz"},
+			expect: "foo\rbar\r\nbaz",
+		},
+	}
 
-	if result != expect {
-		t.Fatalf("expect '%v', but '%v'", expect, result)
+	for i, case1 := range cases {
+		println("try:", i+1)
+		var b strings.Builder
+		w := &writer{w: &b}
+		for _, src := range case1.source {
+			io.Copy(w, strings.NewReader(src))
+		}
+		result := b.String()
+
+		if result != case1.expect {
+			t.Fatalf("(%d) expect '%v', but '%v'",
+				i+1,
+				[]byte(case1.expect),
+				[]byte(result))
+		}
 	}
 }

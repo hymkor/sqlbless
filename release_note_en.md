@@ -1,6 +1,12 @@
-* On `edit` command, added key-bindings
-    * `ESC` + `y`: Apply changes and exit.
-    * `ESC` + `n`: Discard changes and exit.
+* On the `edit` command:
+    * Unified the exit operation to the `ESC` key
+        * `ESC` + `y`: Apply changes and exit
+        * `ESC` + `n`: Discard changes and exit
+        * `q`: Now equivalent to `ESC`
+        * `c`: Removed
+    * Changed the brackets around the table name display from `【】` to `[]`
+    * Added options to apply all (`a`) or discard all (`N`) when applying changes
+* Modified the existing CRLF mode to avoid using golang.org/x/text/transform.
 
 v0.21.0
 =======

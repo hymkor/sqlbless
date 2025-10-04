@@ -3,6 +3,7 @@ package sqlbless
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -17,22 +18,25 @@ const (
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
 
-func ask2(msg, yes, no string, getKey func() (string, error)) (bool, error) {
+func askN(msg string, getKey func() (string, error), options ...string) (int, error) {
 	fmt.Print(msg, _ANSI_CURSOR_ON)
 	for {
 		answer, err := getKey()
 		if err != nil {
-			return false, err
+			return -1, err
 		}
-		if strings.Contains(yes, answer) {
-			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			return true, nil
-		}
-		if strings.Contains(no, answer) {
-			fmt.Println(answer, _ANSI_CURSOR_OFF)
-			return false, nil
+		for i, opt := range options {
+			if strings.Contains(opt, answer) {
+				fmt.Println(answer, _ANSI_CURSOR_OFF)
+				return i, nil
+			}
 		}
 	}
+}
+
+func ask2(msg, yes, no string, getKey func() (string, error)) (bool, error) {
+	n, err := askN(msg, getKey, yes, no)
+	return n == 0, err
 }
 
 func continueOrAbort(getKey func() (string, error)) (bool, error) {
@@ -55,14 +59,6 @@ func newViewer(ss *Session) *spread.Viewer {
 }
 
 func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) error {
-	const (
-		Success = iota
-		Failure
-		AbortAll
-	)
-	getKey := pilot.GetKey
-	status := Success
-
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
 			HeaderLines: 1,
@@ -70,27 +66,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 			Null:        ss.Null,
 		},
 		Entry: ss.Dialect,
-		Exec: func(ctx context.Context, dmlSql string, args ...any) (rv sql.Result, err error) {
-			if status == Failure {
-				if ans, _ := continueOrAbort(getKey); ans {
-					status = Success
-				} else {
-					status = AbortAll
-				}
-			}
-
-			if status == AbortAll {
-				echoPrefix(ss.stdErr, "(cancel) ", dmlSql)
-			} else {
-				err = askSqlAndExecute(ctx, ss, getKey, dmlSql, args)
-				if err != nil {
-					echoPrefix(ss.stdErr, "(error) ", err.Error())
-					status = Failure
-					err = nil
-				}
-			}
-			return
-		},
+		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, Session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
 		editor.Auto = a
@@ -121,37 +97,90 @@ func joinAny(args []any) string {
 	return b.String()
 }
 
-func askSqlAndExecute(ctx context.Context, ss *Session, getKey func() (string, error), dmlSql string, args []any) error {
+type statusValue int
+
+const (
+	success statusValue = iota
+	failure
+	discardAll
+	applyAll
+)
+
+type askSqlAndExecute struct {
+	status statusValue
+	getKey func() (string, error)
+	*Session
+}
+
+func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...any) (sql.Result, error) {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
 	argsString := joinAny(args)
 	if argsString != "" {
 		fmt.Println(argsString)
 	}
-	answer, err := ask2("Execute? [y/n] ", "yY", "nN", getKey)
-	if err != nil {
-		return err
-	}
-	if !answer {
-		echoPrefix(ss.spool, "(cancel) ", dmlSql)
-		if argsString != "" {
-			echoPrefix(ss.spool, "(args)", argsString)
+
+	if this.status == failure {
+		if ans, _ := continueOrAbort(this.getKey); ans {
+			this.status = success
+		} else {
+			this.status = discardAll
 		}
-		return nil
 	}
-	isNewTx := (ss.tx == nil)
-	err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
+	if this.status == discardAll {
+		echoPrefix(this.stdErr, "(cancel) ", dmlSql)
+		return nil, nil
+	}
+	if this.status == success {
+		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none)`, this.getKey, "y", "n", "aA", "N")
+		if err != nil {
+			echoPrefix(this.stdErr, "(error) ", err.Error())
+			this.status = failure
+			return nil, err
+		}
+		switch answer {
+		case 1:
+			// cancel and quit with no error
+			this.status = success
+			echoPrefix(this.spool, "(cancel) ", dmlSql)
+			if argsString != "" {
+				echoPrefix(this.spool, "(args)", argsString)
+			}
+			return nil, nil
+		case 2:
+			// apply all
+			this.status = applyAll
+		case 3:
+			// discard all and quit with no error
+			this.status = discardAll
+			echoPrefix(this.spool, "(cancel) ", dmlSql)
+			if argsString != "" {
+				echoPrefix(this.spool, "(args)", argsString)
+			}
+			return nil, nil
+		}
+	}
+	isNewTx := (this.tx == nil)
+	err := txBegin(ctx, this.conn, &this.tx, this.stdErr)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	echo(ss.spool, dmlSql)
+	echo(this.spool, dmlSql)
 	if argsString != "" {
-		echo(ss.spool, argsString)
+		echo(this.spool, argsString)
 	}
-	count, err := doDML(ctx, ss.tx, dmlSql, args, ss.stdOut)
-	if (err != nil || count == 0) && isNewTx && ss.tx != nil {
-		ss.tx.Rollback()
-		ss.tx = nil
+	result, err := this.tx.ExecContext(ctx, dmlSql, args...)
+	var count int64
+	if err == nil {
+		count, err = result.RowsAffected()
+		if err == nil && count == 0 {
+			err = errors.New("no rows affected")
+		}
 	}
-	return err
+	if err != nil && isNewTx && this.tx != nil {
+		this.tx.Rollback()
+		this.tx = nil
+	}
+	fmt.Fprintf(this.stdOut, "%d record(s) updated.\n", count)
+	return result, err
 }

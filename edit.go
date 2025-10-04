@@ -89,9 +89,9 @@ func joinAny(args []any) string {
 	var b strings.Builder
 	for i, v := range args {
 		if n, ok := v.(sql.NamedArg); ok {
-			fmt.Fprintf(&b, "(%s) %#v\n", n.Name, n.Value)
+			fmt.Fprintf(&b, "(%s) %#v ", n.Name, n.Value)
 		} else {
-			fmt.Fprintf(&b, "(%d) %#v\n", i+1, v)
+			fmt.Fprintf(&b, "(%d) %#v ", i+1, v)
 		}
 	}
 	return b.String()
@@ -115,6 +115,7 @@ type askSqlAndExecute struct {
 func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...any) (sql.Result, error) {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
+	fmt.Println()
 	argsString := joinAny(args)
 	if argsString != "" {
 		fmt.Println(argsString)
@@ -131,6 +132,7 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		echoPrefix(this.stdErr, "(cancel) ", dmlSql)
 		return nil, nil
 	}
+	fmt.Println()
 	if this.status == success {
 		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none)`, this.getKey, "y", "n", "aA", "N")
 		if err != nil {

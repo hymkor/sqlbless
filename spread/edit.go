@@ -58,7 +58,7 @@ func createWhere(row *uncsv.Row, columns []string, quoteFunc []func(string) (any
 	var where strings.Builder
 	for i, c := range row.Cell {
 		if i > 0 {
-			where.WriteString("\n   AND  ")
+			where.WriteString("  AND  ")
 		} else {
 			where.WriteString("\n WHERE  ")
 		}
@@ -274,7 +274,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 							doubleQuoteIfNeed(columns[i]),
 							holder.Make(v))
 					}
-					del = ",\n        "
+					del = ",  "
 				}
 			}
 			var v string

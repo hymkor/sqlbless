@@ -92,8 +92,8 @@ func (_AutoCsvi) Close() error {
 }
 
 const (
-	titlePrefix = "【"
-	titleSuffix = "】"
+	titlePrefix = "["
+	titleSuffix = "]"
 )
 
 func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, rows rowstocsv.Source, termOut io.Writer) error {

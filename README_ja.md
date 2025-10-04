@@ -62,9 +62,11 @@ SQL-Bless は SQL\*Plus や psql のようなコマンドライン用データ�
 - `EDIT tablename [WHERE conditions...]`
     - 選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します
     - エディタ中では以下のキーが拡張されます
-        = `x` or `d`: セルに NULL をセットする
-        - `c`: 変更を適用して終了
-        - `q` or `ESC`: 修正を破棄して終了
+        - `x` or `d`: セルに NULL をセットする
+        - `ESC`+`y`: 変更を適用して終了
+        - `ESC`+`n`: 修正を破棄して終了
+        - `q`: `ESC` と等価
+        - `c`: 変更を適用して終了(廃止予定)
     - EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、[ご連絡](https://github.com/hymkor/sqlbless/issues/new)いただけるとたすかります。
 - `HOST command-line`
     - OS コマンドを実行します

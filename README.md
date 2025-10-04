@@ -63,8 +63,10 @@ Supported commands
     - Start an [editor][csvi] to modify the selected records of the table.
     - In the editor, these keys are bound.
         - `x` or `d`: set NULL to the current cell
-        - `c`: apply changes
-        - `q` or `ESC`: quit without applying changes
+        - `ESC` + `y`: Apply changes and exit
+        - `ESC` + `n`: Discard changes and exit
+        - `q`: Now equivalent to `ESC`
+        - `c`: Apply changes and exit (deprecated)
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
 - `HOST command-line`
     - Executes an operating system command.

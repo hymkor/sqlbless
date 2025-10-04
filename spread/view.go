@@ -134,39 +134,34 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		return &csvi.CommandResult{}, nil
 	}
 
+	quit := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		ch, err := app.MessageAndGetKey(`"Y": Save&Exit  "N": Discard&Exit  <ESC>: Cancel(edit)`)
+		if err != nil {
+			return nil, err
+		}
+		switch ch {
+		case "y", "Y":
+			io.WriteString(app, " y\n")
+			applyChange = true
+			return &csvi.CommandResult{Quit: true}, nil
+		case "n", "N":
+			io.WriteString(app, " n\n")
+			return &csvi.CommandResult{Quit: true}, nil
+		default:
+			return &csvi.CommandResult{}, nil
+		}
+	}
+
 	cfg := &csvi.Config{
 		Titles: []string{
 			toOneLine(title, titlePrefix, titleSuffix),
-			"\"c\": Apply changes & quit, \"q\": Discard changes & quit",
+			"ESC+\"y\": Apply changes & quit, ESC+\"n\": Discard changes & quit",
 		},
 		KeyMap: map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
-			"\x1B": func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-				ch, err := app.MessageAndGetKey(`"Y": Save&Exit  "N": Discard&Exit  <ESC>: Cancel(edit)`)
-				if err != nil {
-					return nil, err
-				}
-				switch ch {
-				case "y", "Y":
-					io.WriteString(app, " y\n")
-					applyChange = true
-					return &csvi.CommandResult{Quit: true}, nil
-				case "n", "N":
-					io.WriteString(app, " n\n")
-					return &csvi.CommandResult{Quit: true}, nil
-				default:
-					return &csvi.CommandResult{}, nil
-				}
-			},
-			"c": func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-				if app.YesNo("Apply changes and quit ? [y/n] ") {
-					io.WriteString(app, "y\n")
-					applyChange = true
-					return &csvi.CommandResult{Quit: true}, nil
-				}
-				return &csvi.CommandResult{}, nil
-			},
-			"x": setNull,
-			"d": setNull,
+			"\x1B": quit,
+			"q":    quit,
+			"x":    setNull,
+			"d":    setNull,
 		},
 		OnCellValidated: validate,
 	}

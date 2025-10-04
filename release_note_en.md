@@ -6,6 +6,7 @@
         * `c`: Removed
     * Changed the brackets around the table name display from `【】` to `[]`
     * Added options to apply all (`a`) or discard all (`N`) when applying changes
+    * Adjusted confirmation SQL output to reduce line usage: SET clause, WHERE clause, and parameter list are now shown on a single line each
 * Modified the existing CRLF mode to avoid using golang.org/x/text/transform.
 
 v0.21.0

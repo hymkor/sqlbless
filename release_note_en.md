@@ -1,110 +1,110 @@
-* On the `edit` command:
-    * Unified the exit operation to the `ESC` key
-        * `ESC` + `y`: Apply changes and exit
-        * `ESC` + `n`: Discard changes and exit
-        * `q`: Now equivalent to `ESC`
-        * `c`: Removed
-    * Changed the brackets around the table name display from `【】` to `[]`
-    * Added options to apply all (`a`) or discard all (`N`) when applying changes
-    * Adjusted confirmation SQL output to reduce line usage: SET clause, WHERE clause, and parameter list are now shown on a single line each
-* Modified the existing CRLF mode to avoid using golang.org/x/text/transform.
+- On the `edit` command:
+    - Unified the exit operation to the `ESC` key
+        - `ESC` + `y`: Apply changes and exit
+        - `ESC` + `n`: Discard changes and exit
+        - `q`: Now equivalent to `ESC`
+        - `c`: Removed
+    - Changed the brackets around the table name display from `【】` to `[]`
+    - Added options to apply all (`a`) or discard all (`N`) when applying changes
+    - Adjusted confirmation SQL output to reduce line usage: SET clause, WHERE clause, and parameter list are now shown on a single line each
+- Modified the existing CRLF mode to avoid using golang.org/x/text/transform.
 
 v0.21.0
 =======
 Sep 27, 2025
 
-* `edit` command
-    * Changed to use placeholders for value specification
-    * Modified SQLite3 datetime column updates to normalize values in `WHERE` clauses according to column type:
-        * `DATETIME` / `TIMESTAMP` columns → `datetime()`
-        * `DATE` columns → `date()`
-        * `TIME` columns → `time()`
+- `edit` command
+    - Changed to use placeholders for value specification
+    - Modified SQLite3 datetime column updates to normalize values in `WHERE` clauses according to column type:
+        - `DATETIME` / `TIMESTAMP` columns → `datetime()`
+        - `DATE` columns → `date()`
+        - `TIME` columns → `time()`
       This ensures updates work regardless of whether ISO8601 strings contain `T` or `Z`
-    * Aligned behavior with other commands: if the number of affected rows is zero, no transaction is started and the prompt remains at `SQL>`
-    * Removed the behavior where the `edit` command wrote the pre-edit SELECT results to the spool destination.  
+    - Aligned behavior with other commands: if the number of affected rows is zero, no transaction is started and the prompt remains at `SQL>`
+    - Removed the behavior where the `edit` command wrote the pre-edit SELECT results to the spool destination.  
       ( The `select` command continues to output to the spool destination as before. )
-* In command-line input, pressing Enter alone previously did not terminate input unless the last line ended with a semicolon. This has been changed so that if the input line begins with one of the following command names, it is executed immediately without requiring a semicolon.
-    * `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
-* Added the `-spool FILENAME` option to enable spooling from startup.
-* Added the `host` command to execute operating system commands.
+- In command-line input, pressing Enter alone previously did not terminate input unless the last line ended with a semicolon. This has been changed so that if the input line begins with one of the following command names, it is executed immediately without requiring a semicolon.
+    - `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
+- Added the `-spool FILENAME` option to enable spooling from startup.
+- Added the `host` command to execute operating system commands.
 
 v0.20.0
 =======
 Sep 14, 2025
 
-* Bug Fixes
-  * Fixed an issue where the `EDIT` command failed to update tables containing date columns in SQLite3 databases.
-  * Fixed an issue where shared memory connections to SQL Server were not working
-    * The required subpackage `"github.com/microsoft/go-mssqldb/sharedmemory"` was not imported
-    * When using shared memory connections, the connection string must include the parameter `protocol=lpc`  
+- Bug Fixes
+    - Fixed an issue where the `EDIT` command failed to update tables containing date columns in SQLite3 databases.
+    - Fixed an issue where shared memory connections to SQL Server were not working
+        - The required subpackage `"github.com/microsoft/go-mssqldb/sharedmemory"` was not imported
+        - When using shared memory connections, the connection string must include the parameter `protocol=lpc`  
           Example: `server=localhost\SQLEXPRESS01;database=master;trusted_connection=yes;protocol=lpc;`  
           Ref: https://github.com/microsoft/go-mssqldb/issues/96
-    * Titles were empty when `DESC` or `\D` commands were used without a table name.
-* Application Changes
-  * Changed the representation of `NULL` from `<NULL>` to the Unicode character U+2400 (&#x2400;, SYMBOL FOR NULL).
-  * In the `EDIT` command, setting a non-string cell to an empty string now results in `NULL`.
-  * If the first DML affected zero rows, the transaction is not started and the prompt remains `SQL>`.
-  * `DESC` and `\D` commands without a table name, and table name completion now exclude non-user tables.
-* Library Changes
-  * Refactored the codebase: split the main package `"sqlbless"` into subpackages `"dialect"`, `"rowstocsv"`, and `"spread"`.
-  * Moved the database-specific customization packages under `"dialect"`.
+        - Titles were empty when `DESC` or `\D` commands were used without a table name.
+- Application Changes
+    - Changed the representation of `NULL` from `<NULL>` to the Unicode character U+2400 (&#x2400;, SYMBOL FOR NULL).
+    - In the `EDIT` command, setting a non-string cell to an empty string now results in `NULL`.
+    - If the first DML affected zero rows, the transaction is not started and the prompt remains `SQL>`.
+    - `DESC` and `\D` commands without a table name, and table name completion now exclude non-user tables.
+- Library Changes
+    - Refactored the codebase: split the main package `"sqlbless"` into subpackages `"dialect"`, `"rowstocsv"`, and `"spread"`.
+    - Moved the database-specific customization packages under `"dialect"`.
 
 v0.19.0
 =======
 Sep 6, 2025
 
-* Parameters for the START command are now completed as filenames.
-* EDIT, DESC, \D commands complete a table name now.
-* Update the SKK library: go-readline-skk to v0.6.0:
-    * Enabled conversion and word registration for words containing slashes in the conversion result
-    * Added support for evaluating certain Emacs Lisp forms in conversion results, such as `(concat)`, `(pwd)`, `(substring)`, and `(skk-current-date)` (but not `(lambda)` yet)
-* Update the spread library: csvi to v1.14.0:
-    * Added search command (`*` and `#`) to find the next occurrence of the current cell's content
+- Parameters for the START command are now completed as filenames.
+- EDIT, DESC, \D commands complete a table name now.
+- Update the SKK library: go-readline-skk to v0.6.0:
+    - Enabled conversion and word registration for words containing slashes in the conversion result
+    - Added support for evaluating certain Emacs Lisp forms in conversion results, such as `(concat)`, `(pwd)`, `(substring)`, and `(skk-current-date)` (but not `(lambda)` yet)
+- Update the spread library: csvi to v1.14.0:
+    - Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v0.18.0
 =======
 Jun 25, 2025
 
-* Updated go-readline-ny to v1.9.1
-* Updated go-multiline-ny to v0.21.0
-    * Added yellow syntax highlighting for comments.
-    * Switched to using `"go-multiline-ny/completion".CmdCompletionOrList`.
-* Added support for table name and column name completion (column name completion works only when the corresponding table name appears to the left of the cursor).
-* Fix duplicate reading of script content in START command
-* Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
+- Updated go-readline-ny to v1.9.1
+- Updated go-multiline-ny to v0.21.0
+    - Added yellow syntax highlighting for comments.
+    - Switched to using `"go-multiline-ny/completion".CmdCompletionOrList`.
+- Added support for table name and column name completion (column name completion works only when the corresponding table name appears to the left of the cursor).
+- Fix duplicate reading of script content in START command
+- Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
 
 v0.17.0
 =======
 Jan 20, 2025
 
-* Update the dependency of go-multiline-ny to v0.18.4 and go-readline-ny to v1.7.1
-    * When prefix key(Esc) is pressed, echo it as `Esc-`
-    * Assign Esc → Enter to submit
-* Modified so that a transaction does not start when an error occurs.
-* Applied colors to input SQL, such as cyan for reserved words and magenta for strings. 
+- Update the dependency of go-multiline-ny to v0.18.4 and go-readline-ny to v1.7.1
+    - When prefix key(Esc) is pressed, echo it as `Esc-`
+    - Assign Esc → Enter to submit
+- Modified so that a transaction does not start when an error occurs.
+- Applied colors to input SQL, such as cyan for reserved words and magenta for strings. 
 
 v0.16.0
 =======
 Nov 21, 2024
 
-* Show the prompt as `SQL*` instead of `SQL>` during a transaction.
-* Erase continuation prompts after submiting so that copied prompt does not get in the
+- Show the prompt as `SQL*` instead of `SQL>` during a transaction.
+- Erase continuation prompts after submiting so that copied prompt does not get in the
 way
-* edit: display SQL and usage on the header
-* Update go-readline-ny to v1.6.2
-    * line-based predictive input support based on history
-    * Fix: on Linux desktop, the second or later lines were missing when pasting multi-lines using the terminal feature
-* Update go-multiline-ny to v0.17.0
-    * Implement the incremental search (Ctrl-R)
-    * Fix: on the legacy terminal of Windows, cursor does not move to the upper line
-    * Fix: on the terminal of Linux desktop, backspace-key could not remove the line feed
-    * Fix: when editing the longer lines than screen height, the number of the lines scrolling was one line short
+- edit: display SQL and usage on the header
+- Update go-readline-ny to v1.6.2
+    - line-based predictive input support based on history
+    - Fix: on Linux desktop, the second or later lines were missing when pasting multi-lines using the terminal feature
+- Update go-multiline-ny to v0.17.0
+    - Implement the incremental search (Ctrl-R)
+    - Fix: on the legacy terminal of Windows, cursor does not move to the upper line
+    - Fix: on the terminal of Linux desktop, backspace-key could not remove the line feed
+    - Fix: when editing the longer lines than screen height, the number of the lines scrolling was one line short
 
 v0.15.2
 =======
 Sep 21, 2024
 
-* Fix: [#3] panic occurred during y/n prompts since v0.15.0
+- Fix: [#3] panic occurred during y/n prompts since v0.15.0
 
 [#3]: https://github.com/hymkor/sqlbless/issues/3
 
@@ -112,64 +112,64 @@ v0.15.1
 =======
 Sep 19, 2024
 
-* Fix: a panic occured when only an empty input was provided
-* Separate the main package into cmd/sqlbless to allow usage as a library
+- Fix: a panic occured when only an empty input was provided
+- Separate the main package into cmd/sqlbless to allow usage as a library
 
 v0.15.0
 =======
 Jul 28, 2024
 
-* With the support for windows/386 in modernc.org/sqlite v1.31.0, the SQLite3 driver has been consolidated to github.com/glebarez/go-sqlite. PureGo implementation is now enabled for all architectures.
+- With the support for windows/386 in modernc.org/sqlite v1.31.0, the SQLite3 driver has been consolidated to github.com/glebarez/go-sqlite. PureGo implementation is now enabled for all architectures.
 
 v0.14.0
 =======
 Jun 10, 2024
 
-* When the cell validation fails, prompt to modify the input text instead of discarding
-* Treat the types including FLOAT, DOUBLE, REAL, SERIAL, YEAR as number
-* Not only the last entry of history, but all modified entries are kept the last value until the current input is completed.
-* The the 1st command line parameter DRIVERNAME can be omitted when the 2nd parameter DataSourceName contains DRIVERNAME as the prefix
-* To enquote the DATASOURCENAME is now not necessary even when it contains a SPACE
-* `desc`: Display the executed sql when `-debug` is specfied
-* New option `-term STRING` : specfying the terminater of SQL instead of semicolon  
+- When the cell validation fails, prompt to modify the input text instead of discarding
+- Treat the types including FLOAT, DOUBLE, REAL, SERIAL, YEAR as number
+- Not only the last entry of history, but all modified entries are kept the last value until the current input is completed.
+- The the 1st command line parameter DRIVERNAME can be omitted when the 2nd parameter DataSourceName contains DRIVERNAME as the prefix
+- To enquote the DATASOURCENAME is now not necessary even when it contains a SPACE
+- `desc`: Display the executed sql when `-debug` is specfied
+- New option `-term STRING` : specfying the terminater of SQL instead of semicolon  
   ( `-term "/"` enables to execute PL/SQL of Oracle )
-* For MySQL, the default setting is now `?parseTime=true&loc=Local`
-* `edit`: column names in SQL are now enclosed in double quotes when they contain spaces
+- For MySQL, the default setting is now `?parseTime=true&loc=Local`
+- `edit`: column names in SQL are now enclosed in double quotes when they contain spaces
 
 ### Fixed bugs
 
-* Fix: `edit` with `-debug` would panic when ColumnType.ScanType() returned nil
-* Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
+- Fix: `edit` with `-debug` would panic when ColumnType.ScanType() returned nil
+- Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
 
 v0.13.0
 =======
 Jun 4, 2024
 
-* Modify the error message of `desc` with no arguments when no tables exist.  
+- Modify the error message of `desc` with no arguments when no tables exist.  
   `: table not found` → `no tables are found`
-* Change the time format of spooled files:  
+- Change the time format of spooled files:  
   `# (2024-05-30 18:15:52)` → `### <2024-05-30 18:46:13> ###`
-* Insert blank line before the message `Spooling to '%s'`
-* `select` and `edit`: implment `-debug` instead of `-print-type` to insert the type-information into the header
-* For types that can store time zones, the time zone is now included in date and time literals
-* Support fractional seconds, Oracle TIMESTAMP type, and SQL Server SMALLDATETIME and DATETIMEOFFSET type
+- Insert blank line before the message `Spooling to '%s'`
+- `select` and `edit`: implment `-debug` instead of `-print-type` to insert the type-information into the header
+- For types that can store time zones, the time zone is now included in date and time literals
+- Support fractional seconds, Oracle TIMESTAMP type, and SQL Server SMALLDATETIME and DATETIMEOFFSET type
 
 ### Changes of EDIT command
 
-* Executed SQLs are recorded to spooled file now.
-* Print `\n---\n` before SQL is displayed.
-* When confirming SQL execution, keys other than `y` and `n` are ignored.
-* When SQL fails, ask whether continue(`c`) or abort(`a`)
-* Minimal input check is now performed when entering data into cells in the editor.
-* `x` and `d` store NULL into the current column
-* Fix: `edit` could not be started when no data records were selected.
+- Executed SQLs are recorded to spooled file now.
+- Print `\n---\n` before SQL is displayed.
+- When confirming SQL execution, keys other than `y` and `n` are ignored.
+- When SQL fails, ask whether continue(`c`) or abort(`a`)
+- Minimal input check is now performed when entering data into cells in the editor.
+- `x` and `d` store NULL into the current column
+- Fix: `edit` could not be started when no data records were selected.
 
 ### Changes from csvi v1.10
 
-* Fix: `o` and `O`: inserted column was always the first one of the new line
-* Fix: `O`: the line of cursor is incorrect before new cell text is input
-* Header can not be modified now.
-* Do not create an empty row at the tail
+- Fix: `o` and `O`: inserted column was always the first one of the new line
+- Fix: `O`: the line of cursor is incorrect before new cell text is input
+- Header can not be modified now.
+- Do not create an empty row at the tail
 
 v0.12.0
 =======

@@ -2,8 +2,8 @@
     - Unified the exit operation to the `ESC` key
         - `ESC` + `y`: Apply changes and exit
         - `ESC` + `n`: Discard changes and exit
+        - `c`: Still supported but deprecated
         - `q`: Now equivalent to `ESC`
-        - `c`: Removed
     - Changed the brackets around the table name display from `【】` to `[]`
     - Added options to apply all (`a`) or discard all (`N`) when applying changes
     - Adjusted confirmation SQL output to reduce line usage: SET clause, WHERE clause, and parameter list are now shown on a single line each

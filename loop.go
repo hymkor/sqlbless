@@ -95,7 +95,7 @@ func txRollback(tx **sql.Tx, w io.Writer) error {
 	return err
 }
 
-func txBegin(ctx context.Context, conn *sql.DB, tx **sql.Tx, w io.Writer) error {
+func txBegin(ctx context.Context, conn *sql.Conn, tx **sql.Tx, w io.Writer) error {
 	if *tx != nil {
 		return nil
 	}
@@ -279,7 +279,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 type Session struct {
 	rowstocsv.Config
 	Dialect         *dialect.Entry
-	conn            *sql.DB
+	conn            *sql.Conn
 	history         *history.History
 	tx              *sql.Tx
 	spool           lftocrlf.WriteNameCloser
@@ -517,20 +517,27 @@ func newReservedWordPattern(list ...string) ReservedWordPattern {
 }
 
 func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
+	ctx := context.Background()
+
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()
 	termOut := colorable.NewColorableStdout()
 	termErr := colorable.NewColorableStderr()
 
-	conn, err := sql.Open(driver, dataSourceName)
+	db, err := sql.Open(driver, dataSourceName)
 	if err != nil {
 		return fmt.Errorf("sql.Open: %[1]w (%[1]T)", err)
 	}
-	defer conn.Close()
+	defer db.Close()
 
-	if err = conn.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		return err
 	}
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
 
 	var spool lftocrlf.WriteNameCloser
 	if fn := cfg.SpoolFilename; fn != "" &&
@@ -568,7 +575,6 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	} else {
 		session.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
 	}
-	ctx := context.Background()
 	if cfg.Script != "" {
 		return session.Start(ctx, cfg.Script)
 	}

@@ -1,3 +1,7 @@
+v0.22.0
+=======
+Oct 5, 2025
+
 - On the `edit` command:
     - Unified the exit operation to the `ESC` key
         - `ESC` + `y`: Apply changes and exit

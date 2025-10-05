@@ -152,6 +152,15 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		}
 	}
 
+	apply := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		if app.YesNo("Apply changes and quit ? [y/n] ") {
+			io.WriteString(app, "y\n")
+			applyChange = true
+			return &csvi.CommandResult{Quit: true}, nil
+		}
+		return &csvi.CommandResult{}, nil
+	}
+
 	cfg := &csvi.Config{
 		Titles: []string{
 			toOneLine(title, titlePrefix, titleSuffix),
@@ -160,6 +169,7 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		KeyMap: map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
 			"\x1B": quit,
 			"q":    quit,
+			"c":    apply,
 			"x":    setNull,
 			"d":    setNull,
 		},

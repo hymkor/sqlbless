@@ -1,5 +1,11 @@
 Set-PSDebug -Strict
 
+$saveEncode = $null
+if ([Console]::IsOutputRedirected) {
+    $saveEncode = [System.Console]::OutputEncoding
+    [System.Console]::OutputEncoding=[System.Text.Encoding]::UTF8
+}
+
 Get-ChildItem "release_note*" | Sort-Object { Format-Hex -InputObject $_.Name } | ForEach-Object{
     $lang = "(English)"
     if ( $_.FullName -like "*ja*" ) {
@@ -11,7 +17,7 @@ Get-ChildItem "release_note*" | Sort-Object { Format-Hex -InputObject $_.Name } 
         if ( $_ -match "^v[0-9]+\.[0-9]+\.[0-9]+$" ){
             $flag++
             if ( $flag -eq 1 ){
-                Write-Host ("`n### Changes in {0} in {1}" -f ($_,$lang))
+                Write-Host ("`r`n### Changes in {0} in {1}" -f ($_,$lang))
             }
         } elseif ($flag -eq 1 ){
             if ( $_ -eq "" ){
@@ -22,6 +28,10 @@ Get-ChildItem "release_note*" | Sort-Object { Format-Hex -InputObject $_.Name } 
             }
         }
     }
+}
+
+if ( $saveEncode -ne $null ){
+    [System.Console]::OutputEncoding=$saveEncode
 }
 
 # gist https://gist.github.com/hymkor/50cd1ed60dc94fe50f12658afcb69cbf

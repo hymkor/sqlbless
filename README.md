@@ -127,6 +127,13 @@ scoop install sqlbless
 go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 ```
 
+Configuration
+-------------
+
+SQL-Bless does **not** rely on any external configuration files. All settings—including database connection parameters, output format, and other options—are specified directly via command-line arguments.
+
+For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see `run-*.cmd`). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.
+
 How to start
 -------------
 

@@ -1,11 +1,13 @@
-package sqlbless
+package postgres
 
 import (
 	"fmt"
+	"strings"
 
 	_ "github.com/lib/pq"
 
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/internal/misc"
 )
 
 var postgresTypeNameToFormat = map[string][2]string{
@@ -71,6 +73,21 @@ var postgresSpec = &dialect.Entry{
 	PlaceHolder:           &placeHolder{},
 	TableField:            "table_name",
 	ColumnField:           "name",
+	CanUseInTransaction:   canUseInTransaction,
+}
+
+func canUseInTransaction(sql string) bool {
+	keyword, rest := misc.CutField(sql)
+	keyword = strings.TrimRight(keyword, ";")
+	switch strings.ToUpper(keyword) {
+	case "VACUUM", "REINDEX", "CLUSTER":
+		return false
+	case "CREATE", "DROP":
+		keyword, _ = misc.CutField(rest)
+		return !strings.EqualFold(keyword, "DATABASE") && !strings.EqualFold(keyword, "TABLESPACE")
+	default:
+		return true
+	}
 }
 
 func init() {

@@ -25,6 +25,7 @@ type Entry struct {
 	PlaceHolder           PlaceHolder
 	TypeNameToConv        func(string) func(string) (any, error)
 	DSNFilter             func(string) (string, error)
+	CanUseInTransaction   func(string) bool
 }
 
 func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {

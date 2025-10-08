@@ -6,6 +6,7 @@ import (
 	_ "github.com/glebarez/go-sqlite/compat"
 
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/internal/misc"
 )
 
 const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
@@ -24,6 +25,13 @@ var Entry = &dialect.Entry{
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
 	TableField:            "name",
 	ColumnField:           "name",
+	CanUseInTransaction:  canUseInTransaction,
+}
+
+func canUseInTransaction(sql string) bool {
+	keyword, _ := misc.CutField(sql)
+	keyword = strings.TrimRight(keyword,";")
+	return !strings.EqualFold(keyword, "VACUUM")
 }
 
 var typeNameToHolder = map[string]string{

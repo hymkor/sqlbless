@@ -464,12 +464,17 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		default:
 			echo(ss.spool, query)
 			if ss.tx != nil {
-				err = errors.New("transaction is not closed. Please Commit or Rollback")
+				f := ss.Dialect.CanUseInTransaction
+				if f == nil || !f(query) {
+					err = errors.New("transaction is not closed. Please Commit or Rollback")
+					break
+				}
+				_, err = ss.tx.ExecContext(ctx, query)
 			} else {
 				_, err = ss.conn.ExecContext(ctx, query)
-				if err == nil {
-					fmt.Fprintln(ss.stdErr, "Ok")
-				}
+			}
+			if err == nil {
+				fmt.Fprintln(ss.stdErr, "Ok")
 			}
 		}
 		if err != nil {

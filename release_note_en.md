@@ -1,3 +1,15 @@
+- For non-DML SQL, `"database/sql".Conn` is now used instead of `"database/sql".DB`
+
+    - This ensures the same connection is used continuously, avoiding potential issues caused by using different connections for consecutive SQL statements
+- Users can no longer use `BEGIN` statements
+
+    - Transactions are automatically started internally, and using `BEGIN` could cause inconsistencies
+- Behavior of DDL execution within transactions has been improved
+
+    - Previously, all DDL was disallowed within transactions; now the database-specific rules determine which statements can run
+    - **PostgreSQL**: All statements are allowed except `VACUUM`, `REINDEX`, `CLUSTER`, `CREATE/DROP DATABASE`, `CREATE/DROP TABLESPACE`
+    - **SQLite3**: All statements are allowed except `VACUUM`
+
 v0.22.0
 =======
 Oct 5, 2025

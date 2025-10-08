@@ -1,3 +1,12 @@
+- DML 以外の SQL について、 `"database/sql".DB` の代わりに `"database/sql".Conn` を使用するようにした
+    - 前後の SQL で別の接続が使われることで発生しうるトラブルを防ぐため、同一接続を継続使用するように変更
+- BEGIN 文をユーザが使用できないようにした
+    - トランザクションは内部で自動開始されるため、BEGIN を使うと不整合が起こる可能性がある
+- トランザクション中の DDL 実行に関する挙動を改善
+    - 従来は一律不可としていたが、データベースごとに実行可能な文を判定するように変更
+    - **PostgreSQL**: `VACUUM`, `REINDEX`, `CLUSTER`, `CREATE/DROP DATABASE`, `CREATE/DROP TABLESPACE` 以外はトランザクション内で実行可能
+    - **SQLite3**: `VACUUM` 以外はトランザクション内で実行可能
+
 v0.22.0
 =======
 Oct 5, 2025

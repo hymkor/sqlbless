@@ -459,6 +459,8 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		case "START":
 			fname, _ := misc.CutField(arg)
 			err = ss.Start(ctx, fname)
+		case "BEGIN":
+			err = errors.New("'BEGIN' is not supported; transactions are managed automatically")
 		default:
 			echo(ss.spool, query)
 			if ss.tx != nil {

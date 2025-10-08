@@ -140,6 +140,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless sqlite3 path/to/file.db
 
 - The drivers used are https://github.com/glebarez/go-sqlite
+- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd)
 
 ### Oracle
 
@@ -147,6 +148,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - The driver used is https://github.com/sijms/go-ora
+- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd)
 
 ### PostgreSQL
 
@@ -155,6 +157,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
 
 - The driver used is https://github.com/lib/pq
+- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd)
 
 ### SQL Server
 
@@ -165,6 +168,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
 
 - The driver used is https://github.com/microsoft/go-mssqldb
+- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd)
 
 ### MySQL
 
@@ -172,6 +176,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
 
 - The driver used is http://github.com/go-sql-driver/mysql
 - The `?parseTime=true&loc=Local` parameter is preset, but it can be overridden
+- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd)
 
 Common Options
 --------------

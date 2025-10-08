@@ -138,6 +138,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless sqlite3 path/to/file.db
 
 - 使用ドライバ : https://github.com/glebarez/go-sqlite
+- [起動バッチファイル例](https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd)
 
 ### Oracle
 
@@ -145,6 +146,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - 使用ドライバー: https://github.com/sijms/go-ora
+- [起動バッチファイル例](https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd)
 
 ### PostgreSQL
 
@@ -153,6 +155,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
 
 - 使用ドライバー https://github.com/lib/pq
+- [起動バッチファイル例](https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd)
 
 ### SQL Server
 
@@ -163,6 +166,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
 
 - 使用ドライバー https://github.com/microsoft/go-mssqldb
+- [起動バッチファイル例](https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd)
 
 ### MySQL
 
@@ -170,6 +174,7 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
 
 - 使用ドライバー http://github.com/go-sql-driver/mysql
 - パラメータ `?parseTime=true&loc=Local` が予め設定されていますが、上書き可能です
+- [起動バッチファイル例](https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd)
 
 共通オプション
 -------------

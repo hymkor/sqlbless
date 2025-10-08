@@ -33,8 +33,8 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 
 | Key | Binding |
 |-----|---------|
-| `Enter`, `Ctrl`-`M` | **改行を挿入** |
-| `Ctrl`-`Enter`/`J` or `;`+`Enter`[^semicolon] | **SQLを実行** |
+| `Enter`, `Ctrl`-`M` | 改行（末尾;または短いコマンド[^sc]時はSQLを実行） |
+| `Ctrl`-`Enter`/`J` | SQLを実行 |
 | `Ctrl`-`F`/`B` | カーソルを前後に移動 |
 | `Ctrl`-`N`/`P` | カーソル移動、もしくはヒストリ参照 |
 | `Ctrl`-`C` | ロールバックして終了 |
@@ -43,7 +43,7 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 | `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | ヒストリ参照(未来方向) |
 | `TAB` | テーブル名・カラム名補完 |
 
-[^semicolon]: `;` もしくは `-term string` で指定された文字列
+[^sc]: `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
 
 サポートコマンド
 ---------------

@@ -35,8 +35,8 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 
 | Key | Binding |
 |-----|---------|
-| `Enter`, `Ctrl`-`M` | **Insert a linefeed** |
-| `Ctrl`-`Enter`/`J` or `;`+`Enter`[^semicolon] | **Execute SQL** |
+| `Enter`, `Ctrl`-`M` | Insert a newline (or execute SQL if line ends with `;` or is a short command[^sc]) |
+| `Ctrl`-`Enter`/`J` | Execute SQL |
 | `Ctrl`-`F`/`B` | Move Cursor forward or backward |
 | `Ctrl`-`N`/`P` | Move Cursor or refer history |
 | `Ctrl`-`C` | Exit with rollback |
@@ -45,7 +45,7 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 | `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | Insert the next SQL (history) |
 | `TAB` | Table name and column name completion |
 
-[^semicolon]: `;` or the string specfied with the option `-term string`
+[^sc]: `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
 
 Supported commands
 ------------------

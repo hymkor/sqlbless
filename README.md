@@ -14,7 +14,7 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 
 - Emacs-like keybindings for editing multi-line SQL input.
     - Pressing Enter inserts a line break by default.
-    - Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.
+    - Use the ↑ (Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.
     - Press Ctrl-J or Ctrl-Enter to execute the input immediately.
     - When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a non-SQL command such as `EXIT` or `QUIT`.
 - Save the result of SELECT in CSV format
@@ -25,9 +25,17 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
     - Microsoft SQL Server
     - MySQL
 - Allows editing database records directly, similar to a spreadsheet (with the `EDIT` command)
-- Auto commit is disabled.
+- Transaction mode (auto-commit disabled)
+    - A transaction is automatically started when executing DML (INSERT/UPDATE/DELETE)
+    - Users cannot input a BEGIN statement (transactions are managed automatically)
+    - Transactions can be ended with COMMIT or ROLLBACK
+    - Whether DDL (CREATE/ALTER/DROP etc.) can be executed inside a transaction depends on the database:
+        - **PostgreSQL**: All DDL can be executed inside a transaction except VACUUM, REINDEX, CLUSTER, CREATE/DROP DATABASE, and CREATE/DROP TABLESPACE
+        - **SQLite3**: All DDL can be executed inside a transaction except VACUUM
+        - **Oracle / SQL Server / MySQL**: DDL must be executed after ending the transaction with COMMIT or ROLLBACK
+        - If a transaction is still active when executing DDL, a warning will be displayed
 - Table name and column name completion
-    - column name completion works only when the corresponding table name appears to the left of the cursor
+    - Column name completion works only when the corresponding table name appears to the left of the cursor
 
 ![image](./demo.gif)
 

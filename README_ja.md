@@ -23,7 +23,15 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
     - Microsoft SQL Server
     - MySQL
 - データベースのレコードをスプレッド風に編集可能 (`EDIT` コマンド)
-- トランザクションモード動作(オートコミット無効化)
+- トランザクションモード動作（オートコミット無効化）
+    - DML（INSERT/UPDATE/DELETE）実行時に自動でトランザクションを開始します
+    - ユーザが BEGIN 文を入力することはできません（内部で自動管理されるため）
+    - COMMIT または ROLLBACK を実行することでトランザクションを終了できます
+    - DDL（CREATE/ALTER/DROP 等）のトランザクション内実行可否はデータベースごとに異なります
+        - **PostgreSQL**: VACUUM, REINDEX, CLUSTER, CREATE/DROP DATABASE, CREATE/DROP TABLESPACE を除き、トランザクション内で実行可能
+        - **SQLite3**: VACUUM を除き、トランザクション内で実行可能
+        - **Oracle / SQL Server / MySQL**: DDL を実行する前に、COMMIT もしくは ROLLBACK でトランザクションを終了させる必要があります
+        - DDL 実行時に既存トランザクションが残っている場合は、警告が表示されます。
 - テーブル名・カラム名補完
     - ただし、カラム名補完はテーブル名がカーソルより左側に登場している時のみ
 

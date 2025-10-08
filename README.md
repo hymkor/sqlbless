@@ -5,6 +5,13 @@ SQL-Bless
 
 The SQL-Bless is a command-line database client like SQL\*Plus or psql.
 
+It was designed with reliability and transparency in mind.
+In the past, I had to deliver an unfinished system due to client pressure,
+which led to serious data inconsistencies that took enormous effort to fix.
+That experience made me realize how important it is to have a tool
+that prevents silent data corruption and keeps a complete, traceable log of every operation.
+SQL-Bless is the result of that lesson — a tool that values safety over convenience.
+
 - Emacs-like keybindings for editing multi-line SQL input.
     - Pressing Enter inserts a line break by default.
     - Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.

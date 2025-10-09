@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.14.1-0.20251001135245-ed95b722494b
+	github.com/hymkor/csvi v1.15.0
 	github.com/hymkor/go-multiline-ny v0.21.0
 	github.com/hymkor/go-shellcommand v0.0.2
 	github.com/lib/pq v1.10.9

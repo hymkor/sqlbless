@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/hymkor/csvi"
 	"github.com/hymkor/sqlbless/dialect"
 )
 
@@ -48,6 +49,10 @@ func NewConfigFromFlag() func() *Config {
 		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
 		flagSpool          = flag.String("spool", os.DevNull, "Spool filename")
 	)
+	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
+		csvi.MonoChrome()
+	}
+
 	flag.Usage = usage
 	return func() *Config {
 		return &Config{

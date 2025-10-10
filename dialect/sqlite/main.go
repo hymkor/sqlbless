@@ -25,12 +25,12 @@ var Entry = &dialect.Entry{
 	SqlForDesc:            `PRAGMA table_info({table_name})`,
 	TableField:            "name",
 	ColumnField:           "name",
-	CanUseInTransaction:  canUseInTransaction,
+	CanUseInTransaction:   canUseInTransaction,
 }
 
 func canUseInTransaction(sql string) bool {
 	keyword, _ := misc.CutField(sql)
-	keyword = strings.TrimRight(keyword,";")
+	keyword = strings.TrimRight(keyword, ";")
 	return !strings.EqualFold(keyword, "VACUUM")
 }
 

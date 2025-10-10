@@ -48,6 +48,7 @@ func NewConfigFromFlag() func() *Config {
 		flagAuto           = flag.String("auto", "", "autopilot")
 		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
 		flagSpool          = flag.String("spool", os.DevNull, "Spool filename")
+		flagReverseVideo   = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
 	)
 	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
 		csvi.MonoChrome()
@@ -55,6 +56,9 @@ func NewConfigFromFlag() func() *Config {
 
 	flag.Usage = usage
 	return func() *Config {
+		if *flagReverseVideo {
+			csvi.RevertColor()
+		}
 		return &Config{
 			Auto:           *flagAuto,
 			Term:           *flagTerm,

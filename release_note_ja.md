@@ -6,6 +6,10 @@
     - 従来は一律不可としていたが、データベースごとに実行可能な文を判定するように変更
     - **PostgreSQL**: `VACUUM`, `REINDEX`, `CLUSTER`, `CREATE/DROP DATABASE`, `CREATE/DROP TABLESPACE` 以外はトランザクション内で実行可能
     - **SQLite3**: `VACUUM` 以外はトランザクション内で実行可能
+- CSVI を v1.15.0 へ更新。select文、edit 文にて
+    - カーソル列の幅を広げる `]` と、縮める `[` を実装
+    - 白背景の端末でも色が不自然にならないよう、`-rv` オプションを追加
+    - 環境変数 `NO_COLOR` が定義されている場合、カラー表示を抑制するようにした ( https://no-color.org/ に準拠 )
 
 v0.22.0
 =======

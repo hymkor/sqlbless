@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hymkor/csvi"
+	"github.com/hymkor/csvi/candidate"
 	"github.com/hymkor/csvi/uncsv"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
@@ -32,7 +33,7 @@ func (_QuitCsvi) GetKey() (string, error) {
 	return "q", nil
 }
 
-func (_QuitCsvi) ReadLine(io.Writer, string, string, csvi.Candidate) (string, error) {
+func (_QuitCsvi) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
 	return "", nil
 }
 
@@ -79,7 +80,7 @@ func (ac _AutoCsvi) readline() (string, error) {
 	}
 }
 
-func (ac _AutoCsvi) ReadLine(io.Writer, string, string, csvi.Candidate) (string, error) {
+func (ac _AutoCsvi) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
 	return ac.readline()
 }
 

@@ -39,7 +39,7 @@ func (cfg *Config) comma() byte {
 	return ','
 }
 
-func NewConfig() *Config {
+func New() *Config {
 	return &Config{
 		FieldSeperator: ",",
 		Null:           "\u2400",
@@ -73,10 +73,10 @@ func usage() {
 	)
 }
 
-func Main() error {
+func Run() error {
 	writeSignature(os.Stdout)
 
-	cfg := NewConfig().Bind(flag.CommandLine)
+	cfg := New().Bind(flag.CommandLine)
 	flag.Usage = usage
 	flag.Parse()
 	args := flag.Args()

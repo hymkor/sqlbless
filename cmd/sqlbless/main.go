@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	if err := sqlbless.Main(); err != nil {
+	if err := sqlbless.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}

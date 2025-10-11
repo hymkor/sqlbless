@@ -11,10 +11,9 @@ import (
 )
 
 func mains() error {
-	cfgSetup := sqlbless.NewConfigFromFlag()
+	cfg := sqlbless.New().Bind(flag.CommandLine)
 	flag.Parse()
 	args := flag.Args()
-	cfg := cfgSetup()
 	if len(args) < 1 {
 		return errors.New("Usage: sqlite3bless {DBPATH or :memory:}")
 	}

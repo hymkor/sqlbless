@@ -6,9 +6,52 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"unicode/utf8"
 
 	"github.com/hymkor/sqlbless/dialect"
+
+	"github.com/hymkor/sqlbless/internal/struct2flag"
 )
+
+type Config struct {
+	Auto           string `flag:"auto,autopilot"`
+	Term           string `flag:"term,SQL terminator to use instead of semicolon"`
+	CrLf           bool   `flag:"crlf,Use CRLF"`
+	Null           string `flag:"null,Set a string representing NULL"`
+	Tsv            bool   `flag:"tsv,Use TAB as seperator"`
+	FieldSeperator string `flag:"fs,Set field separator"`
+	Debug          bool   `flag:"debug,Print type in CSV"`
+	SubmitByEnter  bool   `flag:"submit-enter,Submit by [Enter] and insert a new line by [Ctrl]-[Enter]"`
+	Script         string `flag:"f,script file"`
+	SpoolFilename  string `flag:"spool,Spool filename"`
+	ReverseVideo   bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
+	DebugBell      bool   `flag:"debug-bell,Enable Debug Bell"`
+}
+
+func (cfg *Config) Comma() byte {
+	if cfg.Tsv {
+		return '\t'
+	}
+	if len(cfg.FieldSeperator) > 0 {
+		c, _ := utf8.DecodeRuneInString(cfg.FieldSeperator)
+		return byte(c)
+	}
+	return ','
+}
+
+func NewConfig() *Config {
+	return &Config{
+		FieldSeperator: ",",
+		Null:           "\u2400",
+		Term:           ";",
+		SpoolFilename:  os.DevNull,
+	}
+}
+
+func (cfg *Config) Bind(fs *flag.FlagSet) *Config {
+	struct2flag.Bind(fs, cfg)
+	return cfg
+}
 
 var Version string
 

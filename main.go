@@ -7,7 +7,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/hymkor/csvi"
 	"github.com/hymkor/sqlbless/dialect"
 )
 
@@ -31,59 +30,12 @@ func usage() {
 	)
 }
 
-// NewConfigFromFlag returns the constructor of Config from flag variables.
-//
-//	cfgSetup := NewConfigFromFlag()
-//	flag.Parse()
-//	cfg := cfgSetup()
-func NewConfigFromFlag() func() *Config {
-	var (
-		flagCrLf           = flag.Bool("crlf", false, "use CRLF")
-		flagFieldSeperator = flag.String("fs", ",", "Set field separator")
-		flagNullString     = flag.String("null", "\u2400", "Set a string representing NULL")
-		flagTsv            = flag.Bool("tsv", false, "Use TAB as seperator")
-		flagSubmitByEnter  = flag.Bool("submit-enter", false, "Submit by [Enter] and insert a new line by [Ctrl]-[Enter]")
-		flagScript         = flag.String("f", "", "script file")
-		flagDebug          = flag.Bool("debug", false, "Print type in CSV")
-		flagAuto           = flag.String("auto", "", "autopilot")
-		flagTerm           = flag.String("term", ";", "SQL terminator to use instead of semicolon")
-		flagSpool          = flag.String("spool", os.DevNull, "Spool filename")
-		flagReverseVideo   = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
-		flagDebugBell      = flag.Bool("debug-bell", false, "Enable Debug Bell")
-	)
-	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
-		csvi.MonoChrome()
-	}
-
-	flag.Usage = usage
-	return func() *Config {
-		if *flagReverseVideo || csvi.IsRevertVideoWithEnv() {
-			csvi.RevertColor()
-		}
-		if *flagDebugBell {
-			csvi.EnableDebugBell(os.Stderr)
-		}
-		return &Config{
-			Auto:           *flagAuto,
-			Term:           *flagTerm,
-			CrLf:           *flagCrLf,
-			Null:           *flagNullString,
-			Tsv:            *flagTsv,
-			FieldSeperator: *flagFieldSeperator,
-			Debug:          *flagDebug,
-			SubmitByEnter:  *flagSubmitByEnter,
-			Script:         *flagScript,
-			SpoolFilename:  *flagSpool,
-		}
-	}
-}
-
 func Main() error {
 	writeSignature(os.Stdout)
 
-	cfgSetup := NewConfigFromFlag()
+	cfg := NewConfig().Bind(flag.CommandLine)
+	flag.Usage = usage
 	flag.Parse()
-	cfg := cfgSetup()
 	args := flag.Args()
 
 	if len(args) < 1 {

@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -20,19 +21,23 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-tty"
 
-	"github.com/hymkor/go-multiline-ny"
-	"github.com/hymkor/go-multiline-ny/completion"
-	"github.com/hymkor/go-shellcommand"
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
+	"github.com/hymkor/csvi"
+	"github.com/hymkor/go-multiline-ny"
+	"github.com/hymkor/go-multiline-ny/completion"
+	"github.com/hymkor/go-shellcommand"
+
 	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/sqlbless/rowstocsv"
+
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
 	"github.com/hymkor/sqlbless/internal/misc"
 	"github.com/hymkor/sqlbless/internal/sqlcompletion"
-	"github.com/hymkor/sqlbless/rowstocsv"
+	"github.com/hymkor/sqlbless/internal/struct2flag"
 )
 
 func doSelect(ctx context.Context, ss *Session, query string) error {
@@ -487,16 +492,32 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 }
 
 type Config struct {
-	Auto           string
-	Term           string
-	CrLf           bool
-	Null           string
-	Tsv            bool
-	FieldSeperator string
-	Debug          bool
-	SubmitByEnter  bool
-	Script         string
-	SpoolFilename  string
+	Auto           string `flag:"auto,autopilot"`
+	Term           string `flag:"term,SQL terminator to use instead of semicolon"`
+	CrLf           bool   `flag:"crlf,Use CRLF"`
+	Null           string `flag:"null,Set a string representing NULL"`
+	Tsv            bool   `flag:"tsv,Use TAB as seperator"`
+	FieldSeperator string `flag:"fs,Set field separator"`
+	Debug          bool   `flag:"debug,Print type in CSV"`
+	SubmitByEnter  bool   `flag:"submit-enter,Submit by [Enter] and insert a new line by [Ctrl]-[Enter]"`
+	Script         string `flag:"f,script file"`
+	SpoolFilename  string `flag:"spool,Spool filename"`
+	ReverseVideo   bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
+	DebugBell      bool   `flag:"debug-bell,Enable Debug Bell"`
+}
+
+func NewConfig() *Config {
+	return &Config{
+		FieldSeperator: ",",
+		Null:           "\u2400",
+		Term:           ";",
+		SpoolFilename:  os.DevNull,
+	}
+}
+
+func (cfg *Config) Bind(fs *flag.FlagSet) *Config {
+	struct2flag.Bind(fs, cfg)
+	return cfg
 }
 
 type ReservedWordPattern map[string]struct{}
@@ -525,6 +546,16 @@ func newReservedWordPattern(list ...string) ReservedWordPattern {
 
 func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
 	ctx := context.Background()
+
+	if cfg.ReverseVideo || csvi.IsRevertVideoWithEnv() {
+		csvi.RevertColor()
+	}
+	if cfg.DebugBell {
+		csvi.EnableDebugBell(os.Stderr)
+	}
+	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
+		csvi.MonoChrome()
+	}
 
 	disabler := colorable.EnableColorsStdout(nil)
 	defer disabler()

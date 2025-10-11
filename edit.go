@@ -34,15 +34,6 @@ func askN(msg string, getKey func() (string, error), options ...string) (int, er
 	}
 }
 
-func ask2(msg, yes, no string, getKey func() (string, error)) (bool, error) {
-	n, err := askN(msg, getKey, yes, no)
-	return n == 0, err
-}
-
-func continueOrAbort(getKey func() (string, error)) (bool, error) {
-	return ask2("Continue or abort [c/a] ", "cC", "aA", getKey)
-}
-
 func newViewer(ss *Session) *spread.Viewer {
 	var hl int
 	if ss.Debug {
@@ -122,7 +113,7 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 	}
 
 	if this.status == failure {
-		if ans, _ := continueOrAbort(this.getKey); ans {
+		if n, _ := askN("Continue or abort [c/a] ", this.getKey, "cC", "aA"); n == 0 {
 			this.status = success
 		} else {
 			this.status = discardAll
@@ -134,7 +125,7 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 	}
 	fmt.Println()
 	if this.status == success {
-		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none)`, this.getKey, "y", "n", "aA", "N")
+		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none) `, this.getKey, "y", "n", "aA", "N")
 		if err != nil {
 			echoPrefix(this.stdErr, "(error) ", err.Error())
 			this.status = failure

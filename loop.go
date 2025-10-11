@@ -55,7 +55,7 @@ func doSelect(ctx context.Context, ss *Session, query string) error {
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return newViewer(ss).View(ctx, query, ss.automatic, _rows, ss.termOut)
+	return newViewer(ss).View(ctx, query, ss.automatic(), _rows, ss.termOut)
 }
 
 type canExec interface {
@@ -169,7 +169,7 @@ func (ss *Session) desc(ctx context.Context, table string) error {
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return newViewer(ss).View(ctx, title, ss.automatic, _rows, ss.termOut)
+	return newViewer(ss).View(ctx, title, ss.automatic(), _rows, ss.termOut)
 }
 
 // hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not
@@ -289,7 +289,6 @@ type Session struct {
 	spool           lftocrlf.WriteNameCloser
 	stdOut, termOut io.Writer
 	stdErr, termErr io.Writer
-	automatic       bool
 }
 
 func (ss *Session) Close() {
@@ -302,6 +301,10 @@ func (ss *Session) Close() {
 		ss.stdOut = ss.termOut
 		ss.stdErr = ss.termErr
 	}
+}
+
+func (ss *Session) automatic() bool {
+	return ss.Auto != ""
 }
 
 func (ss *Session) StartFromStdin(ctx context.Context) error {
@@ -601,16 +604,15 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	var history history.History
 
 	session := &Session{
-		Config:    cfg,
-		Dialect:   dbDialect,
-		conn:      conn,
-		history:   &history,
-		automatic: cfg.Auto != "",
-		stdOut:    termOut,
-		termOut:   termOut,
-		stdErr:    termErr,
-		termErr:   termErr,
-		spool:     spool,
+		Config:  cfg,
+		Dialect: dbDialect,
+		conn:    conn,
+		history: &history,
+		stdOut:  termOut,
+		termOut: termOut,
+		stdErr:  termErr,
+		termErr: termErr,
+		spool:   spool,
 	}
 	defer session.Close()
 

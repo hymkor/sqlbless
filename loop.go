@@ -266,34 +266,30 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	}
 	defer conn.Close()
 
-	var history history.History
-
-	session := &session{
+	ss := &session{
 		Config:  cfg,
 		Dialect: dbDialect,
 		conn:    conn,
-		history: &history,
+		history: &history.History{},
 		stdOut:  termOut,
 		termOut: termOut,
 		stdErr:  termErr,
 		termErr: termErr,
 		spool:   cfg.openSpool(),
 	}
-	defer session.Close()
+	defer ss.Close()
 
 	if cfg.Script != "" {
-		return session.Start(ctx, cfg.Script)
+		return ss.Start(ctx, cfg.Script)
 	}
 
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		return session.StartFromStdin(ctx)
+		return ss.StartFromStdin(ctx)
 	}
-
-	// interactive mode
 
 	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()
 
-	return session.Loop(ctx, session.newInteractiveIn(), false)
+	return ss.Loop(ctx, ss.newInteractiveIn(), false)
 }

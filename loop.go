@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -17,15 +16,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/mattn/go-colorable"
-	"github.com/mattn/go-tty"
-
-	"github.com/nyaosorg/go-readline-ny"
-	"github.com/nyaosorg/go-readline-ny/auto"
-	"github.com/nyaosorg/go-readline-ny/keys"
 
 	"github.com/hymkor/csvi"
-	"github.com/hymkor/go-multiline-ny"
-	"github.com/hymkor/go-multiline-ny/completion"
 	"github.com/hymkor/go-shellcommand"
 
 	"github.com/hymkor/sqlbless/dialect"
@@ -33,7 +25,6 @@ import (
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
 	"github.com/hymkor/sqlbless/internal/misc"
-	"github.com/hymkor/sqlbless/internal/sqlcompletion"
 )
 
 func doSelect(ctx context.Context, ss *Session, query string) error {
@@ -179,29 +170,6 @@ func hasTerm(s, term string) (string, bool) {
 	return s, false
 }
 
-var o = struct{}{}
-
-var oneLineCommands = map[string]struct{}{
-	`DESC`:    o,
-	`EDIT`:    o,
-	`EXIT`:    o,
-	`HISTORY`: o,
-	`HOST`:    o,
-	`QUIT`:    o,
-	`REM`:     o,
-	`SPOOL`:   o,
-	`START`:   o,
-	`\D`:      o,
-}
-
-func isOneLineCommand(cmdLine string) bool {
-	first, _ := misc.CutField(cmdLine)
-	first = strings.ToUpper(first)
-	first = strings.TrimRight(first, ";")
-	_, ok := oneLineCommands[first]
-	return ok
-}
-
 type CommandIn interface {
 	Read(context.Context) ([]string, error)
 	GetKey() (string, error)
@@ -254,27 +222,6 @@ func (script *Script) Read(context.Context) ([]string, error) {
 			}
 		}
 	}
-}
-
-type InteractiveIn struct {
-	*multiline.Editor
-	tty getKeyAndSize
-}
-
-func (i *InteractiveIn) GetKey() (string, error) {
-	if i.tty != nil {
-		return i.tty.GetKey()
-	}
-	tt, err := tty.Open()
-	if err != nil {
-		return "", err
-	}
-	defer tt.Close()
-	return readline.GetKey(tt)
-}
-
-func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
-	return i.tty, (i.tty != nil)
 }
 
 type Session struct {
@@ -488,30 +435,6 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 	}
 }
 
-type ReservedWordPattern map[string]struct{}
-
-var rxWords = regexp.MustCompile(`\b\w+\b`)
-
-func (h ReservedWordPattern) FindAllStringIndex(s string, n int) [][]int {
-	matches := rxWords.FindAllStringIndex(s, n)
-	for i := len(matches) - 1; i >= 0; i-- {
-		word := s[matches[i][0]:matches[i][1]]
-		if _, ok := h[strings.ToUpper(word)]; !ok {
-			copy(matches[i:], matches[i+1:])
-			matches = matches[:len(matches)-1]
-		}
-	}
-	return matches
-}
-
-func newReservedWordPattern(list ...string) ReservedWordPattern {
-	m := ReservedWordPattern{}
-	for _, word := range list {
-		m[strings.ToUpper(word)] = struct{}{}
-	}
-	return m
-}
-
 func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
 	ctx := context.Background()
 
@@ -587,64 +510,5 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
 	fmt.Println()
 
-	var editor multiline.Editor
-
-	editor.ResetColor = "\x1B[0m"
-	editor.DefaultColor = "\x1B[39;49;1m"
-	editor.Highlight = []readline.Highlight{
-		{Pattern: newReservedWordPattern("ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT", "HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL", "START", "TRUNCATE", "UPDATE", "AND", "FROM", "INTO", "OR", "WHERE"), Sequence: "\x1B[36;49;1m"},
-		{Pattern: regexp.MustCompile(`[0-9]+`), Sequence: "\x1B[35;49;1m"},
-		{Pattern: regexp.MustCompile(`/\*.*?\*/`), Sequence: "\x1B[33;49;22m"},
-		{Pattern: regexp.MustCompile(`"[^"]*"|"[^"]*$`), Sequence: "\x1B[31;49;1m"},
-		{Pattern: regexp.MustCompile(`'[^']*'|'[^']*$`), Sequence: "\x1B[35;49;1m"},
-	}
-
-	if cfg.SubmitByEnter {
-		editor.SwapEnter()
-	}
-	var tty getKeyAndSize
-	if cfg.Auto != "" {
-		text := strings.ReplaceAll(cfg.Auto, "||", "\n") // "||" -> Ctrl-J(Commit)
-		text = strings.ReplaceAll(text, "|", "\r")       // "|" -> Ctrl-M (NewLine)
-		if text[len(text)-1] != '\n' {                   // EOF -> Ctrl-J(Commit)
-			text = text + "\n"
-		}
-		tty1 := &auto.Pilot{
-			Text: strings.Split(text, ""),
-		}
-		editor.LineEditor.Tty = tty1
-		tty = tty1
-	}
-	editor.SetPredictColor(readline.PredictColorBlueItalic)
-	editor.SetHistory(&history)
-	editor.SetWriter(termOut)
-
-	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
-		Enclosure:  `"'`,
-		Delimiter:  ",",
-		Postfix:    " ",
-		Candidates: sqlcompletion.New(dbDialect, conn),
-	})
-	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
-		if len(lines) > 0 && isOneLineCommand(lines[0]) {
-			return true
-		}
-		for {
-			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
-			if last != "" || len(lines) <= 1 {
-				if len(cfg.Term) == 1 {
-					_, ok := hasTerm(last, cfg.Term)
-					return ok
-				} else {
-					return strings.EqualFold(last, cfg.Term)
-				}
-			}
-			lines = lines[:len(lines)-1]
-		}
-	})
-
-	return session.Loop(ctx, &InteractiveIn{
-		Editor: &editor,
-		tty:    tty,
-	}, false)
+	return session.Loop(ctx, session.newInteractiveIn(), false)
 }

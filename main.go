@@ -57,7 +57,7 @@ func NewConfigFromFlag() func() *Config {
 
 	flag.Usage = usage
 	return func() *Config {
-		if *flagReverseVideo {
+		if *flagReverseVideo || csvi.IsRevertVideoWithEnv() {
 			csvi.RevertColor()
 		}
 		if *flagDebugBell {

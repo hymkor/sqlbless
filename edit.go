@@ -52,7 +52,7 @@ func newViewer(ss *Session) *spread.Viewer {
 	}
 	return &spread.Viewer{
 		HeaderLines: hl,
-		Comma:       byte(ss.Comma),
+		Comma:       ss.Comma(),
 		Null:        ss.Null,
 		Spool:       ss.spool,
 	}
@@ -62,7 +62,7 @@ func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) e
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
 			HeaderLines: 1,
-			Comma:       byte(ss.Comma),
+			Comma:       ss.Comma(),
 			Null:        ss.Null,
 		},
 		Entry: ss.Dialect,

@@ -31,7 +31,6 @@ import (
 	"github.com/hymkor/go-shellcommand"
 
 	"github.com/hymkor/sqlbless/dialect"
-	"github.com/hymkor/sqlbless/rowstocsv"
 
 	"github.com/hymkor/sqlbless/internal/history"
 	"github.com/hymkor/sqlbless/internal/lftocrlf"
@@ -282,7 +281,7 @@ func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 }
 
 type Session struct {
-	rowstocsv.Config
+	*Config
 	Dialect         *dialect.Entry
 	conn            *sql.Conn
 	history         *history.History
@@ -291,8 +290,6 @@ type Session struct {
 	stdOut, termOut io.Writer
 	stdErr, termErr io.Writer
 	automatic       bool
-	term            string
-	crlf            bool
 }
 
 func (ss *Session) Close() {
@@ -311,7 +308,7 @@ func (ss *Session) StartFromStdin(ctx context.Context) error {
 	script := &Script{
 		br:   bufio.NewReader(os.Stdin),
 		echo: ss.stdErr,
-		term: ss.term,
+		term: ss.Term,
 	}
 	return ss.Loop(ctx, script, true)
 }
@@ -328,7 +325,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 	script := &Script{
 		br:   bufio.NewReader(fd),
 		echo: ss.stdErr,
-		term: ss.term,
+		term: ss.Term,
 	}
 	return ss.Loop(ctx, script, true)
 }
@@ -374,7 +371,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		}
 		queryAndTerm := strings.Join(lines, "\n")
-		query, _ := hasTerm(queryAndTerm, ss.term)
+		query, _ := hasTerm(queryAndTerm, ss.Term)
 
 		if query == "" {
 			continue
@@ -410,7 +407,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			if !strings.EqualFold(fname, "off") {
 				if fd, err := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
-					if ss.crlf {
+					if ss.CrLf {
 						ss.spool = lftocrlf.New(fd)
 					} else {
 						ss.spool = fd
@@ -506,6 +503,17 @@ type Config struct {
 	DebugBell      bool   `flag:"debug-bell,Enable Debug Bell"`
 }
 
+func (cfg *Config) Comma() byte {
+	if cfg.Tsv {
+		return '\t'
+	}
+	if len(cfg.FieldSeperator) > 0 {
+		c, _ := utf8.DecodeRuneInString(cfg.FieldSeperator)
+		return byte(c)
+	}
+	return ','
+}
+
 func NewConfig() *Config {
 	return &Config{
 		FieldSeperator: ",",
@@ -544,7 +552,7 @@ func newReservedWordPattern(list ...string) ReservedWordPattern {
 	return m
 }
 
-func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
+func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
 	ctx := context.Background()
 
 	if cfg.ReverseVideo || csvi.IsRevertVideoWithEnv() {
@@ -593,12 +601,11 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	var history history.History
 
 	session := &Session{
+		Config:    cfg,
 		Dialect:   dbDialect,
 		conn:      conn,
 		history:   &history,
 		automatic: cfg.Auto != "",
-		term:      cfg.Term,
-		crlf:      cfg.CrLf,
 		stdOut:    termOut,
 		termOut:   termOut,
 		stdErr:    termErr,
@@ -607,12 +614,6 @@ func (cfg Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) e
 	}
 	defer session.Close()
 
-	session.Null = cfg.Null
-	if cfg.Tsv {
-		session.Comma = '\t'
-	} else {
-		session.Comma, _ = utf8.DecodeRuneInString(cfg.FieldSeperator)
-	}
 	if cfg.Script != "" {
 		return session.Start(ctx, cfg.Script)
 	}

@@ -28,7 +28,7 @@ type Config struct {
 	DebugBell      bool   `flag:"debug-bell,Enable Debug Bell"`
 }
 
-func (cfg *Config) Comma() byte {
+func (cfg *Config) comma() byte {
 	if cfg.Tsv {
 		return '\t'
 	}

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func doSelect(ctx context.Context, ss *Session, query string) error {
+func doSelect(ctx context.Context, ss *session, query string) error {
 	var rows *sql.Rows
 	var err error
 	if ss.tx != nil {
@@ -82,7 +82,7 @@ func txBegin(ctx context.Context, conn *sql.Conn, tx **sql.Tx, w io.Writer) erro
 	return nil
 }
 
-func (ss *Session) desc(ctx context.Context, table string) error {
+func (ss *session) desc(ctx context.Context, table string) error {
 	// fmt.Fprintln(os.Stderr, dbDialect.SqlForDesc)
 	tableName := strings.TrimSpace(table)
 	var rows *sql.Rows

@@ -34,7 +34,7 @@ func askN(msg string, getKey func() (string, error), options ...string) (int, er
 	}
 }
 
-func newViewer(ss *Session) *spread.Viewer {
+func newViewer(ss *session) *spread.Viewer {
 	var hl int
 	if ss.Debug {
 		hl = 3
@@ -43,21 +43,21 @@ func newViewer(ss *Session) *spread.Viewer {
 	}
 	return &spread.Viewer{
 		HeaderLines: hl,
-		Comma:       ss.Comma(),
+		Comma:       ss.comma(),
 		Null:        ss.Null,
 		Spool:       ss.spool,
 	}
 }
 
-func doEdit(ctx context.Context, ss *Session, command string, pilot CommandIn) error {
+func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) error {
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
 			HeaderLines: 1,
-			Comma:       ss.Comma(),
+			Comma:       ss.comma(),
 			Null:        ss.Null,
 		},
 		Entry: ss.Dialect,
-		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, Session: ss}).Exec,
+		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
 		editor.Auto = a
@@ -100,7 +100,7 @@ const (
 type askSqlAndExecute struct {
 	status statusValue
 	getKey func() (string, error)
-	*Session
+	*session
 }
 
 func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...any) (sql.Result, error) {

@@ -11,21 +11,21 @@ import (
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
-type Script struct {
+type scriptIn struct {
 	br   *bufio.Reader
 	echo io.Writer
 	term string
 }
 
-func (script *Script) GetKey() (string, error) {
+func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF
 }
 
-func (script *Script) AutoPilotForCsvi() (getKeyAndSize, bool) {
+func (script *scriptIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 	return nil, false
 }
 
-func (script *Script) Read(context.Context) ([]string, error) {
+func (script *scriptIn) Read(context.Context) ([]string, error) {
 	var buffer strings.Builder
 	quoted := 0
 	for {
@@ -56,8 +56,8 @@ func (script *Script) Read(context.Context) ([]string, error) {
 	}
 }
 
-func (ss *Session) StartFromStdin(ctx context.Context) error {
-	script := &Script{
+func (ss *session) StartFromStdin(ctx context.Context) error {
+	script := &scriptIn{
 		br:   bufio.NewReader(os.Stdin),
 		echo: ss.stdErr,
 		term: ss.Term,
@@ -65,7 +65,7 @@ func (ss *Session) StartFromStdin(ctx context.Context) error {
 	return ss.Loop(ctx, script, true)
 }
 
-func (ss *Session) Start(ctx context.Context, fname string) error {
+func (ss *session) Start(ctx context.Context, fname string) error {
 	if fname == "-" {
 		return ss.StartFromStdin(ctx)
 	}
@@ -74,7 +74,7 @@ func (ss *Session) Start(ctx context.Context, fname string) error {
 		return err
 	}
 	defer fd.Close()
-	script := &Script{
+	script := &scriptIn{
 		br:   bufio.NewReader(fd),
 		echo: ss.stdErr,
 		term: ss.Term,

@@ -26,7 +26,7 @@ import (
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
-type CommandIn interface {
+type commandIn interface {
 	Read(context.Context) ([]string, error)
 	GetKey() (string, error)
 
@@ -35,7 +35,7 @@ type CommandIn interface {
 	AutoPilotForCsvi() (getKeyAndSize, bool)
 }
 
-type Session struct {
+type session struct {
 	*Config
 	Dialect         *dialect.Entry
 	conn            *sql.Conn
@@ -46,7 +46,7 @@ type Session struct {
 	stdErr, termErr io.Writer
 }
 
-func (ss *Session) Close() {
+func (ss *session) Close() {
 	if ss.tx != nil {
 		txRollback(&ss.tx, ss.stdErr)
 	}
@@ -58,11 +58,11 @@ func (ss *Session) Close() {
 	}
 }
 
-func (ss *Session) automatic() bool {
+func (ss *session) automatic() bool {
 	return ss.Auto != ""
 }
 
-func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort bool) error {
+func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort bool) error {
 	for {
 		if ss.spool != nil {
 			fmt.Fprintf(ss.termErr, "\nSpooling to '%s' now\n", ss.spool.Name())
@@ -92,7 +92,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 			return err
 		}
-		if in, ok := commandIn.(*InteractiveIn); ok {
+		if in, ok := commandIn.(*interactiveIn); ok {
 			if L := len(lines) - 1; L > 0 {
 				w := in.LineEditor.Out
 				fmt.Fprintf(w, "\x1B[%dF", L)
@@ -108,7 +108,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		if query == "" {
 			continue
 		}
-		if _, ok := commandIn.(*Script); !ok {
+		if _, ok := commandIn.(*scriptIn); !ok {
 			ss.history.Add(queryAndTerm)
 		}
 		cmd, arg := misc.CutField(query)
@@ -268,7 +268,7 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 
 	var history history.History
 
-	session := &Session{
+	session := &session{
 		Config:  cfg,
 		Dialect: dbDialect,
 		conn:    conn,

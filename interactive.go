@@ -64,12 +64,12 @@ func isOneLineCommand(cmdLine string) bool {
 	return ok
 }
 
-type InteractiveIn struct {
+type interactiveIn struct {
 	*multiline.Editor
 	tty getKeyAndSize
 }
 
-func (i *InteractiveIn) GetKey() (string, error) {
+func (i *interactiveIn) GetKey() (string, error) {
 	if i.tty != nil {
 		return i.tty.GetKey()
 	}
@@ -81,11 +81,11 @@ func (i *InteractiveIn) GetKey() (string, error) {
 	return readline.GetKey(tt)
 }
 
-func (i *InteractiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
+func (i *interactiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
 	return i.tty, (i.tty != nil)
 }
 
-func (ss *Session) newInteractiveIn() *InteractiveIn {
+func (ss *session) newInteractiveIn() *interactiveIn {
 	var editor multiline.Editor
 
 	editor.ResetColor = "\x1B[0m"
@@ -141,7 +141,7 @@ func (ss *Session) newInteractiveIn() *InteractiveIn {
 			lines = lines[:len(lines)-1]
 		}
 	})
-	return &InteractiveIn{
+	return &interactiveIn{
 		Editor: &editor,
 		tty:    tty,
 	}

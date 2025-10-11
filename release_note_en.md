@@ -9,10 +9,14 @@
     - Previously, all DDL was disallowed within transactions; now the database-specific rules determine which statements can run
     - **PostgreSQL**: All statements are allowed except `VACUUM`, `REINDEX`, `CLUSTER`, `CREATE/DROP DATABASE`, `CREATE/DROP TABLESPACE`
     - **SQLite3**: All statements are allowed except `VACUUM`
-- Update csvi package to v1.15.0. On `select` and `edit`:
+- Update csvi package to v1.15.0 + snapshot:
     - Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
     - Added `-rv` option to prevent unnatural colors on terminals with a white background
+    - At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this:
+        - If `ESC[6n` is not supported, the program now continues without aborting.
+        - Skipped the measurement of ambiguous-width Unicode characters when the environment variable `RUNEWIDTH_EASTASIAN` is defined.
     - Suppress color output if the `NO_COLOR` environment variable is set (following https://no-color.org/ )
+    - When the environment variable `COLORFGBG` is defined in the form `(FG);(BG)` and `(FG)` is less than `(BG)`, the program now uses color settings designed for light backgrounds (equivalent to `-rv`).
 
 v0.22.0
 =======

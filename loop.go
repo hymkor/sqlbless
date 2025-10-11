@@ -220,6 +220,19 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 	}
 }
 
+func (cfg *Config) openSpool() *os.File {
+	fn := cfg.SpoolFilename
+	if fn == "" || strings.EqualFold(fn, os.DevNull) || strings.EqualFold(fn, "off") {
+		return nil
+	}
+	fd, err := os.OpenFile(fn, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		return nil
+	}
+	return fd
+}
+
 func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) error {
 	ctx := context.Background()
 
@@ -253,19 +266,6 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	}
 	defer conn.Close()
 
-	var spool lftocrlf.WriteNameCloser
-	if fn := cfg.SpoolFilename; fn != "" &&
-		!strings.EqualFold(fn, os.DevNull) &&
-		!strings.EqualFold(fn, "off") {
-
-		fd, err := os.OpenFile(fn, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-		} else {
-			spool = fd
-		}
-	}
-
 	var history history.History
 
 	session := &session{
@@ -277,7 +277,7 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 		termOut: termOut,
 		stdErr:  termErr,
 		termErr: termErr,
-		spool:   spool,
+		spool:   cfg.openSpool(),
 	}
 	defer session.Close()
 

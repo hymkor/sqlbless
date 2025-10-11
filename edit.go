@@ -120,14 +120,14 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		}
 	}
 	if this.status == discardAll {
-		echoPrefix(this.stdErr, "(cancel) ", dmlSql)
+		misc.EchoPrefix(this.stdErr, "(cancel) ", dmlSql)
 		return nil, nil
 	}
 	fmt.Println()
 	if this.status == success {
 		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none) `, this.getKey, "y", "n", "aA", "N")
 		if err != nil {
-			echoPrefix(this.stdErr, "(error) ", err.Error())
+			misc.EchoPrefix(this.stdErr, "(error) ", err.Error())
 			this.status = failure
 			return nil, err
 		}
@@ -135,9 +135,9 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		case 1:
 			// cancel and quit with no error
 			this.status = success
-			echoPrefix(this.spool, "(cancel) ", dmlSql)
+			misc.EchoPrefix(this.spool, "(cancel) ", dmlSql)
 			if argsString != "" {
-				echoPrefix(this.spool, "(args)", argsString)
+				misc.EchoPrefix(this.spool, "(args)", argsString)
 			}
 			return nil, nil
 		case 2:
@@ -146,9 +146,9 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		case 3:
 			// discard all and quit with no error
 			this.status = discardAll
-			echoPrefix(this.spool, "(cancel) ", dmlSql)
+			misc.EchoPrefix(this.spool, "(cancel) ", dmlSql)
 			if argsString != "" {
-				echoPrefix(this.spool, "(args)", argsString)
+				misc.EchoPrefix(this.spool, "(args)", argsString)
 			}
 			return nil, nil
 		}
@@ -158,9 +158,9 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 	if err != nil {
 		return nil, err
 	}
-	echo(this.spool, dmlSql)
+	misc.Echo(this.spool, dmlSql)
 	if argsString != "" {
-		echo(this.spool, argsString)
+		misc.Echo(this.spool, argsString)
 	}
 	result, err := this.tx.ExecContext(ctx, dmlSql, args...)
 	var count int64

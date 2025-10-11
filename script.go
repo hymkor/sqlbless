@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/hymkor/sqlbless/internal/misc"
 )
 
 type Script struct {
@@ -45,7 +47,7 @@ func (script *Script) Read(context.Context) ([]string, error) {
 		if quoted == 0 {
 			code := buffer.String()
 			term := script.term
-			if _, ok := hasTerm(code, term); ok {
+			if _, ok := misc.HasTerm(code, term); ok {
 				println(code)
 				fmt.Fprintln(script.echo, code)
 				return []string{code}, nil

@@ -132,7 +132,7 @@ func (ss *Session) newInteractiveIn() *InteractiveIn {
 			last := strings.TrimRight(lines[len(lines)-1], " \r\n\t\v")
 			if last != "" || len(lines) <= 1 {
 				if len(ss.Term) == 1 {
-					_, ok := hasTerm(last, ss.Term)
+					_, ok := misc.HasTerm(last, ss.Term)
 					return ok
 				} else {
 					return strings.EqualFold(last, ss.Term)

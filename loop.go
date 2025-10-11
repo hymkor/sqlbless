@@ -99,26 +99,6 @@ func txBegin(ctx context.Context, conn *sql.Conn, tx **sql.Tx, w io.Writer) erro
 	return nil
 }
 
-func echo(spool io.Writer, query string) {
-	echoPrefix(spool, "", query)
-}
-
-func echoPrefix(spool io.Writer, prefix, query string) {
-	if spool != nil {
-		fmt.Fprintf(spool, "### <%s> ###\n", time.Now().Local().Format(time.DateTime))
-		query = strings.TrimRight(query, "\n")
-		for {
-			var line string
-			var next bool
-			line, query, next = strings.Cut(query, "\n")
-			fmt.Fprintf(spool, "# %s%s\n", prefix, line)
-			if !next {
-				break
-			}
-		}
-	}
-}
-
 func (ss *Session) desc(ctx context.Context, table string) error {
 	// fmt.Fprintln(os.Stderr, dbDialect.SqlForDesc)
 	tableName := strings.TrimSpace(table)
@@ -157,16 +137,6 @@ func (ss *Session) desc(ctx context.Context, table string) error {
 		return fmt.Errorf("%s: table not found", table)
 	}
 	return newViewer(ss).View(ctx, title, ss.automatic(), _rows, ss.termOut)
-}
-
-// hasTerm is similar with strings.HasSuffix, but ignores cases when comparing and returns the trimed string and the boolean indicating trimed or not
-func hasTerm(s, term string) (string, bool) {
-	s = strings.TrimRight(s, " \r\n\t\v")
-	from := len(s) - len(term)
-	if 0 <= from && from < len(s) && strings.EqualFold(s[from:], term) {
-		return s[:from], true
-	}
-	return s, false
 }
 
 type CommandIn interface {
@@ -246,7 +216,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 			}
 		}
 		queryAndTerm := strings.Join(lines, "\n")
-		query, _ := hasTerm(queryAndTerm, ss.Term)
+		query, _ := misc.HasTerm(queryAndTerm, ss.Term)
 
 		if query == "" {
 			continue
@@ -294,14 +264,14 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 				}
 			}
 		case "EDIT":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			err = doEdit(ctx, ss, query, commandIn)
 
 		case "SELECT":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			err = doSelect(ctx, ss, query)
 		case "DELETE", "INSERT", "UPDATE":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
 			err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
 			if err == nil {
@@ -312,18 +282,18 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 				}
 			}
 		case "COMMIT":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			err = txCommit(&ss.tx, ss.stdErr)
 		case "ROLLBACK":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			err = txRollback(&ss.tx, ss.stdErr)
 		case "EXIT", "QUIT":
 			return nil
 		case "DESC", "\\D":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			err = ss.desc(ctx, arg)
 		case "HISTORY":
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			csvw := csv.NewWriter(ss.stdOut)
 			for i, end := 0, ss.history.Len(); i < end; i++ {
 				text, stamp := ss.history.TextAndStamp(i)
@@ -339,7 +309,7 @@ func (ss *Session) Loop(ctx context.Context, commandIn CommandIn, onErrorAbort b
 		case "BEGIN":
 			err = errors.New("'BEGIN' is not supported; transactions are managed automatically")
 		default:
-			echo(ss.spool, query)
+			misc.Echo(ss.spool, query)
 			if ss.tx != nil {
 				f := ss.Dialect.CanUseInTransaction
 				if f == nil || !f(query) {

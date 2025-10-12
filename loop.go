@@ -220,7 +220,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 	}
 }
 
-func (cfg *Config) openSpool() *os.File {
+func (cfg *Config) openSpool() lftocrlf.WriteNameCloser {
 	fn := cfg.SpoolFilename
 	if fn == "" || strings.EqualFold(fn, os.DevNull) || strings.EqualFold(fn, "off") {
 		return nil

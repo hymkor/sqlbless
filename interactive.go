@@ -10,6 +10,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
+	"github.com/hymkor/csvi"
 	"github.com/hymkor/go-multiline-ny"
 	"github.com/hymkor/go-multiline-ny/completion"
 
@@ -66,7 +67,8 @@ func isOneLineCommand(cmdLine string) bool {
 
 type interactiveIn struct {
 	*multiline.Editor
-	tty getKeyAndSize
+	tty       misc.GetKeyAndSize
+	csviPilot csvi.Pilot
 }
 
 func (i *interactiveIn) GetKey() (string, error) {
@@ -81,8 +83,8 @@ func (i *interactiveIn) GetKey() (string, error) {
 	return readline.GetKey(tt)
 }
 
-func (i *interactiveIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
-	return i.tty, (i.tty != nil)
+func (i *interactiveIn) AutoPilotForCsvi() (csvi.Pilot, bool) {
+	return i.csviPilot, (i.csviPilot != nil)
 }
 
 func (ss *session) newInteractiveIn() *interactiveIn {
@@ -101,7 +103,8 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 	if ss.SubmitByEnter {
 		editor.SwapEnter()
 	}
-	var tty getKeyAndSize
+	var tty misc.GetKeyAndSize
+	var csviPilot csvi.Pilot
 	if ss.Auto != "" {
 		text := strings.ReplaceAll(ss.Auto, "||", "\n") // "||" -> Ctrl-J(Commit)
 		text = strings.ReplaceAll(text, "|", "\r")      // "|" -> Ctrl-M (NewLine)
@@ -113,6 +116,7 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 		}
 		editor.LineEditor.Tty = tty1
 		tty = tty1
+		csviPilot = misc.AutoCsvi{tty1}
 	}
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(ss.history)
@@ -142,7 +146,8 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 		}
 	})
 	return &interactiveIn{
-		Editor: &editor,
-		tty:    tty,
+		Editor:    &editor,
+		tty:       tty,
+		csviPilot: csviPilot,
 	}
 }

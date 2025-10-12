@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/hymkor/csvi"
-	"github.com/hymkor/csvi/candidate"
 	"github.com/hymkor/csvi/uncsv"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
@@ -17,79 +16,7 @@ type Viewer struct {
 	Comma       byte
 	Null        string
 	Spool       io.Writer
-}
-
-type _QuitCsvi struct{}
-
-func (_QuitCsvi) Size() (int, int, error) {
-	return 80, 25, nil
-}
-
-func (_QuitCsvi) Calibrate() error {
-	return nil
-}
-
-func (_QuitCsvi) GetKey() (string, error) {
-	return "q", nil
-}
-
-func (_QuitCsvi) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
-	return "", nil
-}
-
-func (_QuitCsvi) GetFilename(io.Writer, string, string) (string, error) {
-	return "", nil
-}
-
-func (_QuitCsvi) Close() error {
-	return nil
-}
-
-type GetKeyAndSize interface {
-	GetKey() (string, error)
-	Size() (int, int, error)
-}
-
-type _AutoCsvi struct {
-	Tty GetKeyAndSize
-}
-
-func (_AutoCsvi) Calibrate() error {
-	return nil
-}
-
-func (ac _AutoCsvi) Size() (int, int, error) {
-	return ac.Tty.Size()
-}
-
-func (ac _AutoCsvi) GetKey() (string, error) {
-	return ac.Tty.GetKey()
-}
-
-func (ac _AutoCsvi) readline() (string, error) {
-	var buffer strings.Builder
-	for {
-		c, err := ac.Tty.GetKey()
-		if err != nil {
-			return "", err
-		}
-		if c == "\r" || c == "\n" {
-			return buffer.String(), nil
-		}
-		buffer.WriteString(c)
-	}
-}
-
-func (ac _AutoCsvi) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
-	return ac.readline()
-}
-
-func (ac _AutoCsvi) GetFilename(io.Writer, string, string) (string, error) {
-	return ac.readline()
-}
-
-func (_AutoCsvi) Close() error {
-	return nil
+	csvi.Pilot
 }
 
 const (
@@ -97,13 +24,11 @@ const (
 	titleSuffix = "]"
 )
 
-func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, rows rowstocsv.Source, termOut io.Writer) error {
+func (viewer *Viewer) View(ctx context.Context, title string, rows rowstocsv.Source, termOut io.Writer) error {
 	cfg := &csvi.Config{
 		Titles:   []string{toOneLine(title, titlePrefix, titleSuffix)},
 		ReadOnly: true,
-	}
-	if automatic {
-		cfg.Pilot = _QuitCsvi{}
+		Pilot:    viewer.Pilot,
 	}
 	csvWriteTo := func(w io.Writer) error {
 		return rowstocsv.Config{
@@ -116,7 +41,7 @@ func (viewer *Viewer) View(ctx context.Context, title string, automatic bool, ro
 	return err
 }
 
-func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), tty GetKeyAndSize, csvWriteTo func(pOut io.Writer) error, termOut io.Writer) (*csvi.Result, error) {
+func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), csvWriteTo func(pOut io.Writer) error, termOut io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
@@ -175,9 +100,7 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 			"d":    setNull,
 		},
 		OnCellValidated: validate,
-	}
-	if tty != nil {
-		cfg.Pilot = &_AutoCsvi{Tty: tty}
+		Pilot:           viewer.Pilot,
 	}
 	result, err := viewer.callCsvi(cfg, csvWriteTo, termOut)
 	if applyChange {

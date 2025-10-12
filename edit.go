@@ -11,8 +11,6 @@ import (
 	"github.com/hymkor/sqlbless/spread"
 )
 
-type getKeyAndSize = spread.GetKeyAndSize
-
 const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
@@ -60,7 +58,7 @@ func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) e
 		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
-		editor.Auto = a
+		editor.Pilot = misc.AutoCsvi{a}
 	}
 	if ss.tx == nil {
 		editor.Query = ss.conn.QueryContext

@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/hymkor/csvi"
+
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
@@ -21,7 +23,7 @@ func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF
 }
 
-func (script *scriptIn) AutoPilotForCsvi() (getKeyAndSize, bool) {
+func (script *scriptIn) AutoPilotForCsvi() (csvi.Pilot, bool) {
 	return nil, false
 }
 

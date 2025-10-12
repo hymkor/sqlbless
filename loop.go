@@ -32,7 +32,7 @@ type commandIn interface {
 
 	// AutoPilotForCsvi returns Tty object when AutoPilot is enabled.
 	// When disabled, it MUST return nil.
-	AutoPilotForCsvi() (getKeyAndSize, bool)
+	AutoPilotForCsvi() (csvi.Pilot, bool)
 }
 
 type session struct {

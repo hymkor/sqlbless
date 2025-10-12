@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/hymkor/sqlbless/internal/misc"
 )
 
 func doSelect(ctx context.Context, ss *session, query string) error {
@@ -25,7 +27,11 @@ func doSelect(ctx context.Context, ss *session, query string) error {
 		rows.Close()
 		return fmt.Errorf("data not found")
 	}
-	return newViewer(ss).View(ctx, query, ss.automatic(), _rows, ss.termOut)
+	v := newViewer(ss)
+	if ss.automatic() {
+		v.Pilot = misc.CsviNoOperation{}
+	}
+	return v.View(ctx, query, _rows, ss.termOut)
 }
 
 type canExec interface {
@@ -119,5 +125,9 @@ func (ss *session) desc(ctx context.Context, table string) error {
 		}
 		return fmt.Errorf("%s: table not found", table)
 	}
-	return newViewer(ss).View(ctx, title, ss.automatic(), _rows, ss.termOut)
+	v := newViewer(ss)
+	if ss.automatic() {
+		v.Pilot = misc.CsviNoOperation{}
+	}
+	return v.View(ctx, title, _rows, ss.termOut)
 }

@@ -91,7 +91,6 @@ type Editor struct {
 	*dialect.Entry
 	Query func(context.Context, string, ...any) (*sql.Rows, error)
 	Exec  func(context.Context, string, ...any) (sql.Result, error)
-	Auto  GetKeyAndSize
 }
 
 type placeHolder struct {
@@ -207,7 +206,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 		return validateFunc[e.Col](e.Text)
 	}
 
-	changes, err := editor.Viewer.edit(tableAndWhere, v, editor.Auto, func(w io.Writer) error {
+	changes, err := editor.Viewer.edit(tableAndWhere, v, func(w io.Writer) error {
 		err := rowstocsv.Config{
 			Null:      editor.Viewer.Null,
 			Comma:     rune(editor.Viewer.Comma),

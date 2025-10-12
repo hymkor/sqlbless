@@ -22,7 +22,7 @@ func doSelect(ctx context.Context, ss *session, query string) error {
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
 	}
-	_rows, ok := rowsHasNext(rows)
+	_rows, ok := misc.RowsHasNext(rows)
 	if !ok {
 		rows.Close()
 		return fmt.Errorf("data not found")
@@ -117,7 +117,7 @@ func (ss *session) desc(ctx context.Context, table string) error {
 	if err != nil {
 		return err
 	}
-	_rows, ok := rowsHasNext(rows)
+	_rows, ok := misc.RowsHasNext(rows)
 	if !ok {
 		rows.Close()
 		if table == "" {

@@ -31,6 +31,8 @@ github.com/hymkor/go-shellcommand v0.0.2 h1:6+XG2h/9DGk5i3Oh4rU48z/nsPWx4Sp73s6O
 github.com/hymkor/go-shellcommand v0.0.2/go.mod h1:fZAUgV71RYfFRqqFvJRq/pA0v4RlCCHc2r/WBIPY8sQ=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
+github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9 h1:KBZgaFym9Cw80wwiaj8mAtwqliUdZadCtj5nHsx4qms=
+github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9/go.mod h1:Je1TEampOZlaARtEv1LFIuw1dVT1BZmIa1swu8NZh2M=
 github.com/hymkor/sxencode-go v0.3.0 h1:IfsgPuLLJptw3fczZKLSZjtT4cJ0qfPnFMEWnaG9yuU=
 github.com/hymkor/sxencode-go v0.3.0/go.mod h1:zdsmILW2sJbtydTaB7lwTqnl63XCTxRjTqDDZBA5hV0=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=

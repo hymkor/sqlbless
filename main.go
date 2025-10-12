@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"unicode/utf8"
 
-	"github.com/hymkor/sqlbless/dialect"
+	"github.com/hymkor/struct2flag"
 
-	"github.com/hymkor/sqlbless/internal/struct2flag"
+	"github.com/hymkor/sqlbless/dialect"
 )
 
 type Config struct {

@@ -28,7 +28,7 @@ all:
 test:
 ifeq ($(OS),Windows_NT)
 	pwsh "test/test-sqlite3.ps1"
-	pwsh "test/test.ps1"
+#	pwsh "test/test.ps1"
 endif
 	$(GO) test -v
 

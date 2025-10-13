@@ -8,7 +8,7 @@ require (
 	github.com/hymkor/csvi v1.15.1-0.20251011003849-8919bf53fbe8
 	github.com/hymkor/go-multiline-ny v0.21.0
 	github.com/hymkor/go-shellcommand v0.0.2
-	github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9
+	github.com/hymkor/struct2flag v0.0.3
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-tty v0.0.7

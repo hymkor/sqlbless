@@ -1,3 +1,7 @@
+v0.23.0
+=======
+Oct 14,2025
+
 - For non-DML SQL, `"database/sql".Conn` is now used instead of `"database/sql".DB`
     - This ensures the same connection is used continuously, avoiding potential issues caused by using different connections for consecutive SQL statements
 - Users can no longer use `BEGIN` statements

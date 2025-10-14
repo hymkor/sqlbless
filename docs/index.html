@@ -1142,11 +1142,17 @@ a.permalink:hover{
 <h1 id="sql-bless">SQL-Bless</h1>
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
 <p>The SQL-Bless is a command-line database client like SQL*Plus or psql.</p>
+<p>It was designed with reliability and transparency in mind.
+In the past, I had to deliver an unfinished system due to client pressure,
+which led to serious data inconsistencies that took enormous effort to fix.
+That experience made me realize how important it is to have a tool
+that prevents silent data corruption and keeps a complete, traceable log of every operation.
+SQL-Bless is the result of that lesson — a tool that values safety over convenience.</p>
 <ul>
 <li>Emacs-like keybindings for editing multi-line SQL input.
 <ul>
 <li>Pressing Enter inserts a line break by default.</li>
-<li>Use the ↑(Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.</li>
+<li>Use the ↑ (Up) arrow key or Ctrl-P to move the cursor to the previous line for editing.</li>
 <li>Press Ctrl-J or Ctrl-Enter to execute the input immediately.</li>
 <li>When you press Enter alone, the input is also executed if the last line ends with a semicolon or if the first word is a non-SQL command such as <code>EXIT</code> or <code>QUIT</code>.</li>
 </ul>
@@ -1162,10 +1168,24 @@ a.permalink:hover{
 </ul>
 </li>
 <li>Allows editing database records directly, similar to a spreadsheet (with the <code>EDIT</code> command)</li>
-<li>Auto commit is disabled.</li>
+<li>Transaction mode (auto-commit disabled)
+<ul>
+<li>A transaction is automatically started when executing DML (INSERT/UPDATE/DELETE)</li>
+<li>Users cannot input a BEGIN statement (transactions are managed automatically)</li>
+<li>Transactions can be ended with COMMIT or ROLLBACK</li>
+<li>Whether DDL (CREATE/ALTER/DROP etc.) can be executed inside a transaction depends on the database:
+<ul>
+<li><strong>PostgreSQL</strong>: All DDL can be executed inside a transaction except VACUUM, REINDEX, CLUSTER, CREATE/DROP DATABASE, and CREATE/DROP TABLESPACE</li>
+<li><strong>SQLite3</strong>: All DDL can be executed inside a transaction except VACUUM</li>
+<li><strong>Oracle / SQL Server / MySQL</strong>: DDL must be executed after ending the transaction with COMMIT or ROLLBACK</li>
+<li>If a transaction is still active when executing DDL, a warning will be displayed</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>Table name and column name completion
 <ul>
-<li>column name completion works only when the corresponding table name appears to the left of the cursor</li>
+<li>Column name completion works only when the corresponding table name appears to the left of the cursor</li>
 </ul>
 </li>
 </ul>
@@ -1181,11 +1201,11 @@ a.permalink:hover{
 <tbody>
 <tr>
 <td><code>Enter</code>, <code>Ctrl</code>-<code>M</code></td>
-<td><strong>Insert a linefeed</strong></td>
+<td>Insert a newline (or execute SQL if line ends with <code>;</code> or is a short command<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>)</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
-<td><strong>Execute SQL</strong></td>
+<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code></td>
+<td>Execute SQL</td>
 </tr>
 <tr>
 <td><code>Ctrl</code>-<code>F</code>/<code>B</code></td>
@@ -1270,8 +1290,10 @@ a.permalink:hover{
 <li>In the editor, these keys are bound.
 <ul>
 <li><code>x</code> or <code>d</code>: set NULL to the current cell</li>
-<li><code>c</code>: apply changes</li>
-<li><code>q</code> or <code>ESC</code>: quit without applying changes</li>
+<li><code>ESC</code> + <code>y</code>: Apply changes and exit</li>
+<li><code>ESC</code> + <code>n</code>: Discard changes and exit</li>
+<li><code>q</code>: Now equivalent to <code>ESC</code></li>
+<li><code>c</code>: Apply changes and exit (deprecated)</li>
 </ul>
 </li>
 <li>Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could <a href="https://github.com/hymkor/sqlbless/issues/new">contact us</a>.</li>
@@ -1320,6 +1342,9 @@ scoop install sqlbless
 <h3 id="installing-via-go">Installing via Go</h3>
 <pre><code>go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 </code></pre>
+<h2 id="configuration">Configuration</h2>
+<p>SQL-Bless does <strong>not</strong> rely on any external configuration files. All settings—including database connection parameters, output format, and other options—are specified directly via command-line arguments.</p>
+<p>For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see <code>run-*.cmd</code>). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.</p>
 <h2 id="how-to-start">How to start</h2>
 <pre><code>$ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 </code></pre>
@@ -1330,6 +1355,7 @@ $ sqlbless sqlite3 path/to/file.db
 </code></pre>
 <ul>
 <li>The drivers used are <a href="https://github.com/glebarez/go-sqlite">https://github.com/glebarez/go-sqlite</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="oracle">Oracle</h3>
 <pre><code>$ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
@@ -1337,6 +1363,7 @@ $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/sijms/go-ora">https://github.com/sijms/go-ora</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="postgresql">PostgreSQL</h3>
 <pre><code>$ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
@@ -1345,6 +1372,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/lib/pq">https://github.com/lib/pq</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="sql-server">SQL Server</h3>
 <pre><code>$ sqlbless sqlserver sqlserver://@localhost?database=master
@@ -1354,6 +1382,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/microsoft/go-mssqldb">https://github.com/microsoft/go-mssqldb</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="mysql">MySQL</h3>
 <pre><code>$ sqlbless.exe mysql user:password@/database
@@ -1361,6 +1390,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <ul>
 <li>The driver used is <a href="http://github.com/go-sql-driver/mysql">http://github.com/go-sql-driver/mysql</a></li>
 <li>The <code>?parseTime=true&amp;loc=Local</code> parameter is preset, but it can be overridden</li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd">Example startup batch file</a></li>
 </ul>
 <h2 id="common-options">Common Options</h2>
 <ul>
@@ -1410,6 +1440,35 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </ul>
 </li>
 </ul>
+<ul>
+<li><code>-rv</code>
+<ul>
+<li>Use color schemes designed for light (white) backgrounds.</li>
+</ul>
+</li>
+</ul>
+<h3 id="environment-variables">Environment Variables</h3>
+<ul>
+<li><code>NO_COLOR</code>
+<ul>
+<li>If defined and non-empty, suppress all color output.</li>
+<li>If undefined, colors are displayed as usual.</li>
+<li>(Follows <a href="https://no-color.org/">https://no-color.org/</a>)</li>
+</ul>
+</li>
+<li><code>RUNEWIDTH_EASTASIAN</code>
+<ul>
+<li><code>&quot;1&quot;</code> — Treat ambiguous-width Unicode characters as double-width (2 cells).</li>
+<li>Any other non-empty value — Treat them as single-width (1 cell).</li>
+<li>If undefined, the actual character width is determined by measuring the cursor position using the escape sequence <code>ESC[6n</code>.</li>
+</ul>
+</li>
+<li><code>COLORFGBG</code>
+<ul>
+<li>When defined in the form <code>(FG);(BG)</code>, where <code>(FG)</code> and <code>(BG)</code> are integers representing the foreground and background colors respectively, and <code>(FG)</code> is less than <code>(BG)</code>, CSVI assumes a light background and uses colors suitable for it (equivalent to <code>-rv</code>).</li>
+</ul>
+</li>
+</ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
 <li><a href="https://github.com/emisjerry">emisjerry (emisjerry)</a> - <a href="https://github.com/hymkor/sqlbless/issues/1">#1</a>,<a href="https://github.com/hymkor/sqlbless/issues/2">#2</a>,<a href="https://youtu.be/_cxBQKpfUds">Movie</a></li>
@@ -1422,7 +1481,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <hr />
 <ol>
 <li id="fn:1">
-<p><code>;</code> or the string specfied with the option <code>-term string</code>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p><code>DESC</code>, <code>EDIT</code>, <code>EXIT</code>, <code>HISTORY</code>, <code>HOST</code>, <code>QUIT</code>, <code>REM</code>, <code>SPOOL</code>, <code>START</code>, <code>\D</code>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>
@@ -1439,6 +1498,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li><a href="#installing-via-go">Installing via Go</a></li>
 </ul>
 </li>
+<li><a href="#configuration">Configuration</a></li>
 <li><a href="#how-to-start">How to start</a>
 <ul>
 <li><a href="#sqlite3">SQLite3</a></li>
@@ -1448,7 +1508,11 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li><a href="#mysql">MySQL</a></li>
 </ul>
 </li>
-<li><a href="#common-options">Common Options</a></li>
+<li><a href="#common-options">Common Options</a>
+<ul>
+<li><a href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 <li><a href="#author">Author</a></li>
 <li><a href="#license">License</a></li>

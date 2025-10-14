@@ -1142,6 +1142,10 @@ a.permalink:hover{
 <h1 id="sql-bless">SQL-Bless</h1>
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
 <p>SQL-Bless は SQL*Plus や psql のようなコマンドライン用データベースクライアントです。</p>
+<p>SQL-Bless は「安全性と再現性」を最優先に設計されています。
+かつて、顧客の都合で未完成のシステムを納品せざるを得ず、その後、データ不整合の修正に膨大な労力を費やした経験があります。
+その経験から、「人為的ミスや予期せぬ自動コミットを防ぎ、すべての操作を追跡可能にするツール」が必要だと痛感しました。
+SQL-Bless は、そうした現場での教訓から生まれた、安全で再現性のある DB メンテナンスツールです。</p>
 <ul>
 <li>複数行の SQL 入力を編集するための Emacs 風キーバインド
 <ul>
@@ -1162,7 +1166,21 @@ a.permalink:hover{
 </ul>
 </li>
 <li>データベースのレコードをスプレッド風に編集可能 (<code>EDIT</code> コマンド)</li>
-<li>トランザクションモード動作(オートコミット無効化)</li>
+<li>トランザクションモード動作（オートコミット無効化）
+<ul>
+<li>DML（INSERT/UPDATE/DELETE）実行時に自動でトランザクションを開始します</li>
+<li>ユーザが BEGIN 文を入力することはできません（内部で自動管理されるため）</li>
+<li>COMMIT または ROLLBACK を実行することでトランザクションを終了できます</li>
+<li>DDL（CREATE/ALTER/DROP 等）のトランザクション内実行可否はデータベースごとに異なります
+<ul>
+<li><strong>PostgreSQL</strong>: VACUUM, REINDEX, CLUSTER, CREATE/DROP DATABASE, CREATE/DROP TABLESPACE を除き、トランザクション内で実行可能</li>
+<li><strong>SQLite3</strong>: VACUUM を除き、トランザクション内で実行可能</li>
+<li><strong>Oracle / SQL Server / MySQL</strong>: DDL を実行する前に、COMMIT もしくは ROLLBACK でトランザクションを終了させる必要があります</li>
+<li>DDL 実行時に既存トランザクションが残っている場合は、警告が表示されます。</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>テーブル名・カラム名補完
 <ul>
 <li>ただし、カラム名補完はテーブル名がカーソルより左側に登場している時のみ</li>
@@ -1181,11 +1199,11 @@ a.permalink:hover{
 <tbody>
 <tr>
 <td><code>Enter</code>, <code>Ctrl</code>-<code>M</code></td>
-<td><strong>改行を挿入</strong></td>
+<td>改行（末尾;または短いコマンド<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>時はSQLを実行）</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code> or <code>;</code>+<code>Enter</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
-<td><strong>SQLを実行</strong></td>
+<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code></td>
+<td>SQLを実行</td>
 </tr>
 <tr>
 <td><code>Ctrl</code>-<code>F</code>/<code>B</code></td>
@@ -1268,10 +1286,12 @@ a.permalink:hover{
 <ul>
 <li>選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します</li>
 <li>エディタ中では以下のキーが拡張されます
-= <code>x</code> or <code>d</code>: セルに NULL をセットする
 <ul>
-<li><code>c</code>: 変更を適用して終了</li>
-<li><code>q</code> or <code>ESC</code>: 修正を破棄して終了</li>
+<li><code>x</code> or <code>d</code>: セルに NULL をセットする</li>
+<li><code>ESC</code>+<code>y</code>: 変更を適用して終了</li>
+<li><code>ESC</code>+<code>n</code>: 修正を破棄して終了</li>
+<li><code>q</code>: <code>ESC</code> と等価</li>
+<li><code>c</code>: 変更を適用して終了(廃止予定)</li>
 </ul>
 </li>
 <li>EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、<a href="https://github.com/hymkor/sqlbless/issues/new">ご連絡</a>いただけるとたすかります。</li>
@@ -1320,6 +1340,10 @@ scoop install sqlbless
 <h3 id="go-install-%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">go install でインストールする場合</h3>
 <pre><code>go install github.com/hymkor/sqlbless/cmd/sqlbless@latest
 </code></pre>
+<h2 id="%E8%A8%AD%E5%AE%9A%EF%BC%88configuration%EF%BC%89">設定（Configuration）</h2>
+<p>SQL-Bless は設定ファイルを必要とせず、すべてコマンドラインオプションで指定できます。
+デフォルトでは、ローカルのテスト用データベースに接続するための設定は含まれていません。そのため、接続情報は起動時に必ず指定してください。</p>
+<p>たとえば、バッチファイルやシェルスクリプトを作成して、SQL-Bless を起動する際に接続情報を渡す方法が推奨されます。</p>
 <h2 id="%E8%B5%B7%E5%8B%95%E6%96%B9%E6%B3%95">起動方法</h2>
 <pre><code>$ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 </code></pre>
@@ -1330,6 +1354,7 @@ $ sqlbless sqlite3 path/to/file.db
 </code></pre>
 <ul>
 <li>使用ドライバ : <a href="https://github.com/glebarez/go-sqlite">https://github.com/glebarez/go-sqlite</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="oracle">Oracle</h3>
 <pre><code>$ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
@@ -1337,6 +1362,7 @@ $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 </code></pre>
 <ul>
 <li>使用ドライバー: <a href="https://github.com/sijms/go-ora">https://github.com/sijms/go-ora</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="postgresql">PostgreSQL</h3>
 <pre><code>$ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
@@ -1345,6 +1371,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </code></pre>
 <ul>
 <li>使用ドライバー <a href="https://github.com/lib/pq">https://github.com/lib/pq</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="sql-server">SQL Server</h3>
 <pre><code>$ sqlbless sqlserver sqlserver://@localhost?database=master
@@ -1354,6 +1381,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </code></pre>
 <ul>
 <li>使用ドライバー <a href="https://github.com/microsoft/go-mssqldb">https://github.com/microsoft/go-mssqldb</a></li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="mysql">MySQL</h3>
 <pre><code>$ sqlbless.exe mysql user:password@/database
@@ -1361,6 +1389,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <ul>
 <li>使用ドライバー <a href="http://github.com/go-sql-driver/mysql">http://github.com/go-sql-driver/mysql</a></li>
 <li>パラメータ <code>?parseTime=true&amp;loc=Local</code> が予め設定されていますが、上書き可能です</li>
+<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h2 id="%E5%85%B1%E9%80%9A%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">共通オプション</h2>
 <ul>
@@ -1409,6 +1438,32 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li>ヘルプを表示</li>
 </ul>
 </li>
+<li><code>-rv</code>
+<ul>
+<li>白背景を前提とした色を使用する</li>
+</ul>
+</li>
+</ul>
+<h2 id="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0">環境変数</h2>
+<ul>
+<li><code>NO_COLOR</code>
+<ul>
+<li>1文字以上設定されていたらカラー表示を抑制する</li>
+<li>未定義の場合、通常どおりカラー表示を行う</li>
+</ul>
+</li>
+<li><code>RUNEWIDTH_EASTASIAN</code>
+<ul>
+<li>`&quot;1&quot; - Unicodeの曖昧幅の文字は2桁とする</li>
+<li>それ以外が1文字以上設定れていたら1桁とする</li>
+<li>未定義の場合、カーソル位置取得シーケンス(<code>ESC[6n</code>)で実測する</li>
+</ul>
+</li>
+<li><code>COLORFGBG</code>
+<ul>
+<li><code>(FG);(BG)</code>形式で、前景色を表す<code>(FG)</code>と背景色を表す<code>(BG)</code>が整数で <code>(FG)</code> が <code>(BG)</code> より小さい整数の時、白背景を想定した色使いをするようにする (<code>-rv</code>と等価)</li>
+</ul>
+</li>
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
@@ -1422,7 +1477,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <hr />
 <ol>
 <li id="fn:1">
-<p><code>;</code> もしくは <code>-term string</code> で指定された文字列&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p><code>DESC</code>, <code>EDIT</code>, <code>EXIT</code>, <code>HISTORY</code>, <code>HOST</code>, <code>QUIT</code>, <code>REM</code>, <code>SPOOL</code>, <code>START</code>, <code>\D</code>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>
@@ -1439,6 +1494,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li><a href="#go-install-%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88">go install でインストールする場合</a></li>
 </ul>
 </li>
+<li><a href="#%E8%A8%AD%E5%AE%9Aconfiguration">設定（Configuration）</a></li>
 <li><a href="#%E8%B5%B7%E5%8B%95%E6%96%B9%E6%B3%95">起動方法</a>
 <ul>
 <li><a href="#sqlite3">SQLite3</a></li>
@@ -1449,6 +1505,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 </ul>
 </li>
 <li><a href="#%E5%85%B1%E9%80%9A%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">共通オプション</a></li>
+<li><a href="#%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0">環境変数</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 <li><a href="#author">Author</a></li>
 <li><a href="#license">License</a></li>

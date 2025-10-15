@@ -239,9 +239,6 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	if cfg.ReverseVideo || csvi.IsRevertVideoWithEnv() {
 		csvi.RevertColor()
 	}
-	if cfg.DebugBell {
-		csvi.EnableDebugBell(os.Stderr)
-	}
 	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
 		csvi.MonoChrome()
 	}

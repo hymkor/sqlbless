@@ -25,7 +25,6 @@ type Config struct {
 	Script         string `flag:"f,script file"`
 	SpoolFilename  string `flag:"spool,Spool filename"`
 	ReverseVideo   bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
-	DebugBell      bool   `flag:"debug-bell,Enable Debug Bell"`
 }
 
 func (cfg *Config) comma() byte {

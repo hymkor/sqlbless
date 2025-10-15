@@ -284,9 +284,5 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 		return ss.StartFromStdin(ctx)
 	}
 
-	fmt.Println("  Ctrl-M or      Enter: Insert Linefeed")
-	fmt.Println("  Ctrl-J or Ctrl-Enter: Exec command")
-	fmt.Println()
-
 	return ss.Loop(ctx, ss.newInteractiveIn(), false)
 }

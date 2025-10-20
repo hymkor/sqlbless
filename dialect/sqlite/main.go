@@ -1,6 +1,8 @@
 package sqlite
 
 import (
+	"database/sql"
+	"fmt"
 	"strings"
 
 	_ "github.com/glebarez/go-sqlite/compat"
@@ -66,21 +68,23 @@ type placeHolder struct {
 func (ph *placeHolder) Make(v any) string {
 	if w, ok := v.(*withHolder); ok {
 		ph.values = append(ph.values, w.value)
-		return w.holder
+		return strings.ReplaceAll(w.holder, "?", fmt.Sprintf("$v%d", len(ph.values)))
 	}
 	ph.values = append(ph.values, v)
-	return "?"
+	return fmt.Sprintf("$v%d", len(ph.values))
 }
 
-func (ph *placeHolder) NormalizeColumnForWhere(v any, s string) string {
-	if w, ok := v.(*withHolder); ok {
-		return strings.ReplaceAll(w.holder, "?", s)
+func (ph *placeHolder) NormalizeColumnForWhere(value any, columnName string) string {
+	if w, ok := value.(*withHolder); ok {
+		return strings.ReplaceAll(w.holder, "?", columnName)
 	}
-	return s
+	return columnName
 }
 
 func (ph *placeHolder) Values() (result []any) {
-	result = ph.values
+	for i, v := range ph.values {
+		result = append(result, sql.Named(fmt.Sprintf("v%d", i+1), v))
+	}
 	ph.values = ph.values[:0]
 	return
 }

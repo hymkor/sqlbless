@@ -1,4 +1,5 @@
 - Fixed an issue in the `edit` command where table names containing spaces were incorrectly expanded in SQL statements.
+- Changed SQLite3 placeholders from `?` to bind variables in the `$v%d` format.
 
 v0.23.0
 =======

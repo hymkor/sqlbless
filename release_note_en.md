@@ -1,3 +1,5 @@
+- Fixed an issue in the `edit` command where table names containing spaces were incorrectly expanded in SQL statements.
+
 v0.23.0
 =======
 Oct 14,2025

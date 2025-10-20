@@ -231,7 +231,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			return true
 		case newRow:
 			var sql strings.Builder
-			fmt.Fprintf(&sql, "INSERT INTO %s VALUES\n( ", table)
+			fmt.Fprintf(&sql, "INSERT INTO %s VALUES\n( ", doubleQuoteIfNeed(table))
 			for i, c := range row.Cell {
 				if i > 0 {
 					sql.WriteByte(',')
@@ -252,7 +252,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 		case modified:
 			var sql strings.Builder
 			sql.WriteString("UPDATE  ")
-			sql.WriteString(table)
+			sql.WriteString(doubleQuoteIfNeed(table))
 
 			del := "\n   SET  "
 

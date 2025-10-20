@@ -7,13 +7,22 @@ import (
 	"time"
 )
 
+var undq = strings.NewReplacer(
+	`""`, `"`,
+	`"`, ``,
+)
+
 func CutField(s string) (string, string) {
 	s = strings.TrimLeft(s, " \n\r\t\v")
 	i := 0
-	for len(s) > i && s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v' {
+	q := false
+	for len(s) > i && (q || (s[i] != ' ' && s[i] != '\n' && s[i] != '\r' && s[i] != '\t' && s[i] != '\v')) {
+		if s[i] == '"' {
+			q = !q
+		}
 		i++
 	}
-	return s[:i], s[i:]
+	return undq.Replace(s[:i]), s[i:]
 }
 
 func Echo(spool io.Writer, query string) {

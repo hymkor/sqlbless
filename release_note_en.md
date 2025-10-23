@@ -1,6 +1,7 @@
 - Fixed an issue in the `edit` command where table names containing spaces were incorrectly expanded in SQL statements.
 - Changed SQLite3 placeholders from `?` to bind variables in the `$v%d` format.
-
+- In interactive mode, SQL-Bless now prevents exiting (`Ctrl-D`, `exit`, `quit`) while a transaction is open, showing: `transaction is not closed. Please Commit or Rollback.` This check is skipped during script execution.
+- Modified Ctrl-C behavior during command-line editing. Instead of terminating SQL-Bless, it now cancels (discards) the SQL statement currently being edited.
 v0.23.0
 =======
 Oct 14,2025

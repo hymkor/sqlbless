@@ -20,6 +20,7 @@ type scriptIn struct {
 }
 
 func (*scriptIn) CanCloseInTransaction() bool { return true }
+func (*scriptIn) ShouldRecordHistory() bool   { return false }
 
 func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF

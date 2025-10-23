@@ -72,6 +72,7 @@ type interactiveIn struct {
 }
 
 func (*interactiveIn) CanCloseInTransaction() bool { return false }
+func (*interactiveIn) ShouldRecordHistory() bool   { return true }
 
 func (i *interactiveIn) GetKey() (string, error) {
 	if i.tty != nil {

@@ -35,6 +35,7 @@ type commandIn interface {
 	AutoPilotForCsvi() (csvi.Pilot, bool)
 
 	CanCloseInTransaction() bool
+	ShouldRecordHistory() bool
 }
 
 type session struct {
@@ -119,7 +120,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 		if query == "" {
 			continue
 		}
-		if _, ok := commandIn.(*scriptIn); !ok {
+		if commandIn.ShouldRecordHistory() {
 			ss.history.Add(queryAndTerm)
 		}
 		cmd, arg := misc.CutField(query)

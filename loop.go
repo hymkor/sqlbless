@@ -63,6 +63,7 @@ func (ss *session) automatic() bool {
 }
 
 var (
+	ErrTransactionIsNotClosed = errors.New("transaction is not closed. Please Commit or Rollback")
 	ErrBeginIsNotSupported    = errors.New("'BEGIN' is not supported; transactions are managed automatically")
 )
 
@@ -204,7 +205,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			if ss.tx != nil {
 				f := ss.Dialect.CanUseInTransaction
 				if f == nil || !f(query) {
-					err = errors.New("transaction is not closed. Please Commit or Rollback")
+					err = ErrTransactionIsNotClosed
 					break
 				}
 				_, err = ss.tx.ExecContext(ctx, query)

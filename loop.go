@@ -104,16 +104,6 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			}
 			return err
 		}
-		if in, ok := commandIn.(*interactiveIn); ok {
-			if L := len(lines) - 1; L > 0 {
-				w := in.LineEditor.Out
-				fmt.Fprintf(w, "\x1B[%dF", L)
-				for ; L > 0; L-- {
-					fmt.Fprintln(w, "     ")
-				}
-				w.Flush()
-			}
-		}
 		queryAndTerm := strings.Join(lines, "\n")
 		query, _ := misc.HasTerm(queryAndTerm, ss.Term)
 

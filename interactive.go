@@ -1,6 +1,8 @@
 package sqlbless
 
 import (
+	"context"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -73,6 +75,24 @@ type interactiveIn struct {
 
 func (*interactiveIn) CanCloseInTransaction() bool { return false }
 func (*interactiveIn) ShouldRecordHistory() bool   { return true }
+
+func (i *interactiveIn) Read(ctx context.Context) ([]string, error) {
+	lines, err := i.Editor.Read(ctx)
+	w := i.Editor.LineEditor.Out
+	if L := len(lines) - 1; L > 0 {
+		fmt.Fprintf(w, "\x1B[%dF", L)
+		for ; L > 0; L-- {
+			fmt.Fprintln(w, "     ")
+		}
+		w.Flush()
+	}
+	if err == readline.CtrlC {
+		fmt.Fprintln(w, err.Error())
+		w.Flush()
+		return []string{}, nil
+	}
+	return lines, err
+}
 
 func (i *interactiveIn) GetKey() (string, error) {
 	if i.tty != nil {

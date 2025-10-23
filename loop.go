@@ -71,24 +71,26 @@ var (
 	ErrBeginIsNotSupported    = errors.New("'BEGIN' is not supported; transactions are managed automatically")
 )
 
+func (ss *session) prompt(w io.Writer, i int) (int, error) {
+	io.WriteString(w, "\x1B[0m")
+	if i <= 0 {
+		if ss.tx != nil {
+			return io.WriteString(w, "SQL* ")
+		}
+		return io.WriteString(w, "SQL> ")
+	}
+	if ss.tx != nil {
+		return fmt.Fprintf(w, "%3d* ", i+1)
+	}
+	return fmt.Fprintf(w, "%3d> ", i+1)
+}
+
 func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort bool) error {
+	commandIn.SetPrompt(ss.prompt)
 	for {
 		if ss.spool != nil {
 			fmt.Fprintf(ss.termErr, "\nSpooling to '%s' now\n", ss.spool.Name())
 		}
-		commandIn.SetPrompt(func(w io.Writer, i int) (int, error) {
-			io.WriteString(w, "\x1B[0m")
-			if i <= 0 {
-				if ss.tx != nil {
-					return io.WriteString(w, "SQL* ")
-				}
-				return io.WriteString(w, "SQL> ")
-			}
-			if ss.tx != nil {
-				return fmt.Fprintf(w, "%3d* ", i+1)
-			}
-			return fmt.Fprintf(w, "%3d> ", i+1)
-		})
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			if err == io.EOF {

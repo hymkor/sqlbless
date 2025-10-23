@@ -20,6 +20,7 @@ $script = `
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF||" +
+    "ROLLBACK||" +
     "EXIT||"
 
 ..\sqlbless.exe -auto "$script" sqlite3 :memory:

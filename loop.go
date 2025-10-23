@@ -198,18 +198,19 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			err = ErrBeginIsNotSupported
 		default:
 			misc.Echo(ss.spool, query)
-			if ss.tx != nil {
-				f := ss.Dialect.CanUseInTransaction
-				if f == nil || !f(query) {
-					err = ErrTransactionIsNotClosed
-					break
-				}
-				_, err = ss.tx.ExecContext(ctx, query)
+			if q := ss.Dialect.IsQuerySQL; q != nil && q(query) {
+				err = doSelect(ctx, ss, query)
 			} else {
-				_, err = ss.conn.ExecContext(ctx, query)
-			}
-			if err == nil {
-				fmt.Fprintln(ss.stdErr, "Ok")
+				if ss.tx == nil {
+					_, err = ss.conn.ExecContext(ctx, query)
+				} else if f := ss.Dialect.CanUseInTransaction; f != nil && f(query) {
+					_, err = ss.tx.ExecContext(ctx, query)
+				} else {
+					err = ErrTransactionIsNotClosed
+				}
+				if err == nil {
+					fmt.Fprintln(ss.stdErr, "Ok")
+				}
 			}
 		}
 		if err != nil {

@@ -26,6 +26,7 @@ type Entry struct {
 	TypeNameToConv        func(string) func(string) (any, error)
 	DSNFilter             func(string) (string, error)
 	CanUseInTransaction   func(string) bool
+	IsQuerySQL            func(string) bool
 }
 
 func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {

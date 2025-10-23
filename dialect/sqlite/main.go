@@ -28,6 +28,10 @@ var Entry = &dialect.Entry{
 	TableField:            "name",
 	ColumnField:           "name",
 	CanUseInTransaction:   canUseInTransaction,
+	IsQuerySQL: func(s string) bool {
+		s, _ = misc.CutField(s)
+		return strings.EqualFold(s, "PRAGMA")
+	},
 }
 
 func canUseInTransaction(sql string) bool {

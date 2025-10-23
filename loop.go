@@ -62,6 +62,10 @@ func (ss *session) automatic() bool {
 	return ss.Auto != ""
 }
 
+var (
+	ErrBeginIsNotSupported    = errors.New("'BEGIN' is not supported; transactions are managed automatically")
+)
+
 func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort bool) error {
 	for {
 		if ss.spool != nil {
@@ -194,7 +198,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			fname, _ := misc.CutField(arg)
 			err = ss.Start(ctx, fname)
 		case "BEGIN":
-			err = errors.New("'BEGIN' is not supported; transactions are managed automatically")
+			err = ErrBeginIsNotSupported
 		default:
 			misc.Echo(ss.spool, query)
 			if ss.tx != nil {

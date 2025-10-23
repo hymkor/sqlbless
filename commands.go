@@ -88,46 +88,22 @@ func txBegin(ctx context.Context, conn *sql.Conn, tx **sql.Tx, w io.Writer) erro
 	return nil
 }
 
-func (ss *session) desc(ctx context.Context, table string) error {
-	// fmt.Fprintln(os.Stderr, dbDialect.SqlForDesc)
+func doDesc(ctx context.Context, ss *session, table string) error {
 	tableName := strings.TrimSpace(table)
-	var rows *sql.Rows
-	var err error
-	var title string
+	var query string
 	if tableName == "" {
 		if ss.Dialect.SqlForTab == "" {
 			return errors.New("DESC: not supported")
 		}
-		if ss.Debug {
-			fmt.Println(ss.Dialect.SqlForTab)
-		}
-		title = "Tables"
-		rows, err = ss.conn.QueryContext(ctx, ss.Dialect.SqlForTab)
+		query = ss.Dialect.SqlForTab
 	} else {
 		if ss.Dialect.SqlForDesc == "" {
 			return errors.New("DESC TABLE: not supported")
 		}
-		sql := strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
-		if ss.Debug {
-			fmt.Println(sql)
-		}
-		title = tableName
-		rows, err = ss.conn.QueryContext(ctx, sql, tableName)
+		query = strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
 	}
-	if err != nil {
-		return err
+	if ss.Debug {
+		fmt.Println(query)
 	}
-	_rows, ok := misc.RowsHasNext(rows)
-	if !ok {
-		rows.Close()
-		if table == "" {
-			return errors.New("no tables are found")
-		}
-		return fmt.Errorf("%s: table not found", table)
-	}
-	v := newViewer(ss)
-	if ss.automatic() {
-		v.Pilot = misc.CsviNoOperation{}
-	}
-	return v.View(ctx, title, _rows, ss.termOut)
+	return doSelect(ctx, ss, query)
 }

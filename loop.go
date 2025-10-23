@@ -179,7 +179,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			err = ErrTransactionIsNotClosed
 		case "DESC", "\\D":
 			misc.Echo(ss.spool, query)
-			err = ss.desc(ctx, arg)
+			err = doDesc(ctx, ss, arg)
 		case "HISTORY":
 			misc.Echo(ss.spool, query)
 			csvw := csv.NewWriter(ss.stdOut)

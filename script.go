@@ -19,8 +19,9 @@ type scriptIn struct {
 	term string
 }
 
-func (*scriptIn) CanCloseInTransaction() bool { return true }
-func (*scriptIn) ShouldRecordHistory() bool   { return false }
+func (*scriptIn) CanCloseInTransaction() bool                 { return true }
+func (*scriptIn) ShouldRecordHistory() bool                   { return false }
+func (*scriptIn) SetPrompt(func(io.Writer, int) (int, error)) {}
 
 func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF

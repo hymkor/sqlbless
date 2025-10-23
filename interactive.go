@@ -71,6 +71,8 @@ type interactiveIn struct {
 	csviPilot csvi.Pilot
 }
 
+func (*interactiveIn) CanCloseInTransaction() bool { return false }
+
 func (i *interactiveIn) GetKey() (string, error) {
 	if i.tty != nil {
 		return i.tty.GetKey()

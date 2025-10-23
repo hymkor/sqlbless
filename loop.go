@@ -33,6 +33,8 @@ type commandIn interface {
 	// AutoPilotForCsvi returns Tty object when AutoPilot is enabled.
 	// When disabled, it MUST return nil.
 	AutoPilotForCsvi() (csvi.Pilot, bool)
+
+	CanCloseInTransaction() bool
 }
 
 type session struct {
@@ -93,6 +95,10 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
 			if err == io.EOF {
+				if ss.tx != nil && !commandIn.CanCloseInTransaction() {
+					fmt.Fprintln(ss.termErr, ErrTransactionIsNotClosed.Error())
+					continue
+				}
 				return nil
 			}
 			return err
@@ -180,7 +186,10 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			misc.Echo(ss.spool, query)
 			err = txRollback(&ss.tx, ss.stdErr)
 		case "EXIT", "QUIT":
-			return nil
+			if ss.tx == nil || commandIn.CanCloseInTransaction() {
+				return nil
+			}
+			err = ErrTransactionIsNotClosed
 		case "DESC", "\\D":
 			misc.Echo(ss.spool, query)
 			err = ss.desc(ctx, arg)

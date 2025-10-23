@@ -19,6 +19,8 @@ type scriptIn struct {
 	term string
 }
 
+func (*scriptIn) CanCloseInTransaction() bool { return true }
+
 func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF
 }

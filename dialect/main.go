@@ -10,6 +10,13 @@ import (
 	"database/sql"
 )
 
+var (
+	ErrNotTimeFormat           = errors.New("not time format")
+	ErrTooFewArguments         = errors.New("too few arguments")
+	ErrDSNStringIsNotSpecified = errors.New("DSN String is not specified")
+	ErrSupportDriveNotFound    = errors.New("support driver not found")
+)
+
 type PlaceHolder interface {
 	Make(any) string
 	Values() []any
@@ -74,7 +81,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	if m := rxRawLayout.FindStringSubmatch(s); m != nil {
 		return time.Parse(RawTimeLayout, m[1])
 	}
-	return time.Time{}, errors.New("not time format")
+	return time.Time{}, ErrNotTimeFormat
 }
 
 var registry = map[string]*Entry{}
@@ -98,12 +105,12 @@ func Each(yield func(string, *Entry) bool) {
 
 func findFromArgs(args []string) (*Entry, []string, error) {
 	if len(args) <= 0 {
-		return nil, nil, errors.New("too few arguments")
+		return nil, nil, ErrTooFewArguments
 	}
 	spec, ok := Find(args[0])
 	if ok {
 		if len(args) < 2 {
-			return nil, nil, errors.New("DSN String is not specified")
+			return nil, nil, ErrDSNStringIsNotSpecified
 		}
 		return spec, []string{args[0], strings.Join(args[1:], " ")}, nil
 	}
@@ -114,7 +121,7 @@ func findFromArgs(args []string) (*Entry, []string, error) {
 			return spec, []string{scheme, strings.Join(args, " ")}, nil
 		}
 	}
-	return nil, nil, fmt.Errorf("support driver not found: %s", args[0])
+	return nil, nil, fmt.Errorf("%w: %s", ErrSupportDriveNotFound, args[0])
 }
 
 type DBInfo struct {

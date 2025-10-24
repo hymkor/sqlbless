@@ -34,15 +34,6 @@ func anyToNullString(v any) sql.NullString {
 	return ns
 }
 
-func rawByteToNullString(v sql.RawBytes) sql.NullString {
-	var ns sql.NullString
-	if v != nil {
-		ns.String = string(v)
-		ns.Valid = true
-	}
-	return ns
-}
-
 func makeBuffers[T any](n int) ([]any, []T) {
 	refs := make([]any, n)
 	data := make([]T, n)
@@ -102,7 +93,6 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 		}
 		for i, v := range data {
 			ns := anyToNullString(v)
-			// ns := rawByteToNullString(v)
 			strs[i] = conv(i, columnTypes[i], ns)
 		}
 		if err := write(strs); err != nil {

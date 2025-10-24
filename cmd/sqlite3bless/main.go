@@ -15,7 +15,7 @@ func mains() error {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 1 {
-		return errors.New("Usage: sqlite3bless {DBPATH or :memory:}")
+		return errors.New("usage: sqlite3bless {DBPATH or :memory:}")
 	}
 	return cfg.Run("sqlite3", args[0], sqlite.Entry)
 }

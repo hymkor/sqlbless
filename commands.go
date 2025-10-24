@@ -62,14 +62,14 @@ func (ss *session) commit() error {
 	return err
 }
 
-func txRollback(tx **sql.Tx, w io.Writer) error {
+func (ss *session) rollback() error {
 	var err error
-	if *tx != nil {
-		err = (*tx).Rollback()
-		*tx = nil
+	if ss.tx != nil {
+		err = ss.tx.Rollback()
+		ss.tx = nil
 	}
 	if err == nil {
-		fmt.Fprintln(w, "Rollback complete.")
+		fmt.Fprintln(ss.stdErr, "Rollback complete.")
 	}
 	return err
 }

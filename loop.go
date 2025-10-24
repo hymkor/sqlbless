@@ -52,7 +52,7 @@ type session struct {
 
 func (ss *session) Close() {
 	if ss.tx != nil {
-		txRollback(&ss.tx, ss.stdErr)
+		ss.rollback()
 	}
 	if ss.spool != nil {
 		ss.spool.Close()
@@ -175,7 +175,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			err = ss.commit()
 		case "ROLLBACK":
 			misc.Echo(ss.spool, query)
-			err = txRollback(&ss.tx, ss.stdErr)
+			err = ss.rollback()
 		case "EXIT", "QUIT":
 			if ss.tx == nil || commandIn.CanCloseInTransaction() {
 				return nil

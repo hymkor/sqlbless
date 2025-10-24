@@ -3,12 +3,17 @@ package sqlcompletion
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/nyaosorg/go-readline-ny/completion"
 
 	"github.com/hymkor/sqlbless/dialect"
+)
+
+var (
+	ColumnNameNotFound = errors.New("column name not found")
 )
 
 type CanQuery interface {
@@ -153,7 +158,7 @@ func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName strin
 				}
 			}
 			if tablePosition < 0 {
-				return nil, fmt.Errorf("%s: column name not found", columnName)
+				return nil, fmt.Errorf("%s: %w", columnName, ColumnNameNotFound)
 			}
 			nFields := len(columns)
 			values = make([]any, nFields)

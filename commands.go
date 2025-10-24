@@ -74,13 +74,13 @@ func txRollback(tx **sql.Tx, w io.Writer) error {
 	return err
 }
 
-func txBegin(ctx context.Context, conn *sql.Conn, tx **sql.Tx, w io.Writer) error {
-	if *tx != nil {
+func (ss *session) beginTx(ctx context.Context, w io.Writer) error {
+	if ss.tx != nil {
 		return nil
 	}
 	fmt.Fprintln(w, "Starts a transaction")
 	var err error
-	*tx, err = conn.BeginTx(ctx, nil)
+	ss.tx, err = ss.conn.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("BeginTx: %[1]w (%[1]T)", err)
 	}

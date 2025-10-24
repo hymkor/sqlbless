@@ -162,7 +162,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 		case "DELETE", "INSERT", "UPDATE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
-			err = txBegin(ctx, ss.conn, &ss.tx, ss.stdErr)
+			err = ss.beginTx(ctx, ss.stdErr)
 			if err == nil {
 				count, err := doDML(ctx, ss.tx, query, nil, ss.stdOut)
 				if (err != nil || count == 0) && isNewTx && ss.tx != nil {

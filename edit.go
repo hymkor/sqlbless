@@ -151,7 +151,7 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		}
 	}
 	isNewTx := (this.tx == nil)
-	err := txBegin(ctx, this.conn, &this.tx, this.stdErr)
+	err := this.beginTx(ctx, this.stdErr)
 	if err != nil {
 		return nil, err
 	}

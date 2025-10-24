@@ -69,6 +69,8 @@ func (ss *session) automatic() bool {
 var (
 	ErrTransactionIsNotClosed = errors.New("transaction is not closed. Please Commit or Rollback")
 	ErrBeginIsNotSupported    = errors.New("'BEGIN' is not supported; transactions are managed automatically")
+	ErrNoDataFound            = errors.New("no data found")
+	ErrNotSupported           = errors.New("not supported")
 )
 
 func (ss *session) prompt(w io.Writer, i int) (int, error) {

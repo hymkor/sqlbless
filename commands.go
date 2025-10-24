@@ -3,7 +3,6 @@ package sqlbless
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -25,7 +24,7 @@ func doSelect(ctx context.Context, ss *session, query string) error {
 	_rows, ok := misc.RowsHasNext(rows)
 	if !ok {
 		rows.Close()
-		return fmt.Errorf("data not found")
+		return ErrNoDataFound
 	}
 	v := newViewer(ss)
 	if ss.automatic() {
@@ -93,12 +92,12 @@ func doDesc(ctx context.Context, ss *session, table string) error {
 	var query string
 	if tableName == "" {
 		if ss.Dialect.SqlForTab == "" {
-			return errors.New("DESC: not supported")
+			return fmt.Errorf("desc: %w", ErrNotSupported)
 		}
 		query = ss.Dialect.SqlForTab
 	} else {
 		if ss.Dialect.SqlForDesc == "" {
-			return errors.New("DESC TABLE: not supported")
+			return fmt.Errorf("desc table: %w", ErrNotSupported)
 		}
 		query = strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
 	}

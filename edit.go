@@ -3,7 +3,6 @@ package sqlbless
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -165,7 +164,7 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 	if err == nil {
 		count, err = result.RowsAffected()
 		if err == nil && count == 0 {
-			err = errors.New("no rows affected")
+			err = ErrNoDataFound
 		}
 	}
 	if err != nil && isNewTx && this.tx != nil {

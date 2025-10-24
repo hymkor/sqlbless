@@ -8,25 +8,13 @@ import (
 )
 
 type AutoCsvi struct {
-	Tty GetKeyAndSize
-}
-
-func (AutoCsvi) Calibrate() error {
-	return nil
-}
-
-func (ac AutoCsvi) Size() (int, int, error) {
-	return ac.Tty.Size()
-}
-
-func (ac AutoCsvi) GetKey() (string, error) {
-	return ac.Tty.GetKey()
+	GetKeyAndSize
 }
 
 func (ac AutoCsvi) readline() (string, error) {
 	var buffer strings.Builder
 	for {
-		c, err := ac.Tty.GetKey()
+		c, err := ac.GetKey()
 		if err != nil {
 			return "", err
 		}

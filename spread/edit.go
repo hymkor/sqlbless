@@ -93,27 +93,6 @@ type Editor struct {
 	Exec  func(context.Context, string, ...any) (sql.Result, error)
 }
 
-type placeHolder struct {
-	maker  func(int) string
-	values []any
-}
-
-func newPlaceHolder(maker func(int) string) *placeHolder {
-	return &placeHolder{maker: maker}
-}
-
-func (ph *placeHolder) Make(value any) string {
-	s := ph.maker(len(ph.values))
-	ph.values = append(ph.values, value)
-	return s
-}
-
-func (ph *placeHolder) Values() []any {
-	result := ph.values
-	ph.values = ph.values[:0]
-	return result
-}
-
 func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io.Writer) error {
 	query := "SELECT * FROM " + tableAndWhere
 

@@ -11,9 +11,8 @@ require (
 	github.com/hymkor/struct2flag v0.0.4
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
-	github.com/mattn/go-tty v0.0.7
 	github.com/microsoft/go-mssqldb v1.7.2
-	github.com/nyaosorg/go-readline-ny v1.10.0
+	github.com/nyaosorg/go-readline-ny v1.11.0
 	github.com/sijms/go-ora/v2 v2.8.22
 	golang.org/x/term v0.29.0
 )
@@ -28,6 +27,7 @@ require (
 	github.com/hymkor/sxencode-go v0.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
+	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/nyaosorg/go-readline-skk v0.6.0 // indirect

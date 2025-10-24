@@ -52,10 +52,10 @@ func write(w io.Writer, crIsCut bool, block []byte) (int, bool, error) {
 	}
 }
 
-func (this *LfToCrlf) Write(b []byte) (int, error) {
+func (W *LfToCrlf) Write(b []byte) (int, error) {
 	var n int
 	var err error
-	n, this.crIsCut, err = write(this.WriteNameCloser, this.crIsCut, b)
+	n, W.crIsCut, err = write(W.WriteNameCloser, W.crIsCut, b)
 	return n, err
 }
 

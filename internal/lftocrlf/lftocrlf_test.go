@@ -11,10 +11,10 @@ type writer struct {
 	crIsCut bool
 }
 
-func (this *writer) Write(b []byte) (int, error) {
+func (W *writer) Write(b []byte) (int, error) {
 	var n int
 	var err error
-	n, this.crIsCut, err = write(this.w, this.crIsCut, b)
+	n, W.crIsCut, err = write(W.w, W.crIsCut, b)
 	return n, err
 }
 

@@ -172,7 +172,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 			}
 		case "COMMIT":
 			misc.Echo(ss.spool, query)
-			err = txCommit(&ss.tx, ss.stdErr)
+			err = ss.commit()
 		case "ROLLBACK":
 			misc.Echo(ss.spool, query)
 			err = txRollback(&ss.tx, ss.stdErr)

@@ -50,14 +50,14 @@ func doDML(ctx context.Context, conn canExec, query string, args []any, w io.Wri
 	return count, nil
 }
 
-func txCommit(tx **sql.Tx, w io.Writer) error {
+func (ss *session) commit() error {
 	var err error
-	if *tx != nil {
-		err = (*tx).Commit()
-		*tx = nil
+	if ss.tx != nil {
+		err = ss.tx.Commit()
+		ss.tx = nil
 	}
 	if err == nil {
-		fmt.Fprintln(w, "Commit complete.")
+		fmt.Fprintln(ss.stdErr, "Commit complete.")
 	}
 	return err
 }

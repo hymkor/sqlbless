@@ -26,6 +26,11 @@ const (
 	newRow
 )
 
+var (
+	ErrColumnIsNotNull = errors.New("column is NOT NULL")
+	ErrNotANumber      = errors.New("not a number")
+)
+
 func csvRowModified(csvRow *uncsv.Row) typeModified {
 	bits := 0
 	for _, cell := range csvRow.Cell {
@@ -126,7 +131,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			v = func(s string) (string, error) {
 				if s == editor.Null || s == "" {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("column is NOT NULL")
+						return "", ErrColumnIsNotNull
 					}
 					return editor.Null, nil
 				}
@@ -157,12 +162,12 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			v = func(s string) (string, error) {
 				if s == editor.Null || s == "" {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("column is NOT NULL")
+						return "", ErrColumnIsNotNull
 					}
 					return editor.Null, nil
 				}
 				if _, err := strconv.ParseFloat(s, 64); err != nil {
-					return "", errors.New("not a number")
+					return "", ErrNotANumber
 				}
 				return s, nil
 			}
@@ -173,7 +178,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			v = func(s string) (string, error) {
 				if s == editor.Null {
 					if nullable, ok := _ct.Nullable(); ok && !nullable {
-						return "", errors.New("column is NOT NULL")
+						return "", ErrColumnIsNotNull
 					}
 				}
 				return s, nil

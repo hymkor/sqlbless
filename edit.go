@@ -100,7 +100,7 @@ type askSqlAndExecute struct {
 	*session
 }
 
-func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...any) (sql.Result, error) {
+func (ss *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...any) (sql.Result, error) {
 	fmt.Print("\n---\n")
 	fmt.Println(dmlSql)
 	fmt.Println()
@@ -109,57 +109,57 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 		fmt.Println(argsString)
 	}
 
-	if this.status == failure {
-		if n, _ := askN("Continue or abort [c/a] ", this.getKey, "cC", "aA"); n == 0 {
-			this.status = success
+	if ss.status == failure {
+		if n, _ := askN("Continue or abort [c/a] ", ss.getKey, "cC", "aA"); n == 0 {
+			ss.status = success
 		} else {
-			this.status = discardAll
+			ss.status = discardAll
 		}
 	}
-	if this.status == discardAll {
-		misc.EchoPrefix(this.stdErr, "(cancel) ", dmlSql)
+	if ss.status == discardAll {
+		misc.EchoPrefix(ss.stdErr, "(cancel) ", dmlSql)
 		return nil, nil
 	}
 	fmt.Println()
-	if this.status == success {
-		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none) `, this.getKey, "y", "n", "aA", "N")
+	if ss.status == success {
+		answer, err := askN(`Apply this change? ("y":yes, "n":no, "a":all, "N":none) `, ss.getKey, "y", "n", "aA", "N")
 		if err != nil {
-			misc.EchoPrefix(this.stdErr, "(error) ", err.Error())
-			this.status = failure
+			misc.EchoPrefix(ss.stdErr, "(error) ", err.Error())
+			ss.status = failure
 			return nil, err
 		}
 		switch answer {
 		case 1:
 			// cancel and quit with no error
-			this.status = success
-			misc.EchoPrefix(this.spool, "(cancel) ", dmlSql)
+			ss.status = success
+			misc.EchoPrefix(ss.spool, "(cancel) ", dmlSql)
 			if argsString != "" {
-				misc.EchoPrefix(this.spool, "(args)", argsString)
+				misc.EchoPrefix(ss.spool, "(args)", argsString)
 			}
 			return nil, nil
 		case 2:
 			// apply all
-			this.status = applyAll
+			ss.status = applyAll
 		case 3:
 			// discard all and quit with no error
-			this.status = discardAll
-			misc.EchoPrefix(this.spool, "(cancel) ", dmlSql)
+			ss.status = discardAll
+			misc.EchoPrefix(ss.spool, "(cancel) ", dmlSql)
 			if argsString != "" {
-				misc.EchoPrefix(this.spool, "(args)", argsString)
+				misc.EchoPrefix(ss.spool, "(args)", argsString)
 			}
 			return nil, nil
 		}
 	}
-	isNewTx := (this.tx == nil)
-	err := this.beginTx(ctx, this.stdErr)
+	isNewTx := (ss.tx == nil)
+	err := ss.beginTx(ctx, ss.stdErr)
 	if err != nil {
 		return nil, err
 	}
-	misc.Echo(this.spool, dmlSql)
+	misc.Echo(ss.spool, dmlSql)
 	if argsString != "" {
-		misc.Echo(this.spool, argsString)
+		misc.Echo(ss.spool, argsString)
 	}
-	result, err := this.tx.ExecContext(ctx, dmlSql, args...)
+	result, err := ss.tx.ExecContext(ctx, dmlSql, args...)
 	var count int64
 	if err == nil {
 		count, err = result.RowsAffected()
@@ -167,10 +167,10 @@ func (this *askSqlAndExecute) Exec(ctx context.Context, dmlSql string, args ...a
 			err = ErrNoDataFound
 		}
 	}
-	if err != nil && isNewTx && this.tx != nil {
-		this.tx.Rollback()
-		this.tx = nil
+	if err != nil && isNewTx && ss.tx != nil {
+		ss.tx.Rollback()
+		ss.tx = nil
 	}
-	fmt.Fprintf(this.stdOut, "%d record(s) updated.\n", count)
+	fmt.Fprintf(ss.stdOut, "%d record(s) updated.\n", count)
 	return result, err
 }

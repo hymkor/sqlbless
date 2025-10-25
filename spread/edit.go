@@ -18,7 +18,7 @@ import (
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
-type typeModified int
+type modifiedStatus int
 
 const (
 	notModified = iota
@@ -31,7 +31,7 @@ var (
 	ErrNotANumber      = errors.New("not a number")
 )
 
-func csvRowModified(csvRow *uncsv.Row) typeModified {
+func csvRowModified(csvRow *uncsv.Row) modifiedStatus {
 	bits := 0
 	for _, cell := range csvRow.Cell {
 		if cell.Modified() {

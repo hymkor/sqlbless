@@ -2,7 +2,7 @@
 - Changed SQLite3 placeholders from `?` to bind variables in the `$v%d` format.
 - In interactive mode, SQL-Bless now prevents exiting (`Ctrl-D`, `exit`, `quit`) while a transaction is open, showing: `transaction is not closed. Please Commit or Rollback.` This check is skipped during script execution.
 - Modified Ctrl-C behavior during command-line editing. Instead of terminating SQL-Bless, it now cancels (discards) the SQL statement currently being edited.
-- SQL statements and commands other than `SELECT`, `DESC`, and `EDIT` (e.g., `PRAGMA TABLE_INFO(...)`) can now display result records, similar to `SELECT`. If no records are returned, no error is raised.
+- Enabled record-style display for SQLite3 `PRAGMA` commands, similar to `SELECT` and `DESC`.
 - Enabled syntax highlighting for the `HOST` command and filename completion after `HOST`.
 
 v0.23.0

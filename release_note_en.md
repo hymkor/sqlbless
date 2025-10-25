@@ -1,3 +1,7 @@
+v0.24.0
+=======
+Oct 25, 2025
+
 - Fixed an issue in the `edit` command where table names containing spaces were incorrectly expanded in SQL statements.
 - Changed SQLite3 placeholders from `?` to bind variables in the `$v%d` format.
 - In interactive mode, SQL-Bless now prevents exiting (`Ctrl-D`, `exit`, `quit`) while a transaction is open, showing: `transaction is not closed. Please Commit or Rollback.` This check is skipped during script execution.
@@ -7,7 +11,7 @@
 
 v0.23.0
 =======
-Oct 14,2025
+Oct 14, 2025
 
 - For non-DML SQL, `"database/sql".Conn` is now used instead of `"database/sql".DB`
     - This ensures the same connection is used continuously, avoiding potential issues caused by using different connections for consecutive SQL statements

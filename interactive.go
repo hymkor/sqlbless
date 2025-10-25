@@ -74,6 +74,7 @@ type interactiveIn struct {
 
 func (*interactiveIn) CanCloseInTransaction() bool { return false }
 func (*interactiveIn) ShouldRecordHistory() bool   { return true }
+func (*interactiveIn) OnErrorAbort() bool          { return false }
 
 func (i *interactiveIn) Read(ctx context.Context) ([]string, error) {
 	lines, err := i.Editor.Read(ctx)

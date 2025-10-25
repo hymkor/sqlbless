@@ -22,6 +22,7 @@ type scriptIn struct {
 func (*scriptIn) CanCloseInTransaction() bool                 { return true }
 func (*scriptIn) ShouldRecordHistory() bool                   { return false }
 func (*scriptIn) SetPrompt(func(io.Writer, int) (int, error)) {}
+func (*scriptIn) OnErrorAbort() bool                          { return true }
 
 func (script *scriptIn) GetKey() (string, error) {
 	return "", io.EOF
@@ -68,7 +69,7 @@ func (ss *session) StartFromStdin(ctx context.Context) error {
 		echo: ss.stdErr,
 		term: ss.Term,
 	}
-	return ss.Loop(ctx, script, true)
+	return ss.Loop(ctx, script)
 }
 
 func (ss *session) Start(ctx context.Context, fname string) error {
@@ -85,5 +86,5 @@ func (ss *session) Start(ctx context.Context, fname string) error {
 		echo: ss.stdErr,
 		term: ss.Term,
 	}
-	return ss.Loop(ctx, script, true)
+	return ss.Loop(ctx, script)
 }

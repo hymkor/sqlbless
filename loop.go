@@ -37,6 +37,7 @@ type commandIn interface {
 	CanCloseInTransaction() bool
 	ShouldRecordHistory() bool
 	SetPrompt(func(io.Writer, int) (int, error))
+	OnErrorAbort() bool
 }
 
 type session struct {
@@ -87,7 +88,7 @@ func (ss *session) prompt(w io.Writer, i int) (int, error) {
 	return fmt.Fprintf(w, "%3d> ", i+1)
 }
 
-func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort bool) error {
+func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 	commandIn.SetPrompt(ss.prompt)
 	for {
 		if ss.spool != nil {
@@ -219,7 +220,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn, onErrorAbort b
 		}
 		if err != nil {
 			fmt.Fprintln(ss.stdErr, err.Error())
-			if onErrorAbort {
+			if commandIn.OnErrorAbort() {
 				return err
 			}
 		}
@@ -290,5 +291,5 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 		return ss.StartFromStdin(ctx)
 	}
 
-	return ss.Loop(ctx, ss.newInteractiveIn(), false)
+	return ss.Loop(ctx, ss.newInteractiveIn())
 }

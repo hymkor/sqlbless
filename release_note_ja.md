@@ -3,6 +3,7 @@
 - 対話モードでトランザクションが未完了の状態で `Ctrl-D`、`exit`、`quit` によって終了しようとした場合、`transaction is not closed. Please Commit or Rollback` と表示して終了を防止するようにした。 このチェックはスクリプト実行時には行われない。
 - コマンドライン編集中の `Ctrl-C` で SQL-Bless が終了してしまっていたが、現在入力中の SQL の破棄するだけに変更した。
 - `SELECT`, `DESC`, `EDIT` 以外の SQL / コマンド (例: `PRAGMA TABLE_INFO(..)`) でも、`SELECT` のようにレコードを表示できるようにした。
+- OSコマンドを実行する `HOST` に対してシンタックスハイライトを適用。また、`HOST` 以降でファイル名補完が聞くようにした
 
 v0.23.0
 =======

@@ -3,7 +3,7 @@ SQL-Bless
 
 **&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
 
-The SQL-Bless is a command-line database client like SQL\*Plus or psql.
+SQL-Bless is a command-line database client similar to SQL\*Plus, supporting multiple database systems.
 
 It was designed with reliability and transparency in mind.
 In the past, I had to deliver an unfinished system due to client pressure,

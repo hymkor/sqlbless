@@ -228,7 +228,6 @@ Common Options
 - `RUNEWIDTH_EASTASIAN`
   - `"1"` — Treat ambiguous-width Unicode characters as double-width (2 cells).
   - Any other non-empty value — Treat them as single-width (1 cell).
-  - If undefined, the actual character width is determined by measuring the cursor position using the escape sequence `ESC[6n`.
 - `COLORFGBG`
   - When defined in the form `(FG);(BG)`, where `(FG)` and `(BG)` are integers representing the foreground and background colors respectively, and `(FG)` is less than `(BG)`, CSVI assumes a light background and uses colors suitable for it (equivalent to `-rv`).
 

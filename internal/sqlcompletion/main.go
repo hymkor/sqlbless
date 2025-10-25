@@ -115,7 +115,7 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 			candidates = func() []string {
 				return C.columns(tableNameInline)
 			}
-		} else if strings.EqualFold(word, "start") {
+		} else if strings.EqualFold(word, "start") || strings.EqualFold(word, "host") {
 			lastKeywordAt = i
 			nextKeyword = nil
 			candidates = func() []string {

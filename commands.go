@@ -7,10 +7,14 @@ import (
 	"io"
 	"strings"
 
+	"github.com/hymkor/csvi"
+
+	"github.com/hymkor/sqlbless/spread"
+
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
-func doSelect(ctx context.Context, ss *session, query string) error {
+func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer) error {
 	var rows *sql.Rows
 	var err error
 	if ss.tx != nil {
@@ -26,7 +30,9 @@ func doSelect(ctx context.Context, ss *session, query string) error {
 		rows.Close()
 		return ErrNoDataFound
 	}
-	v := newViewer(ss)
+	if v == nil {
+		v = newViewer(ss)
+	}
 	if ss.automatic() {
 		v.Pilot = misc.CsviNoOperation{}
 	}
@@ -87,7 +93,7 @@ func (ss *session) beginTx(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
-func doDesc(ctx context.Context, ss *session, table string) error {
+func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn) error {
 	tableName := strings.TrimSpace(table)
 	var query string
 	if tableName == "" {
@@ -104,5 +110,30 @@ func doDesc(ctx context.Context, ss *session, table string) error {
 	if ss.Debug {
 		fmt.Println(query)
 	}
-	return doSelect(ctx, ss, query)
+	v := newViewer(ss)
+	var name string
+	ke := spread.KeyBinding{
+		Key: "r",
+		Handler: func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+			if e.CursorRow.Index() == 0 {
+				return &csvi.CommandResult{}, nil
+			}
+			header := e.Front()
+			for i, c := range header.Cell {
+				if strings.EqualFold(c.Text(), ss.Dialect.TableField) {
+					name = e.CursorRow.Cell[i].Text()
+					return &csvi.CommandResult{Quit: true}, nil
+				}
+			}
+			return &csvi.CommandResult{}, nil
+		},
+	}
+	v.OnEvents = append(v.OnEvents, ke)
+	err := doSelect(ctx, ss, query, v)
+	if err == nil && name != "" {
+		misc.Echo(ss.spool, name)
+		err = doEdit(ctx, ss, `edit "`+name+`"`, commandIn)
+	}
+	return err
+
 }

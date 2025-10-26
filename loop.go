@@ -159,7 +159,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 
 		case "SELECT":
 			misc.Echo(ss.spool, query)
-			err = doSelect(ctx, ss, query)
+			err = doSelect(ctx, ss, query, nil)
 		case "DELETE", "INSERT", "UPDATE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
@@ -184,7 +184,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			err = ErrTransactionIsNotClosed
 		case "DESC", "\\D":
 			misc.Echo(ss.spool, query)
-			err = doDesc(ctx, ss, arg)
+			err = doDesc(ctx, ss, arg, commandIn)
 		case "HISTORY":
 			misc.Echo(ss.spool, query)
 			csvw := csv.NewWriter(ss.stdOut)
@@ -204,7 +204,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		default:
 			misc.Echo(ss.spool, query)
 			if q := ss.Dialect.IsQuerySQL; q != nil && q(query) {
-				err = doSelect(ctx, ss, query)
+				err = doSelect(ctx, ss, query, nil)
 			} else {
 				if ss.tx == nil {
 					_, err = ss.conn.ExecContext(ctx, query)

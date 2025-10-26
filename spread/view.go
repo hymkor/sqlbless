@@ -11,12 +11,18 @@ import (
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
+type KeyBinding struct {
+	Key     string
+	Handler func(*csvi.KeyEventArgs) (*csvi.CommandResult, error)
+}
+
 type Viewer struct {
 	HeaderLines int
 	Comma       byte
 	Null        string
 	Spool       io.Writer
 	csvi.Pilot
+	OnEvents []KeyBinding
 }
 
 const (
@@ -36,6 +42,14 @@ func (viewer *Viewer) View(ctx context.Context, title string, rows rowstocsv.Sou
 			Comma:     rune(viewer.Comma),
 			AutoClose: true,
 		}.Dump(ctx, rows, w)
+	}
+
+	if len(viewer.OnEvents) > 0 {
+		keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){}
+		for _, p := range viewer.OnEvents {
+			keymap[p.Key] = p.Handler
+		}
+		cfg.KeyMap = keymap
 	}
 	_, err := viewer.callCsvi(cfg, csvWriteTo, termOut)
 	return err
@@ -86,19 +100,22 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		}
 		return &csvi.CommandResult{}, nil
 	}
-
+	keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
+		"\x1B": quit,
+		"q":    quit,
+		"c":    apply,
+		"x":    setNull,
+		"d":    setNull,
+	}
+	for _, p := range viewer.OnEvents {
+		keymap[p.Key] = p.Handler
+	}
 	cfg := &csvi.Config{
 		Titles: []string{
 			toOneLine(title, titlePrefix, titleSuffix),
 			"ESC+\"y\": Apply changes & quit, ESC+\"n\": Discard changes & quit",
 		},
-		KeyMap: map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
-			"\x1B": quit,
-			"q":    quit,
-			"c":    apply,
-			"x":    setNull,
-			"d":    setNull,
-		},
+		KeyMap:          keymap,
 		OnCellValidated: validate,
 		Pilot:           viewer.Pilot,
 	}

@@ -3,17 +3,11 @@ package sqlcompletion
 import (
 	"context"
 	"database/sql"
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/nyaosorg/go-readline-ny/completion"
 
 	"github.com/hymkor/sqlbless/dialect"
-)
-
-var (
-	ColumnNameNotFound = errors.New("column name not found")
 )
 
 type CanQuery interface {
@@ -22,10 +16,7 @@ type CanQuery interface {
 
 type completeType struct {
 	Conn        CanQuery
-	SqlForTab   string
-	SqlForDesc  string
-	TableField  string
-	ColumnField string
+	Dialect     *dialect.Entry
 	tableCache  []string
 	columnCache map[string][]string
 }
@@ -135,56 +126,9 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 	return result, result
 }
 
-func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName string, args ...any) ([]string, error) {
-	rows, err := conn.QueryContext(ctx, sqlStr, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	uniq := map[string]struct{}{}
-	tablePosition := -1
-	var values []any
-	var result []string
-	for rows.Next() {
-		if values == nil {
-			columns, err := rows.Columns()
-			if err != nil {
-				return nil, err
-			}
-			for i, name := range columns {
-				if strings.EqualFold(name, columnName) {
-					tablePosition = i
-					break
-				}
-			}
-			if tablePosition < 0 {
-				return nil, fmt.Errorf("%s: %w", columnName, ColumnNameNotFound)
-			}
-			nFields := len(columns)
-			values = make([]any, nFields)
-			for i := range values {
-				values[i] = &sql.NullString{}
-			}
-		}
-		err := rows.Scan(values...)
-		if err != nil {
-			return nil, err
-			break
-		}
-		if p, ok := values[tablePosition].(*sql.NullString); ok && p.Valid {
-			if _, ok := uniq[p.String]; !ok {
-				result = append(result, p.String)
-				uniq[p.String] = struct{}{}
-			}
-		}
-	}
-	return result, nil
-
-}
-
 func (C *completeType) tables() []string {
 	if len(C.tableCache) <= 0 {
-		C.tableCache, _ = queryOneColumn(context.TODO(), C.Conn, C.SqlForTab, C.TableField)
+		C.tableCache, _ = C.Dialect.Tables(context.TODO(), C.Conn)
 	}
 	return C.tableCache
 }
@@ -200,8 +144,7 @@ func (C *completeType) columns(tables []string) (result []string) {
 		}
 		values, ok := C.columnCache[tableName]
 		if !ok {
-			sqlStr := strings.ReplaceAll(C.SqlForDesc, "{table_name}", tableName)
-			values, _ = queryOneColumn(ctx, C.Conn, sqlStr, C.ColumnField, tableName)
+			values, _ = C.Dialect.Columns(ctx, C.Conn, tableName)
 			C.columnCache[tableName] = values
 		}
 		result = append(result, values...)
@@ -211,11 +154,8 @@ func (C *completeType) columns(tables []string) (result []string) {
 
 func New(d *dialect.Entry, c CanQuery) func([]string) ([]string, []string) {
 	completer := &completeType{
-		Conn:        c,
-		SqlForTab:   d.SqlForTab,
-		SqlForDesc:  d.SqlForDesc,
-		TableField:  d.TableField,
-		ColumnField: d.ColumnField,
+		Conn:    c,
+		Dialect: d,
 	}
 	return completer.getCandidates
 }

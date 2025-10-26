@@ -4,16 +4,27 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"io"
+	"regexp"
 	"strings"
 
-	"github.com/hymkor/sqlbless/internal/misc"
+	"github.com/nyaosorg/go-box/v2"
+
 	"github.com/hymkor/sqlbless/spread"
+
+	"github.com/hymkor/sqlbless/internal/misc"
 )
 
 const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
+
+type ErrColumnNotFound string
+
+func (e ErrColumnNotFound) Error() string {
+	return fmt.Sprintf("%s: column not found", string(e))
+}
 
 func askN(msg string, getKey func() (string, error), options ...string) (int, error) {
 	fmt.Print(msg, _ANSI_CURSOR_ON)
@@ -46,6 +57,25 @@ func newViewer(ss *session) *spread.Viewer {
 	}
 }
 
+var rxNonQuote = regexp.MustCompile(`^\w+$`)
+
+func chooseTable(ctx context.Context, tables []string, ttyout io.Writer) (string, error) {
+	fmt.Fprintln(ttyout, "Select a table:")
+	table, err := box.SelectStringContext(ctx, tables, false, ttyout)
+	fmt.Println()
+	if err != nil {
+		return "", err
+	}
+	if len(table) < 1 {
+		return "", nil
+	}
+	targetTable := table[0]
+	if !rxNonQuote.MatchString(targetTable) {
+		targetTable = `"` + table[0] + `"`
+	}
+	return targetTable, nil
+}
+
 func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) error {
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
@@ -64,9 +94,18 @@ func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) e
 	} else {
 		editor.Query = ss.tx.QueryContext
 	}
-
 	// replace `edit ` to `select * from `
 	_, tableAndWhere := misc.CutField(command)
+	if tableAndWhere == "" {
+		tables, err := ss.Dialect.Tables(ctx, ss.conn)
+		if err != nil {
+			return err
+		}
+		tableAndWhere, err = chooseTable(ctx, tables, ss.termOut)
+		if err != nil || tableAndWhere == "" {
+			return err
+		}
+	}
 	return editor.Edit(ctx, tableAndWhere, ss.termOut)
 }
 

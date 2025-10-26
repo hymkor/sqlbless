@@ -2,7 +2,6 @@ package sqlcompletion
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 
 	"github.com/nyaosorg/go-readline-ny/completion"
@@ -10,12 +9,8 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
-type CanQuery interface {
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-}
-
 type completeType struct {
-	Conn        CanQuery
+	Conn        dialect.CanQuery
 	Dialect     *dialect.Entry
 	tableCache  []string
 	columnCache map[string][]string
@@ -152,7 +147,7 @@ func (C *completeType) columns(tables []string) (result []string) {
 	return
 }
 
-func New(d *dialect.Entry, c CanQuery) func([]string) ([]string, []string) {
+func New(d *dialect.Entry, c dialect.CanQuery) func([]string) ([]string, []string) {
 	completer := &completeType{
 		Conn:    c,
 		Dialect: d,

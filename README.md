@@ -58,8 +58,9 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 Supported commands
 ------------------
 
-- `SELECT` / `INSERT` / `UPDATE` / `DELETE`
-    - `INSERT`, `UPDATE` and `DELETE` begin the transaction automatically.
+- `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `MERGE` ... `;`
+    - `INSERT`, `UPDATE`, `DELETE`, and `MERGE` automatically start a transaction.
+    - For these commands, input continues across lines until a semicolon (`;`) or the string specified with the `-term` option is entered.
 - `COMMIT` / `ROLLBACK`
 - `SPOOL`
     - `spool FILENAME` .. open FILENAME and write log and output.
@@ -69,12 +70,16 @@ Supported commands
 - `START filename`
     - Start the SQL script given with filename
 - `REM comments`
+
 - `DESC [tablename]` / `\D [tablename]`
-    - When the tablename is given, show the specification of the the table
-    - Without the tablename, show the list of tables.
+    - When a table name is specified, shows the schema of that table.
+    - If omitted, displays a list of tables.
+        - In the table list view, the following keys are available:
+        - `r`: Open the `EDIT` command for the selected table.
+        - `Enter`: Show the schema of the selected table.
 - `HISTORY`
     - Show the history of input SQLs
-- `EDIT tablename [WHERE conditions...]`
+- `EDIT [tablename [WHERE conditions...]]`
     - Start an [editor][csvi] to modify the selected records of the table.
     - In the editor, these keys are bound.
         - `x` or `d`: set NULL to the current cell

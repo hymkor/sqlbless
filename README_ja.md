@@ -56,8 +56,9 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 サポートコマンド
 ---------------
 
-- `SELECT` / `INSERT` / `UPDATE` / `DELETE`
+- `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `MERGE` ... `;`
     - `INSERT`, `UPDATE` , `DELETE` は自動的にトランザクションを開始します
+    - これらのコマンドは、セミコロン `;`、もしくは `-term string` で指定された文字列があるまで、Enter を押下しても入力が継続します。
 - `COMMIT` / `ROLLBACK`
 - `SPOOL`
     - `spool FILENAME` .. FILENAME を開いて、ログや出力を書き込みます
@@ -68,11 +69,14 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
     - ファイル名で指定した SQL スクリプトを実行します。
 - `REM comments`
 - `DESC [tablename]` / `\D [tablename]`
-    - テーブル名が指定された場合、そのテーブルの使用を表示します
+    - テーブル名が指定された場合、そのテーブルのスキーマを表示します
     - テーブル名が省略された場合、テーブルの一覧を表示します
+        - テーブル一覧では以下のキーが拡張されます
+        - `r`: そのテーブルのデータの編集モードに入ります
+        - `Enter`: そのテーブルのスキーマを表示します
 - `HISTORY`
     - 入力履歴を表示します
-- `EDIT tablename [WHERE conditions...]`
+- `EDIT [tablename [WHERE conditions...]]`
     - 選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します
     - エディタ中では以下のキーが拡張されます
         - `x` or `d`: セルに NULL をセットする

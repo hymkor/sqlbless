@@ -160,7 +160,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		case "SELECT":
 			misc.Echo(ss.spool, query)
 			err = doSelect(ctx, ss, query, nil)
-		case "DELETE", "INSERT", "UPDATE":
+		case "DELETE", "INSERT", "UPDATE", "MERGE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
 			err = ss.beginTx(ctx, ss.stdErr)

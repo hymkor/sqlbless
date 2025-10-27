@@ -93,47 +93,82 @@ func (ss *session) beginTx(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
-func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn) error {
-	tableName := strings.TrimSpace(table)
-	var query string
-	if tableName == "" {
-		if ss.Dialect.SqlForTab == "" {
-			return fmt.Errorf("desc: %w", ErrNotSupported)
-		}
-		query = ss.Dialect.SqlToQueryTables()
-	} else {
-		if ss.Dialect.SqlForDesc == "" {
-			return fmt.Errorf("desc table: %w", ErrNotSupported)
-		}
-		query = ss.Dialect.SqlToQueryColumns(tableName)
+func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
+	if ss.Dialect.SqlForTab == "" {
+		return fmt.Errorf("desc: %w", ErrNotSupported)
 	}
+	query := ss.Dialect.SqlToQueryTables()
+	var name string
+
+	handler := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		if e.CursorRow.Index() == 0 {
+			return &csvi.CommandResult{}, nil
+		}
+		header := e.Front()
+		for i, c := range header.Cell {
+			if strings.EqualFold(c.Text(), ss.Dialect.TableField) {
+				name = e.CursorRow.Cell[i].Text()
+				return &csvi.CommandResult{Quit: true}, nil
+			}
+		}
+		return &csvi.CommandResult{}, nil
+	}
+
+	action := func() error { return nil }
+	rKey := spread.KeyBinding{
+		Key: "r",
+		Handler: func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+			rc, err := handler(e)
+			if err == nil && rc.Quit && name != "" {
+				action = func() error {
+					return doEdit(ctx, ss, `edit "`+name+`"`, commandIn)
+				}
+			}
+			return rc, err
+		},
+	}
+	enterKey := spread.KeyBinding{
+		Key: "\r",
+		Handler: func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+			rc, err := handler(e)
+			if err == nil && rc.Quit && name != "" {
+				action = func() error {
+					return doDescColumns(ctx, ss, name)
+				}
+			}
+			return rc, err
+		},
+	}
+	v := newViewer(ss)
+	v.OnEvents = append(v.OnEvents, rKey, enterKey)
+
 	if ss.Debug {
 		fmt.Println(query)
 	}
-	v := newViewer(ss)
-	var name string
-	ke := spread.KeyBinding{
-		Key: "r",
-		Handler: func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-			if e.CursorRow.Index() == 0 {
-				return &csvi.CommandResult{}, nil
-			}
-			header := e.Front()
-			for i, c := range header.Cell {
-				if strings.EqualFold(c.Text(), ss.Dialect.TableField) {
-					name = e.CursorRow.Cell[i].Text()
-					return &csvi.CommandResult{Quit: true}, nil
-				}
-			}
-			return &csvi.CommandResult{}, nil
-		},
-	}
-	v.OnEvents = append(v.OnEvents, ke)
 	err := doSelect(ctx, ss, query, v)
 	if err == nil && name != "" {
+		fmt.Fprintln(ss.termErr)
 		misc.Echo(ss.spool, name)
-		err = doEdit(ctx, ss, `edit "`+name+`"`, commandIn)
+		err = action()
 	}
 	return err
+}
 
+func doDescColumns(ctx context.Context, ss *session, table string) error {
+	if ss.Dialect.SqlForDesc == "" {
+		return fmt.Errorf("desc table: %w", ErrNotSupported)
+	}
+	query := ss.Dialect.SqlToQueryColumns(table)
+	if ss.Debug {
+		fmt.Println(query)
+	}
+	return doSelect(ctx, ss, query, newViewer(ss))
+}
+
+func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn) error {
+	table = strings.TrimSpace(table)
+	if table == "" {
+		return doDescTables(ctx, ss, commandIn)
+	}
+	return doDescColumns(ctx, ss, table)
 }

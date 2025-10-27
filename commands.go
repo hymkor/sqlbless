@@ -100,12 +100,12 @@ func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn)
 		if ss.Dialect.SqlForTab == "" {
 			return fmt.Errorf("desc: %w", ErrNotSupported)
 		}
-		query = ss.Dialect.SqlForTab
+		query = ss.Dialect.SqlToQueryTables()
 	} else {
 		if ss.Dialect.SqlForDesc == "" {
 			return fmt.Errorf("desc table: %w", ErrNotSupported)
 		}
-		query = strings.ReplaceAll(ss.Dialect.SqlForDesc, "{table_name}", tableName)
+		query = ss.Dialect.SqlToQueryColumns(tableName)
 	}
 	if ss.Debug {
 		fmt.Println(query)

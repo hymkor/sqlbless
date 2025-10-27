@@ -66,11 +66,18 @@ func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName strin
 	}
 }
 
+func (e *Entry) SqlToQueryTables() string {
+	return e.SqlForTab
+}
+
+func (e *Entry) SqlToQueryColumns(table string) string {
+	return strings.ReplaceAll(e.SqlForDesc, "{table_name}", table)
+}
+
 func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlForTab, e.TableField)
+	return queryOneColumn(ctx, conn, e.SqlToQueryTables(), e.TableField)
 }
 
 func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
-	sqlStr := strings.ReplaceAll(e.SqlForDesc, "{table_name}", table)
-	return queryOneColumn(ctx, conn, sqlStr, e.ColumnField, table)
+	return queryOneColumn(ctx, conn, e.SqlToQueryColumns(table), e.ColumnField, table)
 }

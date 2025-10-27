@@ -1,3 +1,7 @@
+- Pressing `r` in the `desc` command without a table name now launches the `edit` command for the table under the cursor.
+- Pressing `Enter` in the `desc` command without a table name now launches `desc` command for the table under the cursor.
+- Running `edit` without arguments now opens a table selection mode. 
+
 v0.24.0
 =======
 Oct 25, 2025

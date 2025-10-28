@@ -147,10 +147,10 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 	editor.SetWriter(ss.termOut)
 
 	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList{
-		Enclosure:  `"'`,
-		Delimiter:  ",",
-		Postfix:    " ",
-		Candidates: sqlcompletion.New(ss.Dialect, ss.conn),
+		Enclosure:         `"'`,
+		Delimiter:         ",",
+		Postfix:           " ",
+		CandidatesContext: sqlcompletion.New(ss.Dialect, ss.conn),
 	})
 	editor.SubmitOnEnterWhen(func(lines []string, csrline int) bool {
 		if len(lines) > 0 && isOneLineCommand(lines[0]) {

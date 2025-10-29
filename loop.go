@@ -103,7 +103,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 				}
 				return nil
 			}
-			return err
+			return fmt.Errorf("commandIn.Read: %w", err)
 		}
 		queryAndTerm := strings.Join(lines, "\n")
 		query, _ := misc.HasTerm(queryAndTerm, ss.Term)
@@ -262,11 +262,11 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 	defer db.Close()
 
 	if err = db.Ping(); err != nil {
-		return err
+		return fmt.Errorf("db.Ping: %w", err)
 	}
 	conn, err := db.Conn(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("db.Conn: %w", err)
 	}
 	defer conn.Close()
 
@@ -287,9 +287,8 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 		return ss.Start(ctx, cfg.Script)
 	}
 
-	if !term.IsTerminal(int(os.Stdin.Fd())) {
+	if !term.IsTerminal(int(os.Stdin.Fd())) && !ss.automatic() {
 		return ss.StartFromStdin(ctx)
 	}
-
 	return ss.Loop(ctx, ss.newInteractiveIn())
 }

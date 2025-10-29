@@ -94,7 +94,10 @@ func (i *interactiveIn) Read(ctx context.Context) ([]string, error) {
 		w.Flush()
 		return []string{}, nil
 	}
-	return lines, err
+	if err != nil {
+		return nil, fmt.Errorf("interactiveIn.Read: %w", err)
+	}
+	return lines, nil
 }
 
 func (i *interactiveIn) GetKey() (string, error) {

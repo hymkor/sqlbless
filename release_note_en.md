@@ -10,6 +10,7 @@
 - Updated internal dependencies (go-multiline-ny v0.22.1, go-box v3) (#4)
 - Removed obsolete go-box v2 references (#4)
 - Use context from completion.CmdCompletionOrList.CandidatesContext instead of context.TODO()
+- Rewrote the SQLite3 test written in PowerShell 7 using Go’s standard `go test` framework to enable testing on Linux and GitHub Actions.
 
 v0.24.0
 =======

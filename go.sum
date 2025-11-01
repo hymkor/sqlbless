@@ -6,8 +6,10 @@ github.com/Azure/azure-sdk-for-go/sdk/internal v1.5.1 h1:6oNBlSdi1QqM1PNW7FPA6xO
 github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys v1.0.1 h1:MyVTgWR8qd/Jw1Le0NZebGBUCLbtak3bJ3z1OlqZBpw=
 github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/internal v1.0.0 h1:D3occbWoio4EBLkbkevetNMAVX197GkzbUMtqjGWn80=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.2.1 h1:DzHpqpoJVaCgOUdVHxE8QB52S6NiVdDQvGlny1qvPqA=
-github.com/clipperhouse/uax29/v2 v2.2.0 h1:ChwIKnQN3kcZteTXMgb1wztSgaU+ZemkgWdohwgs8tY=
-github.com/clipperhouse/uax29/v2 v2.2.0/go.mod h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=
+github.com/clipperhouse/stringish v0.1.1 h1:+NSqMOr3GR6k1FdRhhnXrLfztGzuG+VuFDfatpWHKCs=
+github.com/clipperhouse/stringish v0.1.1/go.mod h1:v/WhFtE1q0ovMta2+m+UbpZ+2/HEXNWYXQgCt4hdOzA=
+github.com/clipperhouse/uax29/v2 v2.3.0 h1:SNdx9DVUqMoBuBoW3iLOj4FQv3dN5mDtuqwuhIGpJy4=
+github.com/clipperhouse/uax29/v2 v2.3.0/go.mod h1:Wn1g7MK6OoeDT0vL+Q0SQLDz/KpfsVRgg6W7ihQeh4g=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
@@ -50,10 +52,14 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/nyaosorg/go-box/v2 v2.2.1 h1:1SAtgLE+uYCA8oycJGKFrzsYaOWmxXWiqH8PR9wvnIo=
 github.com/nyaosorg/go-box/v2 v2.2.1/go.mod h1:IAW2+ri9apF0QTlZ5r5lkU+Rfnsigkmt6yODV7JMZ5E=
+github.com/nyaosorg/go-box/v3 v3.0.0 h1:W5qfScEkKBoD68gbP/lwfWlvcTRB0rwXkhL+9iC62xI=
+github.com/nyaosorg/go-box/v3 v3.0.0/go.mod h1:70GsE9mIh7JKVCxt71q3jEijO6C9YJmOZqWpPa9w+GY=
 github.com/nyaosorg/go-readline-ny v1.11.0 h1:D2y24u68a4lr2tAN+SS1DgGtbInoBHtP+rxm5Gx/Evo=
 github.com/nyaosorg/go-readline-ny v1.11.0/go.mod h1:ifQ0YwPemXHat17gvybf+i7/gyQnpufancIbnqTjsEM=
 github.com/nyaosorg/go-readline-skk v0.6.0 h1:n7iy806v34+HwiCgBog7OfUaHe9m43z2o6mg3dylgXo=
 github.com/nyaosorg/go-readline-skk v0.6.0/go.mod h1:ulYKxU1enVwOlLA8LFNaRUxSlI1PyayTM1PBOPVs1w8=
+github.com/nyaosorg/go-ttyadapter v0.0.1 h1:4VslnofOrGLqXvVeKwz51BDR+Q82D2Iitk51urYRLGo=
+github.com/nyaosorg/go-ttyadapter v0.0.1/go.mod h1:w6ySb/Y8rpr0uIju4vN/TMRHC/6ayabORHmEVs6d/qE=
 github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
 github.com/nyaosorg/go-windows-mbcs v0.4.4/go.mod h1:P610Wyc6LcgDbx2VZhwUQn02XRuwjqGK2l/3wox3auA=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c h1:+mdjkGKdHQG3305AYmdv1U2eRNDiU2ErMBj1gwrq8eQ=

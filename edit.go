@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/nyaosorg/go-box/v2"
+	"github.com/nyaosorg/go-box/v3"
 
 	"github.com/hymkor/sqlbless/spread"
 
@@ -61,7 +61,7 @@ var rxNonQuote = regexp.MustCompile(`^\w+$`)
 
 func chooseTable(ctx context.Context, tables []string, ttyout io.Writer) (string, error) {
 	fmt.Fprintln(ttyout, "Select a table:")
-	table, err := box.SelectStringContext(ctx, tables, false, ttyout)
+	table, err := box.SelectString(tables, false, ttyout)
 	fmt.Println()
 	if err != nil {
 		return "", err

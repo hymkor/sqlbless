@@ -38,7 +38,7 @@ func getSqlCommands() []string {
 	}
 }
 
-func (C *completeType) getCandidates(fields []string) ([]string, []string) {
+func (C *completeType) getCandidates(ctx context.Context, fields []string) ([]string, []string) {
 	candidates := getSqlCommands
 	tableListNow := false
 	tableNameInline := []string{}
@@ -50,28 +50,28 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 			lastKeywordAt = i
 			nextKeyword = []string{"where"}
 			candidates = func() []string {
-				return C.tables()
+				return C.tables(ctx)
 			}
 		} else if strings.EqualFold(word, "desc") || strings.EqualFold(word, "\\D") || strings.EqualFold(word, "table") {
 			tableListNow = true
 			lastKeywordAt = i
 			nextKeyword = nil
 			candidates = func() []string {
-				return C.tables()
+				return C.tables(ctx)
 			}
 		} else if strings.EqualFold(word, "set") {
 			tableListNow = false
 			lastKeywordAt = i
 			nextKeyword = []string{"where"}
 			candidates = func() []string {
-				return C.columns(tableNameInline)
+				return C.columns(ctx, tableNameInline)
 			}
 		} else if strings.EqualFold(word, "update") {
 			tableListNow = true
 			lastKeywordAt = i
 			nextKeyword = []string{"set"}
 			candidates = func() []string {
-				return C.tables()
+				return C.tables(ctx)
 			}
 		} else if strings.EqualFold(word, "delete") {
 			tableListNow = true
@@ -85,7 +85,7 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 			lastKeywordAt = i
 			nextKeyword = []string{"from"}
 			candidates = func() []string {
-				return C.columns(tableNameInline)
+				return C.columns(ctx, tableNameInline)
 			}
 		} else if strings.EqualFold(word, "drop") || strings.EqualFold(word, "truncate") {
 			tableListNow = false
@@ -99,7 +99,7 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 			lastKeywordAt = i
 			nextKeyword = []string{"and", "or"}
 			candidates = func() []string {
-				return C.columns(tableNameInline)
+				return C.columns(ctx, tableNameInline)
 			}
 		} else if strings.EqualFold(word, "start") || strings.EqualFold(word, "host") {
 			lastKeywordAt = i
@@ -121,18 +121,17 @@ func (C *completeType) getCandidates(fields []string) ([]string, []string) {
 	return result, result
 }
 
-func (C *completeType) tables() []string {
+func (C *completeType) tables(ctx context.Context) []string {
 	if len(C.tableCache) <= 0 {
-		C.tableCache, _ = C.Dialect.Tables(context.TODO(), C.Conn)
+		C.tableCache, _ = C.Dialect.Tables(ctx, C.Conn)
 	}
 	return C.tableCache
 }
 
-func (C *completeType) columns(tables []string) (result []string) {
+func (C *completeType) columns(ctx context.Context, tables []string) (result []string) {
 	if C.columnCache == nil {
 		C.columnCache = map[string][]string{}
 	}
-	ctx := context.TODO()
 	for _, tableName := range tables {
 		if tableName == "," || tableName == "" {
 			continue
@@ -147,7 +146,7 @@ func (C *completeType) columns(tables []string) (result []string) {
 	return
 }
 
-func New(d *dialect.Entry, c dialect.CanQuery) func([]string) ([]string, []string) {
+func New(d *dialect.Entry, c dialect.CanQuery) func(context.Context, []string) ([]string, []string) {
 	completer := &completeType{
 		Conn:    c,
 		Dialect: d,

@@ -8,6 +8,7 @@
 
 - Updated internal dependencies (go-multiline-ny v0.22.1, go-box v3) (#4)
 - Removed obsolete go-box v2 references (#4)
+- Use context from completion.CmdCompletionOrList.CandidatesContext instead of context.TODO()
 
 v0.24.0
 =======

@@ -8,6 +8,7 @@
 
 - 依存パッケージを更新 (go-multiline-ny v0.22.1, go-box v3) (#4)
 - go-box v2 への参照を削除 (#4)
+- テーブル名・カラム名補完の際に使用していた `context.TODO()` を `completion.CmdCompletionOrList.CandidatesContext` が提供するコンテキストに変更
 
 v0.24.0
 =======

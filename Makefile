@@ -26,11 +26,7 @@ all:
 	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)/$(NAME)$(EXE)" $(GOOPT)
 
 test:
-ifeq ($(OS),Windows_NT)
-	pwsh "test/test-sqlite3.ps1"
-#	pwsh "test/test.ps1"
-endif
-	$(GO) test -v
+	$(GO) test -v ./...
 
 _dist:
 	$(MAKE) all

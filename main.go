@@ -86,7 +86,7 @@ func Run() error {
 	}
 	d, err := dialect.ReadDBInfoFromArgs(args)
 	if err != nil {
-		return err
+		return fmt.Errorf("dialect.ReadDBInfoFromArgs: %w", err)
 	}
 	if cfg.Debug {
 		fmt.Fprintln(os.Stderr, d.DataSource)

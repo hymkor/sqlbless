@@ -6,7 +6,7 @@ require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/hymkor/csvi v1.15.1
-	github.com/hymkor/go-multiline-ny v0.21.1
+	github.com/hymkor/go-multiline-ny v0.22.1
 	github.com/hymkor/go-shellcommand v0.0.2
 	github.com/hymkor/struct2flag v0.0.4
 	github.com/lib/pq v1.10.9
@@ -31,7 +31,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
-	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/nyaosorg/go-readline-skk v0.6.0 // indirect
 	github.com/nyaosorg/go-ttyadapter v0.0.1 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.4 // indirect

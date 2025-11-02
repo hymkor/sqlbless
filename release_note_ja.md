@@ -1,3 +1,14 @@
+( [English](release_note_en.md) / **Japanese** )
+
+### 不具合修正
+
+- `host`文, `start`文: 最後のトークンが空文字列のときにファイル名補完で panic が発生する問題を修正
+  (#4, [go-readline-ny#10], go-readline-ny v1.21.1 にて修正)
+
+[go-readline-ny#10]: https://github.com/nyaosorg/go-readline-ny/pull/10
+
+### 仕様変更
+
 - テーブル名指定なしの `desc` コマンド中に `r` を押下すると、`edit (カーソル行のテーブル名)` を起動するようにした
 - テーブル名指定なしの `desc` コマンド中に `Enter` を押下すると、`desc (カーソル行のテーブル名)` を起動するようにした
 - 引数なしで `edit` コマンドが起動された時、カーソルでテーブルを選択するモードを起動するようにした。

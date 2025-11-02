@@ -1,3 +1,14 @@
+( **English** / [Japanese](release_note_ja.md) )
+
+### Bug fixes
+
+- `host` and `start`: Fixed a panic in filename completion when the last token was an empty string.
+  (#4, [go-readline-ny#10], Fixed in go-readline-ny v1.21.1 )
+
+[go-readline-ny#10]: https://github.com/nyaosorg/go-readline-ny/pull/10
+
+### Specification changes
+
 - Pressing `r` in the `desc` command without a table name now launches the `edit` command for the table under the cursor.
 - Pressing `Enter` in the `desc` command without a table name now launches `desc` command for the table under the cursor.
 - Running `edit` without arguments now opens a table selection mode.

@@ -3,6 +3,7 @@
 - Running `edit` without arguments now opens a table selection mode.
 - The Oracle `MERGE` statement is now treated as a DML command.
 - `COMMIT` and `ROLLBACK` can now be executed without a semicolon (`;`).
+- Added support for the [`NO_COLOR`](https://no-color.org/) environment variable to disable colored output.
 
 ### Internal changes
 

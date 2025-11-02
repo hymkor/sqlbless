@@ -4,6 +4,11 @@
 - The Oracle `MERGE` statement is now treated as a DML command.
 - `COMMIT` and `ROLLBACK` can now be executed without a semicolon (`;`).
 
+### Internal changes
+
+- Updated internal dependencies (go-multiline-ny v0.22.1, go-box v3) (#4)
+- Removed obsolete go-box v2 references (#4)
+
 v0.24.0
 =======
 Oct 25, 2025

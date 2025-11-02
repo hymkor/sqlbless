@@ -3,13 +3,13 @@
 - Running `edit` without arguments now opens a table selection mode.
 - The Oracle `MERGE` statement is now treated as a DML command.
 - `COMMIT` and `ROLLBACK` can now be executed without a semicolon (`;`).
-- Added support for the [`NO_COLOR`](https://no-color.org/) environment variable to disable colored output.
+- Added support for the [`NO_COLOR`](https://no-color.org/) environment variable to disable colored output. (#6)
 
 ### Internal changes
 
 - Updated internal dependencies (go-multiline-ny v0.22.1, go-box v3) (#4)
-- Use context from completion.CmdCompletionOrList.CandidatesContext instead of context.TODO()
-- Rewrote the SQLite3 test written in PowerShell 7 using Go’s standard `go test` framework to enable testing on Linux and GitHub Actions.
+- Use context from completion.CmdCompletionOrList.CandidatesContext instead of context.TODO() (#5)
+- Rewrote the SQLite3 test written in PowerShell 7 using Go’s standard `go test` framework to enable testing on Linux and GitHub Actions. (#7)
 
 v0.24.0
 =======

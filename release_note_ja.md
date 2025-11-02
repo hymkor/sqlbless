@@ -3,13 +3,13 @@
 - 引数なしで `edit` コマンドが起動された時、カーソルでテーブルを選択するモードを起動するようにした。
 - Oracle の`MERGE` 文も DML 扱いするようにした。
 - `COMMIT` や `ROLLBACK` もセミコロンなしで実行できる1行コマンドとした。
-- カラー出力を抑制する環境変数の [`NO_COLOR`](https://no-color.org/) をサポート 
+- カラー出力を抑制する環境変数の [`NO_COLOR`](https://no-color.org/) をサポート (#6)
 
 ### 内部的な変更
 
 - 依存パッケージを更新 (go-multiline-ny v0.22.1, go-box v3) (#4)
-- テーブル名・カラム名補完の際に使用していた `context.TODO()` を `completion.CmdCompletionOrList.CandidatesContext` が提供するコンテキストに変更
-- Linux 環境や GitHub Actions からテストができるよう、PowerShell 7 で記述していた SQLite3 を使ったテストを、go test に置き変えた。
+- テーブル名・カラム名補完の際に使用していた `context.TODO()` を `completion.CmdCompletionOrList.CandidatesContext` が提供するコンテキストに変更 (#5)
+- Linux 環境や GitHub Actions からテストができるよう、PowerShell 7 で記述していた SQLite3 を使ったテストを、go test に置き変えた (#7)
 
 v0.24.0
 =======

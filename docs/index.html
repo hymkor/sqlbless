@@ -1140,6 +1140,11 @@ a.permalink:hover{
 </head><body>
 <div class="main markdown-body">
 <h1 id="sql-bless">SQL-Bless</h1>
+<!-- raw HTML omitted -->
+<p><a href="https://github.com/hymkor/sqlbless/actions/workflows/go.yml"><img src="https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
+<a href="https://github.com/hymkor/sqlbless/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
+<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a></p>
+<!-- raw HTML omitted -->
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
 <p>SQL-Bless is a command-line database client similar to SQL*Plus, supporting multiple database systems.</p>
 <p>It was designed with reliability and transparency in mind.
@@ -1240,9 +1245,10 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 <h2 id="supported-commands">Supported commands</h2>
 <ul>
 <li>
-<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code></p>
+<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code></p>
 <ul>
-<li><code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code> begin the transaction automatically.</li>
+<li><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, and <code>MERGE</code> automatically start a transaction.</li>
+<li>For these commands, input continues across lines until a semicolon (<code>;</code>) or the string specified with the <code>-term</code> option is entered.</li>
 </ul>
 </li>
 <li>
@@ -1273,8 +1279,14 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 <li>
 <p><code>DESC [tablename]</code> / <code>\D [tablename]</code></p>
 <ul>
-<li>When the tablename is given, show the specification of the the table</li>
-<li>Without the tablename, show the list of tables.</li>
+<li>When a table name is specified, shows the schema of that table.</li>
+<li>If omitted, displays a list of tables.
+<ul>
+<li>In the table list view, the following keys are available:</li>
+<li><code>r</code>: Open the <code>EDIT</code> command for the selected table.</li>
+<li><code>Enter</code>: Show the schema of the selected table.</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
@@ -1284,7 +1296,7 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 </ul>
 </li>
 <li>
-<p><code>EDIT tablename [WHERE conditions...]</code></p>
+<p><code>EDIT [tablename [WHERE conditions...]]</code></p>
 <ul>
 <li>Start an <a href="https://github.com/hymkor/csvi">editor</a> to modify the selected records of the table.</li>
 <li>In the editor, these keys are bound.

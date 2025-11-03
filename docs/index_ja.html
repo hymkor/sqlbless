@@ -1140,6 +1140,11 @@ a.permalink:hover{
 </head><body>
 <div class="main markdown-body">
 <h1 id="sql-bless">SQL-Bless</h1>
+<!-- raw HTML omitted -->
+<p><a href="https://github.com/hymkor/sqlbless/actions/workflows/go.yml"><img src="https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
+<a href="https://github.com/hymkor/sqlbless/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
+<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a></p>
+<!-- raw HTML omitted -->
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
 <p>SQL-Bless は、SQL*Plus に着想を得た、複数のデータベースエンジンに対応するコマンドライン用 SQL クライアントです。</p>
 <p>SQL-Bless は「安全性と再現性」を最優先に設計されています。
@@ -1238,9 +1243,10 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 <h2 id="%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89">サポートコマンド</h2>
 <ul>
 <li>
-<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code></p>
+<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code></p>
 <ul>
 <li><code>INSERT</code>, <code>UPDATE</code> , <code>DELETE</code> は自動的にトランザクションを開始します</li>
+<li>これらのコマンドは、セミコロン <code>;</code>、もしくは <code>-term string</code> で指定された文字列があるまで、Enter を押下しても入力が継続します。</li>
 </ul>
 </li>
 <li>
@@ -1271,8 +1277,14 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 <li>
 <p><code>DESC [tablename]</code> / <code>\D [tablename]</code></p>
 <ul>
-<li>テーブル名が指定された場合、そのテーブルの使用を表示します</li>
-<li>テーブル名が省略された場合、テーブルの一覧を表示します</li>
+<li>テーブル名が指定された場合、そのテーブルのスキーマを表示します</li>
+<li>テーブル名が省略された場合、テーブルの一覧を表示します
+<ul>
+<li>テーブル一覧では以下のキーが拡張されます</li>
+<li><code>r</code>: そのテーブルのデータの編集モードに入ります</li>
+<li><code>Enter</code>: そのテーブルのスキーマを表示します</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
@@ -1282,7 +1294,7 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 </ul>
 </li>
 <li>
-<p><code>EDIT tablename [WHERE conditions...]</code></p>
+<p><code>EDIT [tablename [WHERE conditions...]]</code></p>
 <ul>
 <li>選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します</li>
 <li>エディタ中では以下のキーが拡張されます

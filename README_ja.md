@@ -1,6 +1,12 @@
 SQL-Bless
 =========
 
+<!-- badges.cmd | -->
+[![Go Test](https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/sqlbless/actions/workflows/go.yml)
+[![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/sqlbless/blob/master/LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg)](https://pkg.go.dev/github.com/hymkor/sqlbless)
+<!-- -->
+
 [&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
 
 SQL-Bless は、SQL\*Plus に着想を得た、複数のデータベースエンジンに対応するコマンドライン用 SQL クライアントです。

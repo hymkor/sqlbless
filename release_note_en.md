@@ -1,5 +1,9 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.25.0
+=======
+Nov 3, 2025
+
 ### Bug fixes
 
 - `host` and `start`: Fixed a panic in filename completion when the last token was an empty string.

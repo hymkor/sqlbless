@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+v0.25.0
+=======
+Nov 3, 2025
+
 ### 不具合修正
 
 - `host`文, `start`文: 最後のトークンが空文字列のときにファイル名補完で panic が発生する問題を修正

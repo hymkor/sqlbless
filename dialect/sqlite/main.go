@@ -21,7 +21,7 @@ var Entry = &dialect.Entry{
 	union all
 	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
 	where type = 'temp_schema'`,
-	TypeNameToConv:      typeNameToConv,
+	TypeConverterFor:    typeNameToConv,
 	PlaceHolder:         &placeHolder{},
 	SqlForDesc:          `PRAGMA table_info({table_name})`,
 	TableField:          "name",

@@ -29,17 +29,17 @@ type Entry struct {
 	TableField          string
 	ColumnField         string
 	PlaceHolder         PlaceHolder
-	TypeNameToConv      func(string) func(string) (any, error)
+	TypeConverterFor    func(typeName string) func(literal string) (any, error)
 	DSNFilter           func(string) (string, error)
 	CanUseInTransaction func(string) bool
 	IsQuerySQL          func(string) bool
 }
 
 func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {
-	if D.TypeNameToConv == nil {
+	if D.TypeConverterFor == nil {
 		return nil
 	}
-	return D.TypeNameToConv(typeName)
+	return D.TypeConverterFor(typeName)
 }
 
 const (

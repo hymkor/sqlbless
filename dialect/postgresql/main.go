@@ -44,7 +44,7 @@ func (ph *placeHolder) Values() (result []any) {
 
 var postgresSpec = &dialect.Entry{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
-	SqlForDesc: `
+	SQLForColumns: `
       select a.attnum as "ID",
              a.attname as "NAME",
              case

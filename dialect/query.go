@@ -71,7 +71,7 @@ func (e *Entry) SqlToQueryTables() string {
 }
 
 func (e *Entry) SqlToQueryColumns(table string) string {
-	return strings.ReplaceAll(e.SqlForDesc, "{table_name}", table)
+	return strings.ReplaceAll(e.SQLForColumns, "{table_name}", table)
 }
 
 func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {

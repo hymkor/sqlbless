@@ -22,7 +22,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (any, error) {
 
 var sqlServerSpec = &dialect.Entry{
 	Usage: "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
-	SqlForDesc: `
+	SQLForColumns: `
 	select c.column_id as "ID",
 		   c.name as "NAME",
 		   case

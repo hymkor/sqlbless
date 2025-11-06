@@ -155,7 +155,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 }
 
 func doDescColumns(ctx context.Context, ss *session, table string) error {
-	if ss.Dialect.SqlForDesc == "" {
+	if ss.Dialect.SQLForColumns == "" {
 		return fmt.Errorf("desc table: %w", ErrNotSupported)
 	}
 	query := ss.Dialect.SqlToQueryColumns(table)

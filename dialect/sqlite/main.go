@@ -23,7 +23,7 @@ var Entry = &dialect.Entry{
 	where type = 'temp_schema'`,
 	TypeConverterFor:    typeNameToConv,
 	PlaceHolder:         &placeHolder{},
-	SqlForDesc:          `PRAGMA table_info({table_name})`,
+	SQLForColumns:       `PRAGMA table_info({table_name})`,
 	TableField:          "name",
 	ColumnField:         "name",
 	CanUseInTransaction: canUseInTransaction,

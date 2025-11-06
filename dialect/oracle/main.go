@@ -19,7 +19,7 @@ func oracleTypeNameToConv(typeName string) func(string) (any, error) {
 
 var oracleSpec = &dialect.Entry{
 	Usage: "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
-	SqlForDesc: `
+	SQLForColumns: `
   select column_id as "ID",
 		 column_name as "NAME",
 		 case 

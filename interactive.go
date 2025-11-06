@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nyaosorg/go-ttyadapter/auto"
 	"github.com/nyaosorg/go-ttyadapter/tty8"
 	"github.com/nyaosorg/go-readline-ny"
-	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
 	"github.com/hymkor/csvi"

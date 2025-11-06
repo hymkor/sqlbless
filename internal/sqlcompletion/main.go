@@ -123,7 +123,7 @@ func (C *completeType) getCandidates(ctx context.Context, fields []string) ([]st
 
 func (C *completeType) tables(ctx context.Context) []string {
 	if len(C.tableCache) <= 0 {
-		C.tableCache, _ = C.Dialect.Tables(ctx, C.Conn)
+		C.tableCache, _ = C.Dialect.FetchTables(ctx, C.Conn)
 	}
 	return C.tableCache
 }

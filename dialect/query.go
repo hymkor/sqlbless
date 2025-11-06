@@ -77,7 +77,9 @@ func (e *Entry) BuildSQLForColumns(table string) string {
 	return strings.ReplaceAll(e.SQLForColumns, "{table_name}", table)
 }
 
-func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
+// Tables executes the SQL to list all table names defined by the dialect.
+// It returns a slice of table names or an error if the query fails.
+func (e *Entry) FetchTables(ctx context.Context, conn CanQuery) ([]string, error) {
 	return queryOneColumn(ctx, conn, e.BuildSQLForTables(), e.TableNameField)
 }
 

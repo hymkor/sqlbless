@@ -97,7 +97,7 @@ func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) e
 	// replace `edit ` to `select * from `
 	_, tableAndWhere := misc.CutField(command)
 	if tableAndWhere == "" {
-		tables, err := ss.Dialect.Tables(ctx, ss.conn)
+		tables, err := ss.Dialect.FetchTables(ctx, ss.conn)
 		if err != nil {
 			return err
 		}

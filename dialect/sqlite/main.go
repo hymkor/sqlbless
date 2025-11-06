@@ -21,13 +21,12 @@ var Entry = &dialect.Entry{
 	union all
 	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
 	where type = 'temp_schema'`,
-	DisplayDateTimeLayout: dateTimeTzLayout,
-	TypeNameToConv:        typeNameToConv,
-	PlaceHolder:           &placeHolder{},
-	SqlForDesc:            `PRAGMA table_info({table_name})`,
-	TableField:            "name",
-	ColumnField:           "name",
-	CanUseInTransaction:   canUseInTransaction,
+	TypeNameToConv:      typeNameToConv,
+	PlaceHolder:         &placeHolder{},
+	SqlForDesc:          `PRAGMA table_info({table_name})`,
+	TableField:          "name",
+	ColumnField:         "name",
+	CanUseInTransaction: canUseInTransaction,
 	IsQuerySQL: func(s string) bool {
 		s, _ = misc.CutField(s)
 		return strings.EqualFold(s, "PRAGMA")

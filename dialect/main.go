@@ -23,17 +23,16 @@ type PlaceHolder interface {
 }
 
 type Entry struct {
-	Usage                 string
-	SqlForDesc            string
-	SqlForTab             string
-	TableField            string
-	ColumnField           string
-	DisplayDateTimeLayout string
-	PlaceHolder           PlaceHolder
-	TypeNameToConv        func(string) func(string) (any, error)
-	DSNFilter             func(string) (string, error)
-	CanUseInTransaction   func(string) bool
-	IsQuerySQL            func(string) bool
+	Usage               string
+	SqlForDesc          string
+	SqlForTab           string
+	TableField          string
+	ColumnField         string
+	PlaceHolder         PlaceHolder
+	TypeNameToConv      func(string) func(string) (any, error)
+	DSNFilter           func(string) (string, error)
+	CanUseInTransaction func(string) bool
+	IsQuerySQL          func(string) bool
 }
 
 func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {

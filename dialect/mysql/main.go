@@ -87,12 +87,11 @@ var mySqlSpec = &dialect.Entry{
          where table_type = 'BASE TABLE'
            and table_schema 
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        mySQLTypeNameToConv,
-	PlaceHolder:           &dialect.PlaceHolderQuestion{},
-	DSNFilter:             mySQLDSNFilter,
-	TableField:            "TABLE_NAME",
-	ColumnField:           "NAME",
+	TypeNameToConv: mySQLTypeNameToConv,
+	PlaceHolder:    &dialect.PlaceHolderQuestion{},
+	DSNFilter:      mySQLDSNFilter,
+	TableField:     "TABLE_NAME",
+	ColumnField:    "NAME",
 }
 
 func init() {

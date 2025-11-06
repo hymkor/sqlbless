@@ -68,12 +68,11 @@ var postgresSpec = &dialect.Entry{
         from information_schema.tables
        where table_type = 'BASE TABLE'
          and table_schema not in ('pg_catalog', 'information_schema')`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        postgresTypeNameToConv,
-	PlaceHolder:           &placeHolder{},
-	TableField:            "table_name",
-	ColumnField:           "name",
-	CanUseInTransaction:   canUseInTransaction,
+	TypeNameToConv:      postgresTypeNameToConv,
+	PlaceHolder:         &placeHolder{},
+	TableField:          "table_name",
+	ColumnField:         "name",
+	CanUseInTransaction: canUseInTransaction,
 }
 
 func canUseInTransaction(sql string) bool {

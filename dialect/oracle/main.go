@@ -35,12 +35,11 @@ var oracleSpec = &dialect.Entry{
 	from all_tab_columns
    where table_name = UPPER(:1)
    order by column_id`,
-	SqlForTab:             `select * from tab where tname not like 'BIN$%'`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        oracleTypeNameToConv,
-	TableField:            "tname",
-	ColumnField:           "name",
-	PlaceHolder:           &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
+	SqlForTab:      `select * from tab where tname not like 'BIN$%'`,
+	TypeNameToConv: oracleTypeNameToConv,
+	TableField:     "tname",
+	ColumnField:    "name",
+	PlaceHolder:    &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
 }
 
 func init() {

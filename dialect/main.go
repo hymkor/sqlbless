@@ -35,7 +35,7 @@ type Entry struct {
 	IsQuerySQL          func(string) bool
 }
 
-func (D *Entry) TypeToConv(typeName string) func(string) (any, error) {
+func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {
 	if D.TypeConverterFor == nil {
 		return nil
 	}

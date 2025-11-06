@@ -158,7 +158,7 @@ func doDescColumns(ctx context.Context, ss *session, table string) error {
 	if ss.Dialect.SQLForColumns == "" {
 		return fmt.Errorf("desc table: %w", ErrNotSupported)
 	}
-	query := ss.Dialect.SqlToQueryColumns(table)
+	query := ss.Dialect.BuildSQLForColumns(table)
 	if ss.Debug {
 		fmt.Println(query)
 	}

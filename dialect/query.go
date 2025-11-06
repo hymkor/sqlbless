@@ -70,7 +70,9 @@ func (e *Entry) SqlToQueryTables() string {
 	return e.SQLForTables
 }
 
-func (e *Entry) SqlToQueryColumns(table string) string {
+// BuildSQLForColumns returns the SQL statement used to retrieve the list of columns
+// for the given table name. The placeholder "{table_name}" in the template will be replaced.
+func (e *Entry) BuildSQLForColumns(table string) string {
 	return strings.ReplaceAll(e.SQLForColumns, "{table_name}", table)
 }
 
@@ -79,5 +81,5 @@ func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
 }
 
 func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlToQueryColumns(table), e.ColumnNameField, table)
+	return queryOneColumn(ctx, conn, e.BuildSQLForColumns(table), e.ColumnNameField, table)
 }

@@ -146,7 +146,7 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 		}
 		editor.LineEditor.Tty = tty1
 		tty = tty1
-		csviPilot = misc.AutoCsvi{tty1}
+		csviPilot = misc.AutoCsvi{GetKeyAndSize: tty1}
 	} else {
 		tty = &tty8.Tty{}
 	}

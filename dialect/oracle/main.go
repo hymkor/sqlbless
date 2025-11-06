@@ -43,5 +43,5 @@ var oracleSpec = &dialect.Entry{
 }
 
 func init() {
-	dialect.Register("ORACLE", oracleSpec)
+	oracleSpec.Register("ORACLE")
 }

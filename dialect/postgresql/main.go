@@ -90,5 +90,5 @@ func canUseInTransaction(sql string) bool {
 }
 
 func init() {
-	dialect.Register("POSTGRES", postgresSpec)
+	postgresSpec.Register("POSTGRES")
 }

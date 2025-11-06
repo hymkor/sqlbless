@@ -93,5 +93,5 @@ func (ph *placeHolder) Values() (result []any) {
 }
 
 func init() {
-	dialect.Register("SQLITE3", Entry)
+	Entry.Register("SQLITE3")
 }

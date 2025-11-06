@@ -85,8 +85,8 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 
 var registry = map[string]*Entry{}
 
-func Register(name string, setting *Entry) {
-	registry[strings.ToUpper(name)] = setting
+func (e *Entry) Register(name string) {
+	registry[strings.ToUpper(name)] = e
 }
 
 func Find(name string) (*Entry, bool) {

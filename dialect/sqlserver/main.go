@@ -50,5 +50,5 @@ var sqlServerSpec = &dialect.Entry{
 }
 
 func init() {
-	dialect.Register("SQLSERVER", sqlServerSpec)
+	sqlServerSpec.Register("SQLSERVER")
 }

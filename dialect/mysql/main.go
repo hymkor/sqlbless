@@ -95,5 +95,5 @@ var mySqlSpec = &dialect.Entry{
 }
 
 func init() {
-	dialect.Register("MYSQL", mySqlSpec)
+	mySqlSpec.Register("MYSQL")
 }

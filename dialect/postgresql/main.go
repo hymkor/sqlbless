@@ -44,7 +44,7 @@ func (ph *placeHolder) Values() (result []any) {
 
 var postgresSpec = &dialect.Entry{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
-	SqlForDesc: `
+	SQLForColumns: `
       select a.attnum as "ID",
              a.attname as "NAME",
              case
@@ -63,17 +63,16 @@ var postgresSpec = &dialect.Entry{
          and t.oid = a.atttypid
          and a.attisdropped is false
        order by a.attnum`,
-	SqlForTab: `
+	SQLForTables: `
       select *
         from information_schema.tables
        where table_type = 'BASE TABLE'
          and table_schema not in ('pg_catalog', 'information_schema')`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        postgresTypeNameToConv,
-	PlaceHolder:           &placeHolder{},
-	TableField:            "table_name",
-	ColumnField:           "name",
-	CanUseInTransaction:   canUseInTransaction,
+	TypeConverterFor:  postgresTypeNameToConv,
+	PlaceHolder:       &placeHolder{},
+	TableNameField:    "table_name",
+	ColumnNameField:   "name",
+	IsTransactionSafe: canUseInTransaction,
 }
 
 func canUseInTransaction(sql string) bool {
@@ -91,5 +90,5 @@ func canUseInTransaction(sql string) bool {
 }
 
 func init() {
-	dialect.Register("POSTGRES", postgresSpec)
+	postgresSpec.Register("POSTGRES")
 }

@@ -65,7 +65,7 @@ func mySQLDSNFilter(dsn string) (string, error) {
 
 var mySqlSpec = &dialect.Entry{
 	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
-	SqlForDesc: `
+	SQLForColumns: `
         select ordinal_position as "ID",
                column_name as "NAME",
                case
@@ -82,19 +82,18 @@ var mySqlSpec = &dialect.Entry{
           from information_schema.columns
          where table_name = ?
          order by ordinal_position`,
-	SqlForTab: `
+	SQLForTables: `
         select * from information_schema.tables
          where table_type = 'BASE TABLE'
            and table_schema 
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        mySQLTypeNameToConv,
-	PlaceHolder:           &dialect.PlaceHolderQuestion{},
-	DSNFilter:             mySQLDSNFilter,
-	TableField:            "TABLE_NAME",
-	ColumnField:           "NAME",
+	TypeConverterFor: mySQLTypeNameToConv,
+	PlaceHolder:      &dialect.PlaceHolderQuestion{},
+	DSNFilter:        mySQLDSNFilter,
+	TableNameField:   "TABLE_NAME",
+	ColumnNameField:  "NAME",
 }
 
 func init() {
-	dialect.Register("MYSQL", mySqlSpec)
+	mySqlSpec.Register("MYSQL")
 }

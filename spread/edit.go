@@ -126,7 +126,7 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 		name := strings.ToUpper(ct.DatabaseTypeName())
 		var v func(string) (string, error)
 		_ct := ct
-		if conv := editor.TypeToConv(name); conv != nil {
+		if conv := editor.LookupConverter(name); conv != nil {
 			quoteFunc = append(quoteFunc, conv)
 			v = func(s string) (string, error) {
 				if s == editor.Null || s == "" {

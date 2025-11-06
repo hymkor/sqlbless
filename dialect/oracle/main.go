@@ -19,7 +19,7 @@ func oracleTypeNameToConv(typeName string) func(string) (any, error) {
 
 var oracleSpec = &dialect.Entry{
 	Usage: "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
-	SqlForDesc: `
+	SQLForColumns: `
   select column_id as "ID",
 		 column_name as "NAME",
 		 case 
@@ -35,14 +35,13 @@ var oracleSpec = &dialect.Entry{
 	from all_tab_columns
    where table_name = UPPER(:1)
    order by column_id`,
-	SqlForTab:             `select * from tab where tname not like 'BIN$%'`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        oracleTypeNameToConv,
-	TableField:            "tname",
-	ColumnField:           "name",
-	PlaceHolder:           &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
+	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
+	TypeConverterFor: oracleTypeNameToConv,
+	TableNameField:   "tname",
+	ColumnNameField:  "name",
+	PlaceHolder:      &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
 }
 
 func init() {
-	dialect.Register("ORACLE", oracleSpec)
+	oracleSpec.Register("ORACLE")
 }

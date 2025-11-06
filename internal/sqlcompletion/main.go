@@ -123,7 +123,7 @@ func (C *completeType) getCandidates(ctx context.Context, fields []string) ([]st
 
 func (C *completeType) tables(ctx context.Context) []string {
 	if len(C.tableCache) <= 0 {
-		C.tableCache, _ = C.Dialect.Tables(ctx, C.Conn)
+		C.tableCache, _ = C.Dialect.FetchTables(ctx, C.Conn)
 	}
 	return C.tableCache
 }
@@ -138,7 +138,7 @@ func (C *completeType) columns(ctx context.Context, tables []string) (result []s
 		}
 		values, ok := C.columnCache[tableName]
 		if !ok {
-			values, _ = C.Dialect.Columns(ctx, C.Conn, tableName)
+			values, _ = C.Dialect.FetchColumns(ctx, C.Conn, tableName)
 			C.columnCache[tableName] = values
 		}
 		result = append(result, values...)

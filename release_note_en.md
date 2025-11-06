@@ -1,5 +1,7 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Refactor `dialect` subpackage: rename fields and methods for clarity (#8)
+
 v0.25.0
 =======
 Nov 3, 2025

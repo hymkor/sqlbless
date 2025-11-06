@@ -15,19 +15,18 @@ const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
 
 var Entry = &dialect.Entry{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
-	SqlForTab: `
+	SQLForTables: `
 	select      'master' AS schema,name,rootpage,sql FROM sqlite_master
 	where type = 'table'
 	union all
 	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
 	where type = 'temp_schema'`,
-	DisplayDateTimeLayout: dateTimeTzLayout,
-	TypeNameToConv:        typeNameToConv,
-	PlaceHolder:           &placeHolder{},
-	SqlForDesc:            `PRAGMA table_info({table_name})`,
-	TableField:            "name",
-	ColumnField:           "name",
-	CanUseInTransaction:   canUseInTransaction,
+	TypeConverterFor:  typeNameToConv,
+	PlaceHolder:       &placeHolder{},
+	SQLForColumns:     `PRAGMA table_info({table_name})`,
+	TableNameField:    "name",
+	ColumnNameField:   "name",
+	IsTransactionSafe: canUseInTransaction,
 	IsQuerySQL: func(s string) bool {
 		s, _ = misc.CutField(s)
 		return strings.EqualFold(s, "PRAGMA")
@@ -94,5 +93,5 @@ func (ph *placeHolder) Values() (result []any) {
 }
 
 func init() {
-	dialect.Register("SQLITE3", Entry)
+	Entry.Register("SQLITE3")
 }

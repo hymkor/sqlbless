@@ -94,10 +94,10 @@ func (ss *session) beginTx(ctx context.Context, w io.Writer) error {
 }
 
 func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
-	if ss.Dialect.SqlForTab == "" {
+	if ss.Dialect.SQLForTables == "" {
 		return fmt.Errorf("desc: %w", ErrNotSupported)
 	}
-	query := ss.Dialect.SqlToQueryTables()
+	query := ss.Dialect.BuildSQLForTables()
 	var name string
 
 	handler := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
@@ -106,7 +106,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 		}
 		header := e.Front()
 		for i, c := range header.Cell {
-			if strings.EqualFold(c.Text(), ss.Dialect.TableField) {
+			if strings.EqualFold(c.Text(), ss.Dialect.TableNameField) {
 				name = e.CursorRow.Cell[i].Text()
 				return &csvi.CommandResult{Quit: true}, nil
 			}
@@ -155,10 +155,10 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 }
 
 func doDescColumns(ctx context.Context, ss *session, table string) error {
-	if ss.Dialect.SqlForDesc == "" {
+	if ss.Dialect.SQLForColumns == "" {
 		return fmt.Errorf("desc table: %w", ErrNotSupported)
 	}
-	query := ss.Dialect.SqlToQueryColumns(table)
+	query := ss.Dialect.BuildSQLForColumns(table)
 	if ss.Debug {
 		fmt.Println(query)
 	}

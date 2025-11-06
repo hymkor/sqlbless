@@ -66,18 +66,25 @@ func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName strin
 	}
 }
 
-func (e *Entry) SqlToQueryTables() string {
-	return e.SqlForTab
+// BuildSQLForTables returns the SQL statement used to retrieve the list of tables.
+func (e *Entry) BuildSQLForTables() string {
+	return e.SQLForTables
 }
 
-func (e *Entry) SqlToQueryColumns(table string) string {
-	return strings.ReplaceAll(e.SqlForDesc, "{table_name}", table)
+// BuildSQLForColumns returns the SQL statement used to retrieve the list of columns
+// for the given table name. The placeholder "{table_name}" in the template will be replaced.
+func (e *Entry) BuildSQLForColumns(table string) string {
+	return strings.ReplaceAll(e.SQLForColumns, "{table_name}", table)
 }
 
-func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlToQueryTables(), e.TableField)
+// Tables executes the SQL to list all table names defined by the dialect.
+// It returns a slice of table names or an error if the query fails.
+func (e *Entry) FetchTables(ctx context.Context, conn CanQuery) ([]string, error) {
+	return queryOneColumn(ctx, conn, e.BuildSQLForTables(), e.TableNameField)
 }
 
-func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlToQueryColumns(table), e.ColumnField, table)
+// Columns executes the SQL to list column names for the specified table.
+// It returns a slice of column names or an error if the query fails.
+func (e *Entry) FetchColumns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
+	return queryOneColumn(ctx, conn, e.BuildSQLForColumns(table), e.ColumnNameField, table)
 }

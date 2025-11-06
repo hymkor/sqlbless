@@ -22,7 +22,7 @@ func sqlServerTypeNameToConv(typeName string) func(string) (any, error) {
 
 var sqlServerSpec = &dialect.Entry{
 	Usage: "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
-	SqlForDesc: `
+	SQLForColumns: `
 	select c.column_id as "ID",
 		   c.name as "NAME",
 		   case
@@ -42,14 +42,13 @@ var sqlServerSpec = &dialect.Entry{
 	   and o.name = @p1
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
-	SqlForTab:             `select * from sys.tables`,
-	DisplayDateTimeLayout: dialect.DateTimeTzLayout,
-	TypeNameToConv:        sqlServerTypeNameToConv,
-	PlaceHolder:           &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
-	TableField:            "name",
-	ColumnField:           "name",
+	SQLForTables:     `select * from sys.tables`,
+	TypeConverterFor: sqlServerTypeNameToConv,
+	PlaceHolder:      &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
+	TableNameField:   "name",
+	ColumnNameField:  "name",
 }
 
 func init() {
-	dialect.Register("SQLSERVER", sqlServerSpec)
+	sqlServerSpec.Register("SQLSERVER")
 }

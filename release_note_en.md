@@ -1,6 +1,7 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Refactor `dialect` subpackage: rename fields and methods for clarity (#8)
+- Updated `go-readline-ny` to v1.12.2 and `go-ttyadapter` to v0.2.0, and switched API calls to use `go-ttyadapter`.(#9)
 
 v0.25.0
 =======

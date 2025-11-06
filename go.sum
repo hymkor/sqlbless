@@ -52,8 +52,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/nyaosorg/go-box/v3 v3.0.0 h1:W5qfScEkKBoD68gbP/lwfWlvcTRB0rwXkhL+9iC62xI=
 github.com/nyaosorg/go-box/v3 v3.0.0/go.mod h1:70GsE9mIh7JKVCxt71q3jEijO6C9YJmOZqWpPa9w+GY=
-github.com/nyaosorg/go-readline-ny v1.12.1 h1:yEDbW3Np7a/mCKwww3cTQYc9c7U6OnPogMeAjXYUg5M=
-github.com/nyaosorg/go-readline-ny v1.12.1/go.mod h1:JgZg/fWrTrLe+0Pzc7LzptNK28YO6wrdVQPSmJF69ug=
+github.com/nyaosorg/go-readline-ny v1.12.2 h1:PH273rRJ7USE2nCjJK7QzuiFpxJsnzWY2XKsJIdwLSs=
+github.com/nyaosorg/go-readline-ny v1.12.2/go.mod h1:KIoNjr6f6aur67nnYkVvLapZQiFPNRSqUcTe32IgeLE=
 github.com/nyaosorg/go-readline-skk v0.6.0 h1:n7iy806v34+HwiCgBog7OfUaHe9m43z2o6mg3dylgXo=
 github.com/nyaosorg/go-readline-skk v0.6.0/go.mod h1:ulYKxU1enVwOlLA8LFNaRUxSlI1PyayTM1PBOPVs1w8=
 github.com/nyaosorg/go-ttyadapter v0.2.0 h1:2DEL0MeesXRzuppCUlZIwY4vUKTjfIL+8aoR+pUUzGg=

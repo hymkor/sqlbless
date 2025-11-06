@@ -1,5 +1,7 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+- サブパッケージ `dialect` をリファクタリング: フィールド・メソッドを改名 (#8)
+
 v0.25.0
 =======
 Nov 3, 2025

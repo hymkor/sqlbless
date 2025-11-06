@@ -23,16 +23,36 @@ type PlaceHolder interface {
 }
 
 type Entry struct {
-	Usage             string
-	SQLForColumns     string
-	SQLForTables      string
-	TableNameField    string
-	ColumnNameField   string
-	PlaceHolder       PlaceHolder
-	TypeConverterFor  func(typeName string) func(literal string) (any, error)
-	DSNFilter         func(string) (string, error)
-	IsTransactionSafe func(string) bool
-	IsQuerySQL        func(string) bool
+	// Usage describes how to use this entry or what it represents.
+	Usage string
+
+	// SQLForColumns is the SQL query used to retrieve column information.
+	SQLForColumns string
+
+	// SQLForTables is the SQL query used to retrieve table information.
+	SQLForTables string
+
+	// TableNameField is the field name for table names in SQL results.
+	TableNameField string
+
+	// ColumnNameField is the field name for column names in SQL results.
+	ColumnNameField string
+
+	// PlaceHolder defines how to represent placeholders (e.g., ?, $1) in SQL.
+	PlaceHolder PlaceHolder
+
+	// TypeConverterFor returns a converter function for a given type name.
+	// The returned function converts a string literal to the corresponding Go value.
+	TypeConverterFor func(typeName string) func(literal string) (any, error)
+
+	// DSNFilter adjusts or validates a given DSN string before use.
+	DSNFilter func(dsn string) (string, error)
+
+	// IsTransactionSafe reports whether the given SQL statement is safe to run in a transaction.
+	IsTransactionSafe func(sql string) bool
+
+	// IsQuerySQL reports whether the given SQL statement is a query (e.g., SELECT) or not.
+	IsQuerySQL func(sql string) bool
 }
 
 func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {

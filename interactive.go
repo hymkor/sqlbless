@@ -7,10 +7,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nyaosorg/go-ttyadapter/tty8"
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
-	"github.com/nyaosorg/go-readline-ny/tty8"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/go-multiline-ny"

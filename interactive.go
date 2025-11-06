@@ -7,10 +7,12 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nyaosorg/go-ttyadapter"
+	"github.com/nyaosorg/go-ttyadapter/auto"
+	"github.com/nyaosorg/go-ttyadapter/tty8"
+
 	"github.com/nyaosorg/go-readline-ny"
-	"github.com/nyaosorg/go-readline-ny/auto"
 	"github.com/nyaosorg/go-readline-ny/keys"
-	"github.com/nyaosorg/go-readline-ny/tty8"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/go-multiline-ny"
@@ -71,7 +73,7 @@ func isOneLineCommand(cmdLine string) bool {
 
 type interactiveIn struct {
 	*multiline.Editor
-	tty       readline.ITty
+	tty       ttyadapter.Tty
 	csviPilot csvi.Pilot
 }
 
@@ -131,7 +133,7 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 	if ss.SubmitByEnter {
 		editor.SwapEnter()
 	}
-	var tty readline.ITty
+	var tty ttyadapter.Tty
 	var csviPilot csvi.Pilot
 	if ss.Auto != "" {
 		text := strings.ReplaceAll(ss.Auto, "||", "\n") // "||" -> Ctrl-J(Commit)

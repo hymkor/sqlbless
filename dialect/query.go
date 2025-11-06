@@ -66,7 +66,8 @@ func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName strin
 	}
 }
 
-func (e *Entry) SqlToQueryTables() string {
+// BuildSQLForTables returns the SQL statement used to retrieve the list of tables.
+func (e *Entry) BuildSQLForTables() string {
 	return e.SQLForTables
 }
 
@@ -77,7 +78,7 @@ func (e *Entry) BuildSQLForColumns(table string) string {
 }
 
 func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlToQueryTables(), e.TableNameField)
+	return queryOneColumn(ctx, conn, e.BuildSQLForTables(), e.TableNameField)
 }
 
 func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {

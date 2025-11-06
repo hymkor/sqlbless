@@ -97,7 +97,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 	if ss.Dialect.SQLForTables == "" {
 		return fmt.Errorf("desc: %w", ErrNotSupported)
 	}
-	query := ss.Dialect.SqlToQueryTables()
+	query := ss.Dialect.BuildSQLForTables()
 	var name string
 
 	handler := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {

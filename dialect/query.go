@@ -83,6 +83,8 @@ func (e *Entry) FetchTables(ctx context.Context, conn CanQuery) ([]string, error
 	return queryOneColumn(ctx, conn, e.BuildSQLForTables(), e.TableNameField)
 }
 
-func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
+// Columns executes the SQL to list column names for the specified table.
+// It returns a slice of column names or an error if the query fails.
+func (e *Entry) FetchColumns(ctx context.Context, conn CanQuery, table string) ([]string, error) {
 	return queryOneColumn(ctx, conn, e.BuildSQLForColumns(table), e.ColumnNameField, table)
 }

@@ -138,7 +138,7 @@ func (C *completeType) columns(ctx context.Context, tables []string) (result []s
 		}
 		values, ok := C.columnCache[tableName]
 		if !ok {
-			values, _ = C.Dialect.Columns(ctx, C.Conn, tableName)
+			values, _ = C.Dialect.FetchColumns(ctx, C.Conn, tableName)
 			C.columnCache[tableName] = values
 		}
 		result = append(result, values...)

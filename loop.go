@@ -208,7 +208,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			} else {
 				if ss.tx == nil {
 					_, err = ss.conn.ExecContext(ctx, query)
-				} else if f := ss.Dialect.CanUseInTransaction; f != nil && f(query) {
+				} else if f := ss.Dialect.IsTransactionSafe; f != nil && f(query) {
 					_, err = ss.tx.ExecContext(ctx, query)
 				} else {
 					err = ErrTransactionIsNotClosed

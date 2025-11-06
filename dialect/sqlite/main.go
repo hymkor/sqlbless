@@ -21,12 +21,12 @@ var Entry = &dialect.Entry{
 	union all
 	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
 	where type = 'temp_schema'`,
-	TypeConverterFor:    typeNameToConv,
-	PlaceHolder:         &placeHolder{},
-	SQLForColumns:       `PRAGMA table_info({table_name})`,
-	TableNameField:      "name",
-	ColumnNameField:     "name",
-	CanUseInTransaction: canUseInTransaction,
+	TypeConverterFor:  typeNameToConv,
+	PlaceHolder:       &placeHolder{},
+	SQLForColumns:     `PRAGMA table_info({table_name})`,
+	TableNameField:    "name",
+	ColumnNameField:   "name",
+	IsTransactionSafe: canUseInTransaction,
 	IsQuerySQL: func(s string) bool {
 		s, _ = misc.CutField(s)
 		return strings.EqualFold(s, "PRAGMA")

@@ -23,16 +23,16 @@ type PlaceHolder interface {
 }
 
 type Entry struct {
-	Usage               string
-	SQLForColumns       string
-	SQLForTables        string
-	TableNameField      string
-	ColumnNameField     string
-	PlaceHolder         PlaceHolder
-	TypeConverterFor    func(typeName string) func(literal string) (any, error)
-	DSNFilter           func(string) (string, error)
-	CanUseInTransaction func(string) bool
-	IsQuerySQL          func(string) bool
+	Usage             string
+	SQLForColumns     string
+	SQLForTables      string
+	TableNameField    string
+	ColumnNameField   string
+	PlaceHolder       PlaceHolder
+	TypeConverterFor  func(typeName string) func(literal string) (any, error)
+	DSNFilter         func(string) (string, error)
+	IsTransactionSafe func(string) bool
+	IsQuerySQL        func(string) bool
 }
 
 func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {

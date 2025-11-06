@@ -91,7 +91,7 @@ var mySqlSpec = &dialect.Entry{
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
 	DSNFilter:        mySQLDSNFilter,
 	TableNameField:   "TABLE_NAME",
-	ColumnField:      "NAME",
+	ColumnNameField:  "NAME",
 }
 
 func init() {

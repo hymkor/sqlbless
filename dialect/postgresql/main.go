@@ -71,7 +71,7 @@ var postgresSpec = &dialect.Entry{
 	TypeConverterFor:    postgresTypeNameToConv,
 	PlaceHolder:         &placeHolder{},
 	TableNameField:      "table_name",
-	ColumnField:         "name",
+	ColumnNameField:     "name",
 	CanUseInTransaction: canUseInTransaction,
 }
 

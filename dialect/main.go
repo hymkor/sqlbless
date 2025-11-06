@@ -27,7 +27,7 @@ type Entry struct {
 	SQLForColumns       string
 	SQLForTables        string
 	TableNameField      string
-	ColumnField         string
+	ColumnNameField     string
 	PlaceHolder         PlaceHolder
 	TypeConverterFor    func(typeName string) func(literal string) (any, error)
 	DSNFilter           func(string) (string, error)

@@ -25,7 +25,7 @@ var Entry = &dialect.Entry{
 	PlaceHolder:         &placeHolder{},
 	SQLForColumns:       `PRAGMA table_info({table_name})`,
 	TableNameField:      "name",
-	ColumnField:         "name",
+	ColumnNameField:     "name",
 	CanUseInTransaction: canUseInTransaction,
 	IsQuerySQL: func(s string) bool {
 		s, _ = misc.CutField(s)

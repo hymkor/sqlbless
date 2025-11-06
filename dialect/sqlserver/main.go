@@ -46,7 +46,7 @@ var sqlServerSpec = &dialect.Entry{
 	TypeConverterFor: sqlServerTypeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
 	TableNameField:   "name",
-	ColumnField:      "name",
+	ColumnNameField:  "name",
 }
 
 func init() {

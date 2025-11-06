@@ -90,7 +90,7 @@ var mySqlSpec = &dialect.Entry{
 	TypeConverterFor: mySQLTypeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
 	DSNFilter:        mySQLDSNFilter,
-	TableField:       "TABLE_NAME",
+	TableNameField:   "TABLE_NAME",
 	ColumnField:      "NAME",
 }
 

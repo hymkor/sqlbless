@@ -37,7 +37,7 @@ var oracleSpec = &dialect.Entry{
    order by column_id`,
 	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
 	TypeConverterFor: oracleTypeNameToConv,
-	TableField:       "tname",
+	TableNameField:   "tname",
 	ColumnField:      "name",
 	PlaceHolder:      &dialect.PlaceHolderName{Prefix: ":", Format: "v"},
 }

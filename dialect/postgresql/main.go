@@ -70,7 +70,7 @@ var postgresSpec = &dialect.Entry{
          and table_schema not in ('pg_catalog', 'information_schema')`,
 	TypeConverterFor:    postgresTypeNameToConv,
 	PlaceHolder:         &placeHolder{},
-	TableField:          "table_name",
+	TableNameField:      "table_name",
 	ColumnField:         "name",
 	CanUseInTransaction: canUseInTransaction,
 }

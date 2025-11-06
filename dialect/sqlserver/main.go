@@ -45,7 +45,7 @@ var sqlServerSpec = &dialect.Entry{
 	SQLForTables:     `select * from sys.tables`,
 	TypeConverterFor: sqlServerTypeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
-	TableField:       "name",
+	TableNameField:   "name",
 	ColumnField:      "name",
 }
 

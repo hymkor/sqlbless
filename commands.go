@@ -106,7 +106,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 		}
 		header := e.Front()
 		for i, c := range header.Cell {
-			if strings.EqualFold(c.Text(), ss.Dialect.TableField) {
+			if strings.EqualFold(c.Text(), ss.Dialect.TableNameField) {
 				name = e.CursorRow.Cell[i].Text()
 				return &csvi.CommandResult{Quit: true}, nil
 			}

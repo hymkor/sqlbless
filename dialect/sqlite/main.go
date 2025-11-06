@@ -24,7 +24,7 @@ var Entry = &dialect.Entry{
 	TypeConverterFor:    typeNameToConv,
 	PlaceHolder:         &placeHolder{},
 	SQLForColumns:       `PRAGMA table_info({table_name})`,
-	TableField:          "name",
+	TableNameField:      "name",
 	ColumnField:         "name",
 	CanUseInTransaction: canUseInTransaction,
 	IsQuerySQL: func(s string) bool {

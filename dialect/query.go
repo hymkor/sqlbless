@@ -75,7 +75,7 @@ func (e *Entry) SqlToQueryColumns(table string) string {
 }
 
 func (e *Entry) Tables(ctx context.Context, conn CanQuery) ([]string, error) {
-	return queryOneColumn(ctx, conn, e.SqlToQueryTables(), e.TableField)
+	return queryOneColumn(ctx, conn, e.SqlToQueryTables(), e.TableNameField)
 }
 
 func (e *Entry) Columns(ctx context.Context, conn CanQuery, table string) ([]string, error) {

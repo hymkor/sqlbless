@@ -82,7 +82,7 @@ var mySqlSpec = &dialect.Entry{
           from information_schema.columns
          where table_name = ?
          order by ordinal_position`,
-	SqlForTab: `
+	SQLForTables: `
         select * from information_schema.tables
          where table_type = 'BASE TABLE'
            and table_schema 

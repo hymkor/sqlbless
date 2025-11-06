@@ -42,7 +42,7 @@ var sqlServerSpec = &dialect.Entry{
 	   and o.name = @p1
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
-	SqlForTab:        `select * from sys.tables`,
+	SQLForTables:     `select * from sys.tables`,
 	TypeConverterFor: sqlServerTypeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
 	TableField:       "name",

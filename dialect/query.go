@@ -67,7 +67,7 @@ func queryOneColumn(ctx context.Context, conn CanQuery, sqlStr, columnName strin
 }
 
 func (e *Entry) SqlToQueryTables() string {
-	return e.SqlForTab
+	return e.SQLForTables
 }
 
 func (e *Entry) SqlToQueryColumns(table string) string {

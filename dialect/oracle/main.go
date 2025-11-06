@@ -35,7 +35,7 @@ var oracleSpec = &dialect.Entry{
 	from all_tab_columns
    where table_name = UPPER(:1)
    order by column_id`,
-	SqlForTab:        `select * from tab where tname not like 'BIN$%'`,
+	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
 	TypeConverterFor: oracleTypeNameToConv,
 	TableField:       "tname",
 	ColumnField:      "name",

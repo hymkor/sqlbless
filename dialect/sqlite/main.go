@@ -15,7 +15,7 @@ const dateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
 
 var Entry = &dialect.Entry{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
-	SqlForTab: `
+	SQLForTables: `
 	select      'master' AS schema,name,rootpage,sql FROM sqlite_master
 	where type = 'table'
 	union all

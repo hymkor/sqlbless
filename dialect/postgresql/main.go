@@ -63,7 +63,7 @@ var postgresSpec = &dialect.Entry{
          and t.oid = a.atttypid
          and a.attisdropped is false
        order by a.attnum`,
-	SqlForTab: `
+	SQLForTables: `
       select *
         from information_schema.tables
        where table_type = 'BASE TABLE'

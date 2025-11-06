@@ -94,7 +94,7 @@ func (ss *session) beginTx(ctx context.Context, w io.Writer) error {
 }
 
 func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
-	if ss.Dialect.SqlForTab == "" {
+	if ss.Dialect.SQLForTables == "" {
 		return fmt.Errorf("desc: %w", ErrNotSupported)
 	}
 	query := ss.Dialect.SqlToQueryTables()

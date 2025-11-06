@@ -25,7 +25,7 @@ type PlaceHolder interface {
 type Entry struct {
 	Usage               string
 	SQLForColumns       string
-	SqlForTab           string
+	SQLForTables        string
 	TableField          string
 	ColumnField         string
 	PlaceHolder         PlaceHolder

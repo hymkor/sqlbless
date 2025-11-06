@@ -87,7 +87,7 @@ func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) e
 		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
-		editor.Pilot = misc.AutoCsvi{a}
+		editor.Pilot = misc.AutoCsvi{GetKeyAndSize: a}
 	}
 	if ss.tx == nil {
 		editor.Query = ss.conn.QueryContext

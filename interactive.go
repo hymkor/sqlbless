@@ -121,7 +121,7 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 		editor.ResetColor = "\x1B[0m"
 		editor.DefaultColor = "\x1B[39;49;1m"
 		editor.Highlight = []readline.Highlight{
-			{Pattern: newReservedWordPattern("HOST", "ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT", "HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL", "START", "TRUNCATE", "UPDATE", "AND", "FROM", "INTO", "OR", "WHERE"), Sequence: "\x1B[36;49;1m"},
+			{Pattern: newReservedWordPattern("HOST", "ALTER", "COMMIT", "CREATE", "DELETE", "DESC", "DROP", "EXIT", "HISTORY", "INSERT", "QUIT", "REM", "ROLLBACK", "SELECT", "SPOOL", "START", "TRUNCATE", "UPDATE", "AND", "FROM", "INTO", "OR", "WHERE", "TO", "TRANSACTION"), Sequence: "\x1B[36;49;1m"},
 			{Pattern: regexp.MustCompile(`[0-9]+`), Sequence: "\x1B[35;49;1m"},
 			{Pattern: regexp.MustCompile(`/\*.*?\*/`), Sequence: "\x1B[33;49;22m"},
 			{Pattern: regexp.MustCompile(`"[^"]*"|"[^"]*$`), Sequence: "\x1B[31;49;1m"},

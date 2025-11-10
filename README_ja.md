@@ -65,7 +65,12 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 - `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `MERGE` ... `;`
     - `INSERT`, `UPDATE` , `DELETE` は自動的にトランザクションを開始します
     - これらのコマンドは、セミコロン `;`、もしくは `-term string` で指定された文字列があるまで、Enter を押下しても入力が継続します。
-- `COMMIT` / `ROLLBACK`
+- `COMMIT`
+- `ROLLBACK` `;`  -- semicolon required
+- `SAVEPOINT savepoint;`  
+   (or `SAVE TRANSACTION savepoint;` for Microsoft SQL Server)
+- `ROLLBACK TO savepoint;`  
+   (or `ROLLBACK TRANSACTION savepoint;` for Microsoft SQL Server)
 - `SPOOL`
     - `spool FILENAME` .. FILENAME を開いて、ログや出力を書き込みます
     - `spool off` .. スプールを止めてクローズします
@@ -93,6 +98,8 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
     - EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、[ご連絡](https://github.com/hymkor/sqlbless/issues/new)いただけるとたすかります。
 - `HOST command-line`
     - OS コマンドを実行します
+
+&nbsp;
 
 - スクリプトを実行する時、セミコロン `;`、もしくは `-term string` で指定された文字列が文の区切りとなります
 - インタラクティブに SQL を入力する時、セミコロン`;` もしくは`-term string` で指定された文字列は無視されます

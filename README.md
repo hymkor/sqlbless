@@ -67,7 +67,12 @@ Supported commands
 - `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `MERGE` ... `;`
     - `INSERT`, `UPDATE`, `DELETE`, and `MERGE` automatically start a transaction.
     - For these commands, input continues across lines until a semicolon (`;`) or the string specified with the `-term` option is entered.
-- `COMMIT` / `ROLLBACK`
+- `COMMIT`
+- `ROLLBACK` `;`  -- semicolon required
+- `SAVEPOINT savepoint;`  
+   (or `SAVE TRANSACTION savepoint;` for Microsoft SQL Server)
+- `ROLLBACK TO savepoint;`  
+   (or `ROLLBACK TRANSACTION savepoint;` for Microsoft SQL Server)
 - `SPOOL`
     - `spool FILENAME` .. open FILENAME and write log and output.
     - `spool off` .. stop spooling and close.
@@ -76,7 +81,6 @@ Supported commands
 - `START filename`
     - Start the SQL script given with filename
 - `REM comments`
-
 - `DESC [tablename]` / `\D [tablename]`
     - When a table name is specified, shows the schema of that table.
     - If omitted, displays a list of tables.
@@ -96,6 +100,8 @@ Supported commands
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
 - `HOST command-line`
     - Executes an operating system command.
+
+&nbsp;
 
 - `;` (or the string specified with `-term string`) is a statement seperator when script is executed
 - When sql is input interactively, terminator string (`;` or the string specified with `-term string`) is ignored

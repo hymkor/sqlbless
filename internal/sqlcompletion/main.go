@@ -30,6 +30,7 @@ func getSqlCommands() []string {
 		"quit",
 		"rem",
 		"rollback",
+		"save",
 		"savepoint",
 		"select",
 		"spool",
@@ -115,6 +116,13 @@ func (C *completeType) getCandidates(ctx context.Context, fields []string) ([]st
 			nextKeyword = nil
 			candidates = func() []string {
 				return []string{"to", "transaction"}
+			}
+		} else if strings.EqualFold(word, "save") {
+			tableListNow = false
+			lastKeywordAt = i
+			nextKeyword = nil
+			candidates = func() []string {
+				return []string{"transaction"}
 			}
 		} else {
 			if tableListNow && i < len(fields)-1 {

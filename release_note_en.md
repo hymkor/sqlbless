@@ -3,6 +3,7 @@
 - Refactor `dialect` subpackage: rename fields and methods for clarity (#8)
 - Updated `go-readline-ny` to v1.12.2 and `go-ttyadapter` to v0.2.0, and switched API calls to use `go-ttyadapter`.(#9)
 - Support `SAVEPOINT` as a TCL command (#11)
+- Support `SAVE TRANSACTION` as a TCL command (#14)
 - Support `ROLLBACK TO` (or `ROLLBACK TRANSACTION`) as a TCL command (#11)
 - Require `;` after `ROLLBACK` to prevent accidental execution (#11)
 - Fix: Correct handling of `io.EOF` during script execution (#12)

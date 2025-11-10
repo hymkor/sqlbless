@@ -49,18 +49,17 @@ func newReservedWordPattern(list ...string) reserveWordPattern {
 var o = struct{}{}
 
 var oneLineCommands = map[string]struct{}{
-	`COMMIT`:   o,
-	`DESC`:     o,
-	`EDIT`:     o,
-	`EXIT`:     o,
-	`HISTORY`:  o,
-	`HOST`:     o,
-	`QUIT`:     o,
-	`REM`:      o,
-	`ROLLBACK`: o,
-	`SPOOL`:    o,
-	`START`:    o,
-	`\D`:       o,
+	`COMMIT`:  o,
+	`DESC`:    o,
+	`EDIT`:    o,
+	`EXIT`:    o,
+	`HISTORY`: o,
+	`HOST`:    o,
+	`QUIT`:    o,
+	`REM`:     o,
+	`SPOOL`:   o,
+	`START`:   o,
+	`\D`:      o,
 }
 
 func isOneLineCommand(cmdLine string) bool {

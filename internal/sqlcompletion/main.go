@@ -30,6 +30,7 @@ func getSqlCommands() []string {
 		"quit",
 		"rem",
 		"rollback",
+		"savepoint",
 		"select",
 		"spool",
 		"start",

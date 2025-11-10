@@ -10,6 +10,7 @@ import (
 
 	"github.com/nyaosorg/go-box/v3"
 
+	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/spread"
 
 	"github.com/hymkor/sqlbless/internal/misc"
@@ -59,7 +60,7 @@ func newViewer(ss *session) *spread.Viewer {
 
 var rxNonQuote = regexp.MustCompile(`^\w+$`)
 
-func chooseTable(ctx context.Context, tables []string, ttyout io.Writer) (string, error) {
+func chooseTable(ctx context.Context, tables []string, d *dialect.Entry, ttyout io.Writer) (string, error) {
 	fmt.Fprintln(ttyout, "Select a table:")
 	table, err := box.SelectString(tables, false, ttyout)
 	fmt.Println()
@@ -71,7 +72,7 @@ func chooseTable(ctx context.Context, tables []string, ttyout io.Writer) (string
 	}
 	targetTable := table[0]
 	if !rxNonQuote.MatchString(targetTable) {
-		targetTable = `"` + table[0] + `"`
+		targetTable = d.EncloseIdentifier(table[0])
 	}
 	return targetTable, nil
 }
@@ -101,7 +102,7 @@ func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) e
 		if err != nil {
 			return err
 		}
-		tableAndWhere, err = chooseTable(ctx, tables, ss.termOut)
+		tableAndWhere, err = chooseTable(ctx, tables, ss.Dialect, ss.termOut)
 		if err != nil || tableAndWhere == "" {
 			return err
 		}

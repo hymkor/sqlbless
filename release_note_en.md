@@ -9,6 +9,8 @@
 - Fix: Correct handling of `io.EOF` during script execution (#12)
 - Suppress output of empty lines and leading/trailing spaces in script output (#12)
 - Fix: `CSVI` launched by `SELECT` in a script now terminates automatically with `>`, `q`, and `y` (#12)
+- Update go-readline-ny to v1.12.3 (#15)
+    - Fix: completion: cursor moved to the start of the previous word when the current word is empty ([go-readline-ny#17](https://github.com/nyaosorg/go-readline-ny/pull/17))
 
 v0.25.0
 =======

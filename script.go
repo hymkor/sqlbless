@@ -3,6 +3,7 @@ package sqlbless
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -29,18 +30,25 @@ func (script *scriptIn) GetKey() (string, error) {
 }
 
 func (script *scriptIn) AutoPilotForCsvi() (csvi.Pilot, bool) {
-	return nil, false
+	return &misc.CsviNoOperation{}, true
 }
 
 func (script *scriptIn) Read(context.Context) ([]string, error) {
+	if script.br == nil {
+		return nil, io.EOF
+	}
 	var buffer strings.Builder
 	quoted := 0
 	for {
 		ch, _, err := script.br.ReadRune()
-		if err != nil {
+		if errors.Is(err, io.EOF) {
 			code := buffer.String()
-			fmt.Fprintln(script.echo, code)
-			return []string{code}, err
+			fmt.Fprintln(script.echo, strings.TrimSpace(code))
+			script.br = nil
+			return []string{code}, nil
+		}
+		if err != nil {
+			return nil, err
 		}
 		if ch == '\r' {
 			continue
@@ -55,8 +63,7 @@ func (script *scriptIn) Read(context.Context) ([]string, error) {
 			code := buffer.String()
 			term := script.term
 			if _, ok := misc.HasTerm(code, term); ok {
-				println(code)
-				fmt.Fprintln(script.echo, code)
+				fmt.Fprintln(script.echo, strings.TrimSpace(code))
 				return []string{code}, nil
 			}
 		}

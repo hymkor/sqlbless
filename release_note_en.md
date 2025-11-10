@@ -5,6 +5,9 @@
 - Support `SAVEPOINT` as a TCL command (#11)
 - Support `ROLLBACK TO` (or `ROLLBACK TRANSACTION`) as a TCL command (#11)
 - Require `;` after `ROLLBACK` to prevent accidental execution (#11)
+- Fix: Correct handling of `io.EOF` during script execution (#12)
+- Suppress output of empty lines and leading/trailing spaces in script output (#12)
+- Fix: `CSVI` launched by `SELECT` in a script now terminates automatically with `>`, `q`, and `y` (#12)
 
 v0.25.0
 =======

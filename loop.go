@@ -72,6 +72,8 @@ var (
 	ErrBeginIsNotSupported    = errors.New("'BEGIN' is not supported; transactions are managed automatically")
 	ErrNoDataFound            = errors.New("no data found")
 	ErrNotSupported           = errors.New("not supported")
+	ErrInvalidRollback        = errors.New("invalid ROLLBACK syntax: expected 'TO' or 'TRANSACTION'")
+	ErrNoActiveTransaction    = errors.New("no active transaction")
 )
 
 func (ss *session) prompt(w io.Writer, i int) (int, error) {
@@ -160,6 +162,19 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		case "SELECT":
 			misc.Echo(ss.spool, query)
 			err = doSelect(ctx, ss, query, nil)
+		case "ROLLBACK":
+			misc.Echo(ss.spool, query)
+			arg, _ = misc.CutField(arg)
+			if arg == "" {
+				err = ss.rollback()
+			} else if strings.EqualFold(arg, "TO") || strings.EqualFold(arg, "TRANSACTION") {
+				err = doTCL(ctx, ss, query)
+			} else {
+				err = ErrInvalidRollback
+			}
+		case "SAVEPOINT":
+			misc.Echo(ss.spool, query)
+			doTCL(ctx, ss, query)
 		case "DELETE", "INSERT", "UPDATE", "MERGE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
@@ -174,9 +189,6 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		case "COMMIT":
 			misc.Echo(ss.spool, query)
 			err = ss.commit()
-		case "ROLLBACK":
-			misc.Echo(ss.spool, query)
-			err = ss.rollback()
 		case "EXIT", "QUIT":
 			if ss.tx == nil || commandIn.CanCloseInTransaction() {
 				return nil

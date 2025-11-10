@@ -2,6 +2,9 @@
 
 - サブパッケージ `dialect` をリファクタリング: フィールド・メソッドを改名 (#8)
 - `go-readline-ny` を v1.12.2、`go-ttyadapter` を v0.2.0 に更新し、対応する API 呼び出しを `go-ttyadapter` 側に切り替えた。(#9)
+- `SAVEPOINT` を TCL コマンドとしてサポート (#11)
+- `ROLLBACK TO`（もしくは `ROLLBACK TRANSACTION`）を TCL コマンドとしてサポート (#11)
+- 誤操作による実行を防ぐため、`ROLLBACK` には `;` を必須とした (#11)
 
 v0.25.0
 =======

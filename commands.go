@@ -56,6 +56,17 @@ func doDML(ctx context.Context, conn canExec, query string, args []any, w io.Wri
 	return count, nil
 }
 
+func doTCL(ctx context.Context, ss *session, query string) error {
+	if ss.tx == nil {
+		return ErrNoActiveTransaction
+	}
+	_, err := ss.tx.ExecContext(ctx, query)
+	if err == nil {
+		fmt.Fprintln(ss.stdErr, "Ok")
+	}
+	return err
+}
+
 func (ss *session) commit() error {
 	var err error
 	if ss.tx != nil {

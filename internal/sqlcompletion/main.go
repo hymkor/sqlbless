@@ -30,6 +30,7 @@ func getSqlCommands() []string {
 		"quit",
 		"rem",
 		"rollback",
+		"savepoint",
 		"select",
 		"spool",
 		"start",
@@ -107,6 +108,13 @@ func (C *completeType) getCandidates(ctx context.Context, fields []string) ([]st
 			candidates = func() []string {
 				v, _ := completion.PathComplete(fields[:i+1])
 				return v
+			}
+		} else if strings.EqualFold(word, "rollback") {
+			tableListNow = false
+			lastKeywordAt = i
+			nextKeyword = nil
+			candidates = func() []string {
+				return []string{"to", "transaction"}
 			}
 		} else {
 			if tableListNow && i < len(fields)-1 {

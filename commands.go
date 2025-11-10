@@ -15,13 +15,13 @@ import (
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
-func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer, pilot commandIn) error {
+func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer, pilot commandIn, args ...any) error {
 	var rows *sql.Rows
 	var err error
 	if ss.tx != nil {
-		rows, err = ss.tx.QueryContext(ctx, query)
+		rows, err = ss.tx.QueryContext(ctx, query, args...)
 	} else {
-		rows, err = ss.conn.QueryContext(ctx, query)
+		rows, err = ss.conn.QueryContext(ctx, query, args...)
 	}
 	if err != nil {
 		return fmt.Errorf("query: %[1]w (%[1]T)", err)
@@ -180,7 +180,7 @@ func doDescColumns(ctx context.Context, ss *session, table string, commandIn com
 	if ss.Debug {
 		fmt.Println(query)
 	}
-	return doSelect(ctx, ss, query, newViewer(ss), commandIn)
+	return doSelect(ctx, ss, query, newViewer(ss), commandIn, table)
 }
 
 func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn) error {

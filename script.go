@@ -30,7 +30,7 @@ func (script *scriptIn) GetKey() (string, error) {
 }
 
 func (script *scriptIn) AutoPilotForCsvi() (csvi.Pilot, bool) {
-	return nil, false
+	return &misc.CsviNoOperation{}, true
 }
 
 func (script *scriptIn) Read(context.Context) ([]string, error) {

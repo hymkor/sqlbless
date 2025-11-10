@@ -11,28 +11,34 @@ type GetKeyAndSize interface {
 	Size() (int, int, error)
 }
 
-type CsviNoOperation struct{}
+type CsviNoOperation struct {
+	text []string
+}
 
-func (CsviNoOperation) Size() (int, int, error) {
+func (*CsviNoOperation) Size() (int, int, error) {
 	return 80, 25, nil
 }
 
-func (CsviNoOperation) Calibrate() error {
-	return nil
+func (c *CsviNoOperation) GetKey() (string, error) {
+	if len(c.text) <= 0 {
+		c.text = []string{">", "q", "y", ""}
+	}
+	v := c.text[0]
+	if v == "" {
+		return "", io.EOF
+	}
+	c.text = c.text[1:]
+	return v, nil
 }
 
-func (CsviNoOperation) GetKey() (string, error) {
-	return "q", nil
-}
-
-func (CsviNoOperation) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
+func (*CsviNoOperation) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
 	return "", nil
 }
 
-func (CsviNoOperation) GetFilename(io.Writer, string, string) (string, error) {
+func (*CsviNoOperation) GetFilename(io.Writer, string, string) (string, error) {
 	return "", nil
 }
 
-func (CsviNoOperation) Close() error {
+func (*CsviNoOperation) Close() error {
 	return nil
 }

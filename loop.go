@@ -161,7 +161,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 
 		case "SELECT":
 			misc.Echo(ss.spool, query)
-			err = doSelect(ctx, ss, query, nil)
+			err = doSelect(ctx, ss, query, nil, commandIn)
 		case "ROLLBACK":
 			misc.Echo(ss.spool, query)
 			arg, _ = misc.CutField(arg)
@@ -216,7 +216,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		default:
 			misc.Echo(ss.spool, query)
 			if q := ss.Dialect.IsQuerySQL; q != nil && q(query) {
-				err = doSelect(ctx, ss, query, nil)
+				err = doSelect(ctx, ss, query, nil, commandIn)
 			} else {
 				if ss.tx == nil {
 					_, err = ss.conn.ExecContext(ctx, query)

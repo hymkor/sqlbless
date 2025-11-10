@@ -15,7 +15,7 @@ import (
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
-func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer) error {
+func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer, pilot commandIn) error {
 	var rows *sql.Rows
 	var err error
 	if ss.tx != nil {
@@ -35,9 +35,15 @@ func doSelect(ctx context.Context, ss *session, query string, v *spread.Viewer) 
 		v = newViewer(ss)
 	}
 	if ss.automatic() {
-		v.Pilot = misc.CsviNoOperation{}
+		v.Pilot = &misc.CsviNoOperation{}
+	} else if a, ok := pilot.AutoPilotForCsvi(); ok {
+		v.Pilot = a
 	}
-	return v.View(ctx, query, _rows, ss.termOut)
+	err = v.View(ctx, query, _rows, ss.termOut)
+	if errors.Is(err, io.EOF) {
+		return nil
+	}
+	return err
 }
 
 type canExec interface {
@@ -145,7 +151,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 			rc, err := handler(e)
 			if err == nil && rc.Quit && name != "" {
 				action = func() error {
-					return doDescColumns(ctx, ss, name)
+					return doDescColumns(ctx, ss, name, commandIn)
 				}
 			}
 			return rc, err
@@ -157,7 +163,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 	if ss.Debug {
 		fmt.Println(query)
 	}
-	err := doSelect(ctx, ss, query, v)
+	err := doSelect(ctx, ss, query, v, commandIn)
 	if err == nil && name != "" {
 		fmt.Fprintln(ss.termErr)
 		misc.Echo(ss.spool, name)
@@ -166,7 +172,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 	return err
 }
 
-func doDescColumns(ctx context.Context, ss *session, table string) error {
+func doDescColumns(ctx context.Context, ss *session, table string, commandIn commandIn) error {
 	if ss.Dialect.SQLForColumns == "" {
 		return fmt.Errorf("desc table: %w", ErrNotSupported)
 	}
@@ -174,7 +180,7 @@ func doDescColumns(ctx context.Context, ss *session, table string) error {
 	if ss.Debug {
 		fmt.Println(query)
 	}
-	return doSelect(ctx, ss, query, newViewer(ss))
+	return doSelect(ctx, ss, query, newViewer(ss), commandIn)
 }
 
 func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn) error {
@@ -182,5 +188,5 @@ func doDesc(ctx context.Context, ss *session, table string, commandIn commandIn)
 	if table == "" {
 		return doDescTables(ctx, ss, commandIn)
 	}
-	return doDescColumns(ctx, ss, table)
+	return doDescColumns(ctx, ss, table, commandIn)
 }

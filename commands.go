@@ -139,7 +139,7 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 			rc, err := handler(e)
 			if err == nil && rc.Quit && name != "" {
 				action = func() error {
-					return doEdit(ctx, ss, `edit "`+name+`"`, commandIn)
+					return doEdit(ctx, ss, "edit "+ss.Dialect.EncloseIdentifier(name), commandIn)
 				}
 			}
 			return rc, err

@@ -53,6 +53,19 @@ type Entry struct {
 
 	// IsQuerySQL reports whether the given SQL statement is a query (e.g., SELECT) or not.
 	IsQuerySQL func(sql string) bool
+
+	// IdentifierEncloser encloses an identifier with dialect-specific quotes.
+	IdentifierEncloser func(name string) string
+}
+
+// EncloseIdentifier returns the given name enclosed with
+// dialect-specific quotes. If IdentifierEncloser is nil,
+// it defaults to using double quotes.
+func (D *Entry) EncloseIdentifier(name string) string {
+	if f := D.IdentifierEncloser; f != nil {
+		return f(name)
+	}
+	return `"` + name + `"`
 }
 
 func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {

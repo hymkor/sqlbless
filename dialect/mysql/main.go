@@ -92,6 +92,10 @@ var mySqlSpec = &dialect.Entry{
 	DSNFilter:        mySQLDSNFilter,
 	TableNameField:   "TABLE_NAME",
 	ColumnNameField:  "NAME",
+
+	IdentifierEncloser: func(s string) string {
+		return "`" + s + "`"
+	},
 }
 
 func init() {

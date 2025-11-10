@@ -3,6 +3,7 @@ package sqlbless
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"strings"

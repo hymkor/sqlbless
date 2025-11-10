@@ -1,16 +1,24 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
-- Refactor `dialect` subpackage: rename fields and methods for clarity (#8)
-- Updated `go-readline-ny` to v1.12.2 and `go-ttyadapter` to v0.2.0, and switched API calls to use `go-ttyadapter`.(#9)
+### Bug fixes
+
+- Fix: completion — cursor moved to the start of the previous word when the current word was empty (#15, [go-readline-ny #17](https://github.com/nyaosorg/go-readline-ny/pull/17))
+
+### Specification changes
+
 - Support `SAVEPOINT` as a TCL command (#11)
 - Support `SAVE TRANSACTION` as a TCL command (#14)
 - Support `ROLLBACK TO` (or `ROLLBACK TRANSACTION`) as a TCL command (#11)
 - Require `;` after `ROLLBACK` to prevent accidental execution (#11)
-- Fix: Correct handling of `io.EOF` during script execution (#12)
-- Suppress output of empty lines and leading/trailing spaces in script output (#12)
-- Fix: `CSVI` launched by `SELECT` in a script now terminates automatically with `>`, `q`, and `y` (#12)
-- Update go-readline-ny to v1.12.3 (#15)
-    - Fix: completion: cursor moved to the start of the previous word when the current word is empty ([go-readline-ny#17](https://github.com/nyaosorg/go-readline-ny/pull/17))
+- Script execution improvements (#12):
+    - Fix: correct handling of `io.EOF`
+    - Suppress output of empty lines and leading/trailing spaces
+    - Fix: `CSVI` launched by `SELECT` in a script now terminates automatically with `>`, `q`, and `y`
+
+### Internal changes
+
+- Refactor `dialect` subpackage: renamed fields and methods for clarity (#8)
+- Switched terminal input API calls to use `go-ttyadapter` v0.2.0 (#9)
 
 v0.25.0
 =======

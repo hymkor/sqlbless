@@ -98,7 +98,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		}
 		lines, err := commandIn.Read(ctx)
 		if err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				if ss.tx != nil && !commandIn.CanCloseInTransaction() {
 					fmt.Fprintln(ss.termErr, ErrTransactionIsNotClosed.Error())
 					continue

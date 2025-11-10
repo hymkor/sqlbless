@@ -3,6 +3,7 @@ package sqlbless
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -33,14 +34,21 @@ func (script *scriptIn) AutoPilotForCsvi() (csvi.Pilot, bool) {
 }
 
 func (script *scriptIn) Read(context.Context) ([]string, error) {
+	if script.br == nil {
+		return nil, io.EOF
+	}
 	var buffer strings.Builder
 	quoted := 0
 	for {
 		ch, _, err := script.br.ReadRune()
-		if err != nil {
+		if errors.Is(err, io.EOF) {
 			code := buffer.String()
 			fmt.Fprintln(script.echo, code)
-			return []string{code}, err
+			script.br = nil
+			return []string{code}, nil
+		}
+		if err != nil {
+			return nil, err
 		}
 		if ch == '\r' {
 			continue

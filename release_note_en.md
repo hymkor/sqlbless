@@ -4,6 +4,7 @@
 
 - Fix: completion — cursor moved to the start of the previous word when the current word was empty (#15, [go-readline-ny #17](https://github.com/nyaosorg/go-readline-ny/pull/17))
 - Fix: an issue where pressing `Enter` on the result of the `desc` command (table list) did not show the column (`desc TABLE`) for the selected table on databases other than SQLite3. (#16)
+- Fix: In MySQL, pressing `r` on the table list failed to launch the `edit <table>` command because the table name was enclosed with a different type of quotation marks (`` ` ``) than other databases. (#17)
 
 ### Specification changes
 

@@ -1,5 +1,9 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.26.0
+=======
+Nov 11, 2025
+
 ### Bug fixes
 
 - Fix: completion — cursor moved to the start of the previous word when the current word was empty (#15, [go-readline-ny #17](https://github.com/nyaosorg/go-readline-ny/pull/17))

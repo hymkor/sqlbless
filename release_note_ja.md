@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+v0.26.0
+=======
+Nov 11, 2025
+
 ### 不具合修正
 
 - 補完で、現在の単語が空の場合にカーソルが前の単語の先頭に移動してしまう不具合を修正 (#15,[go-readline-ny v1.12.3 #17](https://github.com/nyaosorg/go-readline-ny/pull/17))

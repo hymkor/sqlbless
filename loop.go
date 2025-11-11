@@ -172,9 +172,9 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			} else {
 				err = ErrInvalidRollback
 			}
-		case "SAVEPOINT", "SAVE":
+		case "SAVEPOINT", "SAVE", "RELEASE":
 			misc.Echo(ss.spool, query)
-			doTCL(ctx, ss, query)
+			err = doTCL(ctx, ss, query)
 		case "DELETE", "INSERT", "UPDATE", "MERGE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)

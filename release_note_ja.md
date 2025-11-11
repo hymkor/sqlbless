@@ -6,7 +6,7 @@
 
 ### 仕様変更
 
-- `RELEASE SAVEPOINT` もトランザクション内で実行できるようにした。(#19)
+- `RELEASE SAVEPOINT` (#19), `REPLACE INTO` (#20,MySQL) もトランザクション内で実行できるようにした。
 
 v0.26.0
 =======

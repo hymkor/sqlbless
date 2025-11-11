@@ -6,7 +6,7 @@
 
 ### Specification Changes
 
-- Enable `RELEASE SAVEPOINT` to execute within a transaction. (#19)
+- Enable `RELEASE SAVEPOINT`(#19) and `REPLACE INTO`(#20,MySQL) to execute within a transaction. 
 
 v0.26.0
 =======

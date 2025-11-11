@@ -175,7 +175,9 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 		case "SAVEPOINT", "SAVE", "RELEASE":
 			misc.Echo(ss.spool, query)
 			err = doTCL(ctx, ss, query)
-		case "DELETE", "INSERT", "UPDATE", "MERGE":
+
+		// Updates returning affected row count, safe in transaction
+		case "DELETE", "INSERT", "UPDATE", "MERGE", "REPLACE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)
 			err = ss.beginTx(ctx, ss.stdErr)

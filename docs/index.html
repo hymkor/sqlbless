@@ -1244,40 +1244,36 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 </table>
 <h2 id="supported-commands">Supported commands</h2>
 <ul>
-<li>
-<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code></p>
+<li><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code>
 <ul>
 <li><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, and <code>MERGE</code> automatically start a transaction.</li>
 <li>For these commands, input continues across lines until a semicolon (<code>;</code>) or the string specified with the <code>-term</code> option is entered.</li>
 </ul>
 </li>
-<li>
-<p><code>COMMIT</code> / <code>ROLLBACK</code></p>
-</li>
-<li>
-<p><code>SPOOL</code></p>
+<li><code>COMMIT</code></li>
+<li><code>ROLLBACK</code> <code>;</code>  -- semicolon required</li>
+<li><code>SAVEPOINT savepoint;</code><br />
+(or <code>SAVE TRANSACTION savepoint;</code> for Microsoft SQL Server)</li>
+<li><code>ROLLBACK TO savepoint;</code><br />
+(or <code>ROLLBACK TRANSACTION savepoint;</code> for Microsoft SQL Server)</li>
+<li><code>SPOOL</code>
 <ul>
 <li><code>spool FILENAME</code> .. open FILENAME and write log and output.</li>
 <li><code>spool off</code> .. stop spooling and close.</li>
 </ul>
 </li>
-<li>
-<p><code>EXIT</code> / <code>QUIT</code></p>
+<li><code>EXIT</code> / <code>QUIT</code>
 <ul>
 <li>Rollback a transaction and exit SQL-Bless.</li>
 </ul>
 </li>
-<li>
-<p><code>START filename</code></p>
+<li><code>START filename</code>
 <ul>
 <li>Start the SQL script given with filename</li>
 </ul>
 </li>
-<li>
-<p><code>REM comments</code></p>
-</li>
-<li>
-<p><code>DESC [tablename]</code> / <code>\D [tablename]</code></p>
+<li><code>REM comments</code></li>
+<li><code>DESC [tablename]</code> / <code>\D [tablename]</code>
 <ul>
 <li>When a table name is specified, shows the schema of that table.</li>
 <li>If omitted, displays a list of tables.
@@ -1289,14 +1285,12 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 </li>
 </ul>
 </li>
-<li>
-<p><code>HISTORY</code></p>
+<li><code>HISTORY</code>
 <ul>
 <li>Show the history of input SQLs</li>
 </ul>
 </li>
-<li>
-<p><code>EDIT [tablename [WHERE conditions...]]</code></p>
+<li><code>EDIT [tablename [WHERE conditions...]]</code>
 <ul>
 <li>Start an <a href="https://github.com/hymkor/csvi">editor</a> to modify the selected records of the table.</li>
 <li>In the editor, these keys are bound.
@@ -1311,18 +1305,16 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 <li>Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could <a href="https://github.com/hymkor/sqlbless/issues/new">contact us</a>.</li>
 </ul>
 </li>
-<li>
-<p><code>HOST command-line</code></p>
+<li><code>HOST command-line</code>
 <ul>
 <li>Executes an operating system command.</li>
 </ul>
 </li>
-<li>
-<p><code>;</code> (or the string specified with <code>-term string</code>) is a statement seperator when script is executed</p>
-</li>
-<li>
-<p>When sql is input interactively, terminator string (<code>;</code> or the string specified with <code>-term string</code>) is ignored</p>
-</li>
+</ul>
+<p> </p>
+<ul>
+<li><code>;</code> (or the string specified with <code>-term string</code>) is a statement seperator when script is executed</li>
+<li>When sql is input interactively, terminator string (<code>;</code> or the string specified with <code>-term string</code>) is ignored</li>
 </ul>
 <h2 id="example-of-a-spooled-file">Example of a spooled file</h2>
 <pre><code class="language-CSV"># (2023-04-17 22:52:16)

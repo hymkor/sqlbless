@@ -1242,40 +1242,36 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 </table>
 <h2 id="%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89">サポートコマンド</h2>
 <ul>
-<li>
-<p><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code></p>
+<li><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code>
 <ul>
 <li><code>INSERT</code>, <code>UPDATE</code> , <code>DELETE</code> は自動的にトランザクションを開始します</li>
 <li>これらのコマンドは、セミコロン <code>;</code>、もしくは <code>-term string</code> で指定された文字列があるまで、Enter を押下しても入力が継続します。</li>
 </ul>
 </li>
-<li>
-<p><code>COMMIT</code> / <code>ROLLBACK</code></p>
-</li>
-<li>
-<p><code>SPOOL</code></p>
+<li><code>COMMIT</code></li>
+<li><code>ROLLBACK</code> <code>;</code>  -- semicolon required</li>
+<li><code>SAVEPOINT savepoint;</code><br />
+(or <code>SAVE TRANSACTION savepoint;</code> for Microsoft SQL Server)</li>
+<li><code>ROLLBACK TO savepoint;</code><br />
+(or <code>ROLLBACK TRANSACTION savepoint;</code> for Microsoft SQL Server)</li>
+<li><code>SPOOL</code>
 <ul>
 <li><code>spool FILENAME</code> .. FILENAME を開いて、ログや出力を書き込みます</li>
 <li><code>spool off</code> .. スプールを止めてクローズします</li>
 </ul>
 </li>
-<li>
-<p><code>EXIT</code> / <code>QUIT</code></p>
+<li><code>EXIT</code> / <code>QUIT</code>
 <ul>
 <li>トランザクションをロールバックして、SQL-Bless を終了します</li>
 </ul>
 </li>
-<li>
-<p><code>START filename</code></p>
+<li><code>START filename</code>
 <ul>
 <li>ファイル名で指定した SQL スクリプトを実行します。</li>
 </ul>
 </li>
-<li>
-<p><code>REM comments</code></p>
-</li>
-<li>
-<p><code>DESC [tablename]</code> / <code>\D [tablename]</code></p>
+<li><code>REM comments</code></li>
+<li><code>DESC [tablename]</code> / <code>\D [tablename]</code>
 <ul>
 <li>テーブル名が指定された場合、そのテーブルのスキーマを表示します</li>
 <li>テーブル名が省略された場合、テーブルの一覧を表示します
@@ -1287,14 +1283,12 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 </li>
 </ul>
 </li>
-<li>
-<p><code>HISTORY</code></p>
+<li><code>HISTORY</code>
 <ul>
 <li>入力履歴を表示します</li>
 </ul>
 </li>
-<li>
-<p><code>EDIT [tablename [WHERE conditions...]]</code></p>
+<li><code>EDIT [tablename [WHERE conditions...]]</code>
 <ul>
 <li>選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します</li>
 <li>エディタ中では以下のキーが拡張されます
@@ -1309,18 +1303,16 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 <li>EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、<a href="https://github.com/hymkor/sqlbless/issues/new">ご連絡</a>いただけるとたすかります。</li>
 </ul>
 </li>
-<li>
-<p><code>HOST command-line</code></p>
+<li><code>HOST command-line</code>
 <ul>
 <li>OS コマンドを実行します</li>
 </ul>
 </li>
-<li>
-<p>スクリプトを実行する時、セミコロン <code>;</code>、もしくは <code>-term string</code> で指定された文字列が文の区切りとなります</p>
-</li>
-<li>
-<p>インタラクティブに SQL を入力する時、セミコロン<code>;</code> もしくは<code>-term string</code> で指定された文字列は無視されます</p>
-</li>
+</ul>
+<p> </p>
+<ul>
+<li>スクリプトを実行する時、セミコロン <code>;</code>、もしくは <code>-term string</code> で指定された文字列が文の区切りとなります</li>
+<li>インタラクティブに SQL を入力する時、セミコロン<code>;</code> もしくは<code>-term string</code> で指定された文字列は無視されます</li>
 </ul>
 <h2 id="%E3%82%B9%E3%83%97%E3%83%BC%E3%83%AB%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E4%BE%8B">スプールファイルの例</h2>
 <pre><code class="language-CSV"># (2023-04-17 22:52:16)

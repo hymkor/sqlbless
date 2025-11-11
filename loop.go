@@ -172,7 +172,9 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			} else {
 				err = ErrInvalidRollback
 			}
-		case "SAVEPOINT", "SAVE", "RELEASE":
+
+		// Executable but return nothing, safe in transaction
+		case "SAVEPOINT", "SAVE", "RELEASE", "SET":
 			misc.Echo(ss.spool, query)
 			err = doTCL(ctx, ss, query)
 

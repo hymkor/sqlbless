@@ -1,5 +1,13 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+### 不具合修正
+
+- `SAVEPOINT`, `SAVE TRANSACTION` の実行中にエラーが発生してもメッセージが表示されなかった問題を修正 (#19)
+
+### 仕様変更
+
+- `RELEASE SAVEPOINT` もトランザクション内で実行できるようにした。(#19)
+
 v0.26.0
 =======
 Nov 11, 2025

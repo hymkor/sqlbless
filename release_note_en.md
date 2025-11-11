@@ -1,5 +1,13 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+### Bug fixes
+
+- Fix: Errors were not reported during execution of `SAVEPOINT` and `SAVE TRANSACTION`. (#19)
+
+### Specification Changes
+
+- Enable `RELEASE SAVEPOINT` to execute within a transaction. (#19)
+
 v0.26.0
 =======
 Nov 11, 2025

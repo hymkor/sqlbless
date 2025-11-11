@@ -174,7 +174,7 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			}
 		case "SAVEPOINT", "SAVE":
 			misc.Echo(ss.spool, query)
-			doTCL(ctx, ss, query)
+			err = doTCL(ctx, ss, query)
 		case "DELETE", "INSERT", "UPDATE", "MERGE":
 			misc.Echo(ss.spool, query)
 			isNewTx := (ss.tx == nil)

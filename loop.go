@@ -164,11 +164,18 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			err = doSelect(ctx, ss, query, nil, commandIn)
 		case "ROLLBACK":
 			misc.Echo(ss.spool, query)
-			arg, _ = misc.CutField(arg)
+			var rest string
+			arg, rest = misc.CutField(arg)
 			if arg == "" {
 				err = ss.rollback()
-			} else if strings.EqualFold(arg, "TO") || strings.EqualFold(arg, "TRANSACTION") {
+			} else if strings.EqualFold(arg, "TO") {
 				err = doTCL(ctx, ss, query)
+			} else if strings.EqualFold(arg, "TRANSACTION") {
+				if strings.TrimSpace(rest) == "" {
+					err = ss.rollback()
+				} else {
+					err = doTCL(ctx, ss, query)
+				}
 			} else {
 				err = ErrInvalidRollback
 			}

@@ -12,9 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/term"
-
 	"github.com/mattn/go-colorable"
+	"github.com/mattn/go-isatty"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/go-shellcommand"
@@ -310,7 +309,7 @@ func (cfg *Config) Run(driver, dataSourceName string, dbDialect *dialect.Entry) 
 		return ss.Start(ctx, cfg.Script)
 	}
 
-	if !term.IsTerminal(int(os.Stdin.Fd())) && !ss.automatic() {
+	if !isatty.IsTerminal(os.Stdin.Fd()) && !ss.automatic() {
 		return ss.StartFromStdin(ctx)
 	}
 	return ss.Loop(ctx, ss.newInteractiveIn())

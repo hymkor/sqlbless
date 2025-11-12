@@ -3,6 +3,7 @@
 ### Bug fixes
 
 - Fix: Errors were not reported during execution of `SAVEPOINT` and `SAVE TRANSACTION`. (#19)
+- SQL Server: Fixed an issue where `ROLLBACK TRANSACTION` without a savepoint was not recognized as ending the transaction, causing the prompt to remain as `SQL*`. (#22)
 
 ### Specification Changes
 

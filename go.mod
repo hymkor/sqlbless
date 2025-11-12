@@ -11,12 +11,12 @@ require (
 	github.com/hymkor/struct2flag v0.0.4
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
+	github.com/mattn/go-isatty v0.0.20
 	github.com/microsoft/go-mssqldb v1.7.2
 	github.com/nyaosorg/go-box/v3 v3.0.0
 	github.com/nyaosorg/go-readline-ny v1.12.3
 	github.com/nyaosorg/go-ttyadapter v0.2.0
 	github.com/sijms/go-ora/v2 v2.8.22
-	golang.org/x/term v0.29.0
 )
 
 require (
@@ -28,7 +28,6 @@ require (
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hymkor/sxencode-go v0.3.0 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect

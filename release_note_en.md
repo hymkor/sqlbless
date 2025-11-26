@@ -1,3 +1,5 @@
+Release notes (English)
+=======================
 ( **English** / [Japanese](release_note_ja.md) )
 
 ### Bug fixes
@@ -10,7 +12,7 @@
 - Enable `RELEASE SAVEPOINT`(#19), `REPLACE INTO`(#20,MySQL) and `SET`(#21) to execute within a transaction. 
 
 v0.26.0
-=======
+-------
 Nov 11, 2025
 
 ### Bug fixes
@@ -38,7 +40,7 @@ Nov 11, 2025
 - Switched terminal input API calls to use `go-ttyadapter` v0.2.0 (#9)
 
 v0.25.0
-=======
+-------
 Nov 3, 2025
 
 ### Bug fixes
@@ -64,7 +66,7 @@ Nov 3, 2025
 - Rewrote the SQLite3 test written in PowerShell 7 using Go’s standard `go test` framework to enable testing on Linux and GitHub Actions. (#7)
 
 v0.24.0
-=======
+-------
 Oct 25, 2025
 
 - Fixed an issue in the `edit` command where table names containing spaces were incorrectly expanded in SQL statements.
@@ -75,7 +77,7 @@ Oct 25, 2025
 - Enabled syntax highlighting for the `HOST` command and filename completion after `HOST`.
 
 v0.23.0
-=======
+-------
 Oct 14, 2025
 
 - For non-DML SQL, `"database/sql".Conn` is now used instead of `"database/sql".DB`
@@ -96,7 +98,7 @@ Oct 14, 2025
     - When the environment variable `COLORFGBG` is defined in the form `(FG);(BG)` and `(FG)` is less than `(BG)`, the program now uses color settings designed for light backgrounds (equivalent to `-rv`).
 
 v0.22.0
-=======
+-------
 Oct 5, 2025
 
 - On the `edit` command:
@@ -111,7 +113,7 @@ Oct 5, 2025
 - Modified the existing CRLF mode to avoid using golang.org/x/text/transform.
 
 v0.21.0
-=======
+-------
 Sep 27, 2025
 
 - `edit` command
@@ -130,7 +132,7 @@ Sep 27, 2025
 - Added the `host` command to execute operating system commands.
 
 v0.20.0
-=======
+-------
 Sep 14, 2025
 
 - Bug Fixes
@@ -151,7 +153,7 @@ Sep 14, 2025
     - Moved the database-specific customization packages under `"dialect"`.
 
 v0.19.0
-=======
+-------
 Sep 6, 2025
 
 - Parameters for the START command are now completed as filenames.
@@ -163,7 +165,7 @@ Sep 6, 2025
     - Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v0.18.0
-=======
+-------
 Jun 25, 2025
 
 - Updated go-readline-ny to v1.9.1
@@ -175,7 +177,7 @@ Jun 25, 2025
 - Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
 
 v0.17.0
-=======
+-------
 Jan 20, 2025
 
 - Update the dependency of go-multiline-ny to v0.18.4 and go-readline-ny to v1.7.1
@@ -185,7 +187,7 @@ Jan 20, 2025
 - Applied colors to input SQL, such as cyan for reserved words and magenta for strings. 
 
 v0.16.0
-=======
+-------
 Nov 21, 2024
 
 - Show the prompt as `SQL*` instead of `SQL>` during a transaction.
@@ -202,7 +204,7 @@ way
     - Fix: when editing the longer lines than screen height, the number of the lines scrolling was one line short
 
 v0.15.2
-=======
+-------
 Sep 21, 2024
 
 - Fix: [#3] panic occurred during y/n prompts since v0.15.0
@@ -210,20 +212,20 @@ Sep 21, 2024
 [#3]: https://github.com/hymkor/sqlbless/issues/3
 
 v0.15.1
-=======
+-------
 Sep 19, 2024
 
 - Fix: a panic occured when only an empty input was provided
 - Separate the main package into cmd/sqlbless to allow usage as a library
 
 v0.15.0
-=======
+-------
 Jul 28, 2024
 
 - With the support for windows/386 in modernc.org/sqlite v1.31.0, the SQLite3 driver has been consolidated to github.com/glebarez/go-sqlite. PureGo implementation is now enabled for all architectures.
 
 v0.14.0
-=======
+-------
 Jun 10, 2024
 
 - When the cell validation fails, prompt to modify the input text instead of discarding
@@ -243,7 +245,7 @@ Jun 10, 2024
 - Fix: When `-debug` was specfied, `d` or `x` could clear the debug-header.
 
 v0.13.0
-=======
+-------
 Jun 4, 2024
 
 - Modify the error message of `desc` with no arguments when no tables exist.  
@@ -273,7 +275,7 @@ Jun 4, 2024
 - Do not create an empty row at the tail
 
 v0.12.0
-=======
+-------
 May 29, 2024
 
 - [#1] Support SQLite3. For windows-386, use "mattn/go-sqlite3" and for others, "glebarez/go-sqlite" (Thanks to [@emisjerry] and [@spiegel-im-spiegel])
@@ -285,7 +287,7 @@ May 29, 2024
 [@spiegel-im-spiegel]: https://github.com/spiegel-im-spiegel
 
 v0.11.0
-=======
+-------
 May 27, 2024
 
 - Create new statement: `edit TABLENAME [WHERE...]` to edit the records of table with [CSVI]
@@ -295,7 +297,7 @@ May 27, 2024
 - (go-multiline-ny) The text before the first Ctrl-P/N is treated as if it were the latest entry in the history not to lose them
 
 v0.10.1
-=======
+-------
 May 9, 2024
 
 - Fix: CSV pager was called even when SQL Statement raised error
@@ -304,7 +306,7 @@ May 9, 2024
 - Fix: EOF was reported as an error when Ctrl-D or `exit` is typed.
 
 v0.10.0
-=======
+-------
 May 8, 2024
 
 - Implement `-auto` option (for test and benchmark)
@@ -315,19 +317,19 @@ May 8, 2024
 [CSVI]: https://github.com/hymkor/csvi
 
 v0.9.0
-======
+------
 Sep 4, 2023
 
 - When lines end with `;`, Enter-key works as submiting
 
 v0.8.0
-======
+------
 May 15, 2023
 
 - Added input completion for some keywords such as SELECT and INSERT. 
 
 v0.7.1
-======
+------
 May 4, 2023
 
 - Update importing libraries
@@ -337,7 +339,7 @@ May 4, 2023
         - Ctrl-F can move cursor to the beginning of the next line
 
 v0.7.0
-======
+------
 Apr 25, 2023
 
 - Option `-f -`: read a script from STDIN
@@ -346,7 +348,7 @@ Apr 25, 2023
 - Add debug option -print-type
 
 v0.6.0
-======
+------
 Apr 22, 2023
 
 - Disable Ctrl-S and Ctrl-R (incremental search)
@@ -358,7 +360,7 @@ Apr 22, 2023
 - Print `Ok` after DDL succeeds.
 
 v0.5.0
-======
+------
 Apr 19, 2023
 
 - `spool` writes program version also
@@ -366,7 +368,7 @@ Apr 19, 2023
 - Fix: login error was not raised until the first SQL was input.
 
 v0.4.0
-=======
+------
 Apr 17, 2023
 
 - On start, print version, GOOS, GOARCH, and runtime-version.
@@ -376,7 +378,7 @@ Apr 17, 2023
 - Add the option -tsv: use TAB as field separator
 
 v0.3.0
-======
+------
 Apr 16, 2023
 
 - select: when data is []byte and valid as utf8, print it as string
@@ -390,7 +392,7 @@ Apr 16, 2023
     - Open as append-mode. Do not truncate existing spooled file.
 
 v0.2.0
-======
+------
 Apr 16, 2023
 
 - Insert `#` at the beginning of each line of spooled SQL
@@ -400,7 +402,7 @@ Apr 16, 2023
 - Implemented automatic rollback of a transaction on 'exit', 'quit', or EOF
 
 v0.1.0
-======
+------
 Apr 10, 2023
 
 - The first version

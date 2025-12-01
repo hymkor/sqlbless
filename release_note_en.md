@@ -2,6 +2,10 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.27.0
+-------
+Dec 2, 2025
+
 ### Bug fixes
 
 - Fix: Errors were not reported during execution of `SAVEPOINT` and `SAVE TRANSACTION`. (#19)

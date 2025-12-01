@@ -2,6 +2,10 @@ Release notes (Japanese)
 ========================
 ( [English](release_note_en.md) / **Japanese** )
 
+v0.27.0
+-------
+Dec 2, 2025
+
 ### 不具合修正
 
 - `SAVEPOINT`, `SAVE TRANSACTION` の実行中にエラーが発生してもメッセージが表示されなかった問題を修正 (#19)

@@ -25,8 +25,8 @@ github.com/golang-sql/sqlexp v0.1.0/go.mod h1:J4ad9Vo8ZCWQ2GMrC4UCQy1JpCbwU9m3EO
 github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd h1:gbpYu9NMq8jhDVbvlGkMFWCjLFlqqEZjEmObmhUy6Vo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.15.1 h1:6sK3X9dfaEnrns++D4UOsrQ/zMEhkptr/dFoN5FcDZs=
-github.com/hymkor/csvi v1.15.1/go.mod h1:P1oIyBhI5gvGcqjcpfzTV08Fsw/lLCQL1Q37VD00xCM=
+github.com/hymkor/csvi v1.17.1 h1:bjanMnZX71OKo/NxrJNKJBOSeS4VqqsN3jQLOOjcfqI=
+github.com/hymkor/csvi v1.17.1/go.mod h1:s1gvb3w9tVJjb+RhNPGZgHrV8xfRWTIopa57nZCS3hM=
 github.com/hymkor/go-multiline-ny v0.22.1 h1:6WvTcT0YB7XFukDyCZFHZtJDP0aSmRkcRi0cssNxVf0=
 github.com/hymkor/go-multiline-ny v0.22.1/go.mod h1:9FsFQa3nIhxAjz1yL0kK/Oya/LB4fBsHckY3ZqBcTJY=
 github.com/hymkor/go-shellcommand v0.0.2 h1:6+XG2h/9DGk5i3Oh4rU48z/nsPWx4Sp73s6OpryQtyw=
@@ -54,8 +54,8 @@ github.com/nyaosorg/go-box/v3 v3.0.0 h1:W5qfScEkKBoD68gbP/lwfWlvcTRB0rwXkhL+9iC6
 github.com/nyaosorg/go-box/v3 v3.0.0/go.mod h1:70GsE9mIh7JKVCxt71q3jEijO6C9YJmOZqWpPa9w+GY=
 github.com/nyaosorg/go-readline-ny v1.12.3 h1:nF+ywMS1XFpIeONssuUxmu20S2tQIqkq1ahdEXBhIYU=
 github.com/nyaosorg/go-readline-ny v1.12.3/go.mod h1:pFXLTklUi8JVi6gI3HdnA3Wak/7cl+kx2q8kIIiAf/c=
-github.com/nyaosorg/go-readline-skk v0.6.0 h1:n7iy806v34+HwiCgBog7OfUaHe9m43z2o6mg3dylgXo=
-github.com/nyaosorg/go-readline-skk v0.6.0/go.mod h1:ulYKxU1enVwOlLA8LFNaRUxSlI1PyayTM1PBOPVs1w8=
+github.com/nyaosorg/go-readline-skk v0.6.1 h1:k8A50gJKb9WpDKEKHdXAZriOAWi8APJSZf07tPqb5ok=
+github.com/nyaosorg/go-readline-skk v0.6.1/go.mod h1:wjcWJkHorPQ2BepphQH33TbdAXcVmmYDeXZc4Y6dbzc=
 github.com/nyaosorg/go-ttyadapter v0.2.0 h1:2DEL0MeesXRzuppCUlZIwY4vUKTjfIL+8aoR+pUUzGg=
 github.com/nyaosorg/go-ttyadapter v0.2.0/go.mod h1:w6ySb/Y8rpr0uIju4vN/TMRHC/6ayabORHmEVs6d/qE=
 github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=

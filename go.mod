@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/microsoft/go-mssqldb v1.7.2
 	github.com/nyaosorg/go-box/v3 v3.0.0
-	github.com/nyaosorg/go-readline-ny v1.12.3
+	github.com/nyaosorg/go-readline-ny v1.13.0
 	github.com/nyaosorg/go-ttyadapter v0.2.0
 	github.com/sijms/go-ora/v2 v2.8.22
 )

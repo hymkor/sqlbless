@@ -2,6 +2,12 @@ Release notes (Japanese)
 ========================
 ( [English](release_note_en.md) / **Japanese** )
 
+- Update github.com/hymkor/csvi from v1.15.1 to v1.17.1
+  - テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした
+  - 変更がある場合、ステータスラインに`*` を表示
+  - ページ単位の移動(PgDn,PgUp)を実装
+  - `gg` にファイル先頭への移動を設定
+
 v0.27.0
 -------
 Dec 2, 2025

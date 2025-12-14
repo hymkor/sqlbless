@@ -2,6 +2,12 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Update github.com/hymkor/csvi from v1.15.1 to v1.17.1
+  - Truncate text that exceeds the cell width and append U+2026 (ellipsis).
+  - Display `*` in the status line when there are unsaved changes
+  - Implement page up/down
+  - Assign `gg` as an additional keybinding for moving to the first row.
+
 v0.27.0
 -------
 Dec 2, 2025

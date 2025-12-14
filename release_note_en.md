@@ -2,6 +2,8 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Update go-multiline-ny from 0.22.1 to v0.22.3
+  - Fixed incorrect cursor position handling in syntax highlighting when editing multiple lines. The cursor offset is now correctly adjusted to account for the prefixed lines.
 - Update go-readline-ny from v1.12.3 to v1.13.0
   - Fix: completion: cursor moved to the start of the previous word when the current word is empty
   - Made input prediction case-insensitive.

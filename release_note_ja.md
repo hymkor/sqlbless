@@ -2,6 +2,9 @@ Release notes (Japanese)
 ========================
 ( [English](release_note_en.md) / **Japanese** )
 
+- Update go-multiline-ny from 0.22.1 to v0.22.3
+  - シンタックスハイライトで扱われるカーソル位置が不正確だった問題を修正。
+    カーソル位置は前行までのバイト数分を加味して正しく調整されるようになった。
 - Update go-readline-ny from v1.12.3 to v1.13.0
   - 補完で、現在の単語が空の場合にカーソルが前の単語の先頭に移動してしまう不具合を修正
   - 入力予測機能で英大文字・小文字を区別しないようにした

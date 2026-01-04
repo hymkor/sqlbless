@@ -2,6 +2,10 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.27.1
+-------
+Jan 4, 2026
+
 - Update go-multiline-ny from 0.22.1 to v0.22.3
   - Fixed incorrect cursor position handling in syntax highlighting when editing multiple lines. The cursor offset is now correctly adjusted to account for the prefixed lines.
 - Update go-readline-ny from v1.12.3 to v1.13.0

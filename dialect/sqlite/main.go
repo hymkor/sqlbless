@@ -14,11 +14,11 @@ import (
 var Entry = &dialect.Entry{
 	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
 	SQLForTables: `
-	select      'master' AS schema,name,rootpage,sql FROM sqlite_master
+	select 'main' as schema,name,rootpage,sql from sqlite_master
 	where type = 'table'
 	union all
-	select 'temp_schema' AS schema,name,rootpage,sql FROM sqlite_temp_schema
-	where type = 'temp_schema'`,
+	select 'temp' as schema,name,rootpage,sql from sqlite_temp_master
+	where type = 'table'`,
 	TypeConverterFor:  typeNameToConv,
 	PlaceHolder:       &placeHolder{},
 	SQLForColumns:     `PRAGMA table_info({table_name})`,

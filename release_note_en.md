@@ -12,6 +12,7 @@ Release notes (English)
   - Display `*` in the status line when there are unsaved changes
   - Implement page up/down
   - Assign `gg` as an additional keybinding for moving to the first row.
+- Fix incorrect SQL for querying temporary tables in SQLite3 (#24)
 
 v0.27.0
 -------

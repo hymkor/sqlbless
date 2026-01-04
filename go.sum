@@ -25,8 +25,8 @@ github.com/golang-sql/sqlexp v0.1.0/go.mod h1:J4ad9Vo8ZCWQ2GMrC4UCQy1JpCbwU9m3EO
 github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd h1:gbpYu9NMq8jhDVbvlGkMFWCjLFlqqEZjEmObmhUy6Vo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.17.1 h1:bjanMnZX71OKo/NxrJNKJBOSeS4VqqsN3jQLOOjcfqI=
-github.com/hymkor/csvi v1.17.1/go.mod h1:s1gvb3w9tVJjb+RhNPGZgHrV8xfRWTIopa57nZCS3hM=
+github.com/hymkor/csvi v1.19.1 h1:gVoqVBgPyEjPWwz3URGLZhQ5RUZQdTzbO5h8sQ0g29g=
+github.com/hymkor/csvi v1.19.1/go.mod h1:s1gvb3w9tVJjb+RhNPGZgHrV8xfRWTIopa57nZCS3hM=
 github.com/hymkor/go-multiline-ny v0.22.3 h1:+4ttpG8MQK6F3uWqxbWFoDlIAN8bv4BmH7HyxTIfHn0=
 github.com/hymkor/go-multiline-ny v0.22.3/go.mod h1:9FsFQa3nIhxAjz1yL0kK/Oya/LB4fBsHckY3ZqBcTJY=
 github.com/hymkor/go-shellcommand v0.0.2 h1:6+XG2h/9DGk5i3Oh4rU48z/nsPWx4Sp73s6OpryQtyw=

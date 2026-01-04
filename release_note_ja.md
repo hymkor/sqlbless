@@ -8,7 +8,7 @@ Release notes (Japanese)
 - Update go-readline-ny from v1.12.3 to v1.13.0
   - 補完で、現在の単語が空の場合にカーソルが前の単語の先頭に移動してしまう不具合を修正
   - 入力予測機能で英大文字・小文字を区別しないようにした
-- Update github.com/hymkor/csvi from v1.15.1 to v1.17.1
+- Update github.com/hymkor/csvi from v1.15.1 to v1.19.1 (#26)
   - テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした
   - 変更がある場合、ステータスラインに`*` を表示
   - ページ単位の移動(PgDn,PgUp)を実装

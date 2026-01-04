@@ -7,7 +7,7 @@ Release notes (English)
 - Update go-readline-ny from v1.12.3 to v1.13.0
   - Fix: completion: cursor moved to the start of the previous word when the current word is empty
   - Made input prediction case-insensitive.
-- Update github.com/hymkor/csvi from v1.15.1 to v1.17.1
+- Update github.com/hymkor/csvi from v1.15.1 to v1.19.1 (#26)
   - Truncate text that exceeds the cell width and append U+2026 (ellipsis).
   - Display `*` in the status line when there are unsaved changes
   - Implement page up/down

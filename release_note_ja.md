@@ -2,6 +2,11 @@ Release notes (Japanese)
 ========================
 ( [English](release_note_en.md) / **Japanese** )
 
+- Update github.com/hymkor/csvi from v1.19.1 to v1.20.1 (#27)
+  - 廃止された `(*csvi.Application) YesNo` のかわりに、`(*csvi.Application) MessageAndGetKey` を使うようにした
+  - 半角カナの濁音・半濁音記号が含まれていると表示桁数が超過して表示が乱れる問題を修正
+  - データ読み込みが終わると、CPU が空回りになる問題に対処
+
 v0.27.1
 -------
 Jan 4, 2026

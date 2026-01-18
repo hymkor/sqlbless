@@ -93,7 +93,8 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	}
 
 	apply := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if app.YesNo("Apply changes and quit ? [y/n] ") {
+		ch, err := app.MessageAndGetKey("Apply changes and quit ? [y/n] ")
+		if err == nil && (ch == "y" || ch == "Y") {
 			io.WriteString(app, "y\n")
 			applyChange = true
 			return &csvi.CommandResult{Quit: true}, nil

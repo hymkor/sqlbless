@@ -2,6 +2,11 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Update github.com/hymkor/csvi from v1.19.1 to v1.20.1 (#27)
+  - Use `(*csvi.Application) MessageAndGetKey` instead of removed `(*csvi.Application) YesNo`
+  - Fix display overflow caused by halfwidth kana with voiced/semi-voiced sound marks
+  - Fix a CPU spinning issue after data fetching completed
+
 v0.27.1
 -------
 Jan 4, 2026

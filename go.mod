@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.20.1
+	github.com/hymkor/csvi v1.21.1
 	github.com/hymkor/go-multiline-ny v0.22.3
 	github.com/hymkor/go-shellcommand v0.0.2
 	github.com/hymkor/struct2flag v0.0.4
@@ -14,8 +14,8 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/microsoft/go-mssqldb v1.7.2
 	github.com/nyaosorg/go-box/v3 v3.0.0
-	github.com/nyaosorg/go-readline-ny v1.13.0
-	github.com/nyaosorg/go-ttyadapter v0.2.0
+	github.com/nyaosorg/go-readline-ny v1.14.1
+	github.com/nyaosorg/go-ttyadapter v0.3.0
 	github.com/sijms/go-ora/v2 v2.8.22
 )
 
@@ -31,6 +31,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
+	github.com/nyaosorg/go-inline-animation v0.3.0 // indirect
 	github.com/nyaosorg/go-readline-skk v0.6.1 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.4 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect

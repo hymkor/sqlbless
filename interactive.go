@@ -9,7 +9,7 @@ import (
 
 	"github.com/nyaosorg/go-ttyadapter"
 	"github.com/nyaosorg/go-ttyadapter/auto"
-	"github.com/nyaosorg/go-ttyadapter/tty8"
+	"github.com/nyaosorg/go-ttyadapter/tty8pe"
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/keys"
@@ -147,7 +147,7 @@ func (ss *session) newInteractiveIn() *interactiveIn {
 		tty = tty1
 		csviPilot = misc.AutoCsvi{GetKeyAndSize: tty1}
 	} else {
-		tty = &tty8.Tty{}
+		tty = &tty8pe.Tty{}
 	}
 	editor.SetPredictColor(readline.PredictColorBlueItalic)
 	editor.SetHistory(ss.history)

@@ -25,8 +25,8 @@ github.com/golang-sql/sqlexp v0.1.0/go.mod h1:J4ad9Vo8ZCWQ2GMrC4UCQy1JpCbwU9m3EO
 github.com/google/pprof v0.0.0-20240409012703-83162a5b38cd h1:gbpYu9NMq8jhDVbvlGkMFWCjLFlqqEZjEmObmhUy6Vo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hymkor/csvi v1.20.1 h1:C2hL6Y9i57P9K83t3LSfiYYvJK61RlfJ/WKgwTWVjEs=
-github.com/hymkor/csvi v1.20.1/go.mod h1:s1gvb3w9tVJjb+RhNPGZgHrV8xfRWTIopa57nZCS3hM=
+github.com/hymkor/csvi v1.21.1 h1:8rgQgH0mGTeuzabk7cN53g87LwoR/uMQIAmIEqIk0bo=
+github.com/hymkor/csvi v1.21.1/go.mod h1:zm4EcSzlGiiCtPWq77a+L3Q5IpJufIEX0q4iIGKXZhs=
 github.com/hymkor/go-multiline-ny v0.22.3 h1:+4ttpG8MQK6F3uWqxbWFoDlIAN8bv4BmH7HyxTIfHn0=
 github.com/hymkor/go-multiline-ny v0.22.3/go.mod h1:9FsFQa3nIhxAjz1yL0kK/Oya/LB4fBsHckY3ZqBcTJY=
 github.com/hymkor/go-shellcommand v0.0.2 h1:6+XG2h/9DGk5i3Oh4rU48z/nsPWx4Sp73s6OpryQtyw=
@@ -52,6 +52,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/nyaosorg/go-box/v3 v3.0.0 h1:W5qfScEkKBoD68gbP/lwfWlvcTRB0rwXkhL+9iC62xI=
 github.com/nyaosorg/go-box/v3 v3.0.0/go.mod h1:70GsE9mIh7JKVCxt71q3jEijO6C9YJmOZqWpPa9w+GY=
+github.com/nyaosorg/go-inline-animation v0.3.0 h1:LrOHowED2PrXEUWGagL1bLR+XTXD06EoWnLRAAn0PWc=
+github.com/nyaosorg/go-inline-animation v0.3.0/go.mod h1:GLb7BXeLMuA12LMN3c8l69GQcmlAxit3oZRKILztOsU=
 github.com/nyaosorg/go-readline-ny v1.14.1 h1:bWyXpR6jRaCXysx4bnioxk36+YjQ6dypHKMjHnzIXdk=
 github.com/nyaosorg/go-readline-ny v1.14.1/go.mod h1:/BDf3/H/AScnvey4LoDws1bjTZDB76EE7uKnW2apoKU=
 github.com/nyaosorg/go-readline-skk v0.6.1 h1:k8A50gJKb9WpDKEKHdXAZriOAWi8APJSZf07tPqb5ok=

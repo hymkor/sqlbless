@@ -49,15 +49,18 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 
 | Key | Binding |
 |-----|---------|
-| `Enter`, `Ctrl`-`M` | Insert a newline (or execute SQL if line ends with `;` or is a short command[^sc]) |
-| `Ctrl`-`Enter`/`J` | Execute SQL |
-| `Ctrl`-`F`/`B` | Move Cursor forward or backward |
-| `Ctrl`-`N`/`P` | Move Cursor or refer history |
-| `Ctrl`-`C` | Exit with rollback |
-| `Ctrl`-`D` | Delete character or submit EOF (exit with rollback) |
-| `ALT`-`P`, `Ctrl`-`Up`, `PageUp` | Insert the previous SQL (history)|
-| `ALT`-`N`, `Ctrl`-`Down`, `PageDown` | Insert the next SQL (history) |
-| `TAB` | Table name and column name completion |
+| `Enter`, `Ctrl`+`M` | Insert a newline or execute SQL if line ends with `;` or is a short command[^sc] |
+| `Ctrl`+`Enter`, `Meta`+`Enter`, `Ctrl`+`J` | Execute SQL |
+| `→`, `Ctrl`+`F` | Move Cursor forward |
+| `←`, `Ctrl`+`B` | Move Cursor backward |
+| `↑`, `Ctrl`+`P` | Move cursor to previous line or last line of previous SQL in history |
+| `↓`, `Ctrl`+`N` | Move cursor to next line or first line of next SQL in history |
+| `Ctrl`+`D` | Delete character or submit EOF (exit with rollback) |
+| `PageUp`, `Ctrl`+`↑`, `Meta`+`P` | Insert the previous SQL (history)|
+| `PageDown`, `Ctrl`+`↓`, `Meta`+`N`| Insert the next SQL (history) |
+| `Tab` | Table name and column name completion |
+
+`Meta` means either `Alt`+`key` or `Esc` followed by key.
 
 [^sc]: `DESC`, `EDIT`, `EXIT`, `HISTORY`, `HOST`, `QUIT`, `REM`, `SPOOL`, `START`, `\D`
 

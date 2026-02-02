@@ -7,6 +7,7 @@ Release notes (English)
   - go-multiline-ny v0.22.3 →v0.22.4
   - go-readline-ny v1.13.0 → v1.14.1
   - go-ttyadapter v0.2.0 → v0.3.0
+- `edit`: Removed `c` and `Esc`. Use `q` to exit the editor, whether applying changes or not. (#32)
 
 v0.27.2
 -------

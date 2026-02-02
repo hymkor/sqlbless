@@ -92,21 +92,10 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		}
 	}
 
-	apply := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		ch, err := app.MessageAndGetKey("Apply changes and quit ? [y/n] ")
-		if err == nil && (ch == "y" || ch == "Y") {
-			io.WriteString(app, "y\n")
-			applyChange = true
-			return &csvi.CommandResult{Quit: true}, nil
-		}
-		return &csvi.CommandResult{}, nil
-	}
 	keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
-		"\x1B": quit,
-		"q":    quit,
-		"c":    apply,
-		"x":    setNull,
-		"d":    setNull,
+		"q": quit,
+		"x": setNull,
+		"d": setNull,
 	}
 	for _, p := range viewer.OnEvents {
 		keymap[p.Key] = p.Handler
@@ -114,7 +103,7 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	cfg := &csvi.Config{
 		Titles: []string{
 			toOneLine(title, titlePrefix, titleSuffix),
-			"ESC+\"y\": Apply changes & quit, ESC+\"n\": Discard changes & quit",
+			"Press `q` to quit: `y` to apply changes, `n` to discard.",
 		},
 		KeyMap:          keymap,
 		OnCellValidated: validate,

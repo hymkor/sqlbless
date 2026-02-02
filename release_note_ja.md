@@ -7,6 +7,7 @@ Release notes (Japanese)
   - go-multiline-ny v0.22.3 →v0.22.4
   - go-readline-ny v1.13.0 → v1.14.1
   - go-ttyadapter v0.2.0 → v0.3.0
+- `edit`: `c` と `Esc` を廃止。変更の適用を伴う終了も`q` を使用してください。 (#32)
 
 v0.27.2
 -------

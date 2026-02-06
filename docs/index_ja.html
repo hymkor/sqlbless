@@ -1203,43 +1203,48 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 </thead>
 <tbody>
 <tr>
-<td><code>Enter</code>, <code>Ctrl</code>-<code>M</code></td>
-<td>改行（末尾;または短いコマンド<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>時はSQLを実行）</td>
+<td><code>Enter</code>, <code>Ctrl</code>+<code>M</code></td>
+<td>改行（末尾が<code>;</code>であるか、明らかに一行未満で終わるコマンド<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>時はSQLを実行）</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code></td>
+<td><code>Ctrl</code>+<code>Enter</code>, <code>Meta</code>+<code>Enter</code>, <code>Ctrl</code>+<code>J</code></td>
 <td>SQLを実行</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>F</code>/<code>B</code></td>
-<td>カーソルを前後に移動</td>
+<td><code>→</code>, <code>Ctrl</code>+<code>F</code></td>
+<td>カーソルを右へ移動</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>N</code>/<code>P</code></td>
-<td>カーソル移動、もしくはヒストリ参照</td>
+<td><code>←</code>, <code>Ctrl</code>+<code>B</code></td>
+<td>カーソルを左へ移動</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>C</code></td>
-<td>ロールバックして終了</td>
+<td><code>↑</code>, <code>Ctrl</code>+<code>P</code></td>
+<td>カーソルを上、もしくはヒストリの前のSQLを参照</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>D</code></td>
+<td><code>↓</code>, <code>Ctrl</code>+<code>N</code></td>
+<td>カーソルを上、もしくはヒストリの後のSQLを参照</td>
+</tr>
+<tr>
+<td><code>Ctrl</code>+<code>D</code></td>
 <td>一次削除もしくは、EOF:ロールバックして終了</td>
 </tr>
 <tr>
-<td><code>ALT</code>-<code>P</code>, <code>Ctrl</code>-<code>Up</code>, <code>PageUp</code></td>
+<td><code>PageUp</code>,   <code>Ctrl</code>+<code>↑</code>, <code>Meta</code>+<code>P</code></td>
 <td>ヒストリ参照(過去方向)</td>
 </tr>
 <tr>
-<td><code>ALT</code>-<code>N</code>, <code>Ctrl</code>-<code>Down</code>, <code>PageDown</code></td>
+<td><code>PageDown</code>, <code>Ctrl</code>+<code>↓</code>, <code>Meta</code>+<code>N</code></td>
 <td>ヒストリ参照(未来方向)</td>
 </tr>
 <tr>
-<td><code>TAB</code></td>
+<td><code>Tab</code></td>
 <td>テーブル名・カラム名補完</td>
 </tr>
 </tbody>
 </table>
+<p><code>Meta</code>は<code>Alt</code>+<code>key</code>もしくは、<code>Esc</code> の後に<code>key</code>を押下することを意味します。</p>
 <h2 id="%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89">サポートコマンド</h2>
 <ul>
 <li><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code>
@@ -1290,17 +1295,33 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 </li>
 <li><code>EDIT [tablename [WHERE conditions...]]</code>
 <ul>
-<li>選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します</li>
-<li>エディタ中では以下のキーが拡張されます
-<ul>
-<li><code>x</code> or <code>d</code>: セルに NULL をセットする</li>
-<li><code>ESC</code>+<code>y</code>: 変更を適用して終了</li>
-<li><code>ESC</code>+<code>n</code>: 修正を破棄して終了</li>
-<li><code>q</code>: <code>ESC</code> と等価</li>
-<li><code>c</code>: 変更を適用して終了(廃止予定)</li>
-</ul>
+<li>
+<p>選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します</p>
 </li>
-<li>EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、<a href="https://github.com/hymkor/sqlbless/issues/new">ご連絡</a>いただけるとたすかります。</li>
+<li>
+<p>エディタ中では以下のキーが拡張されます</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Bindings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code>,<code>d</code></td>
+<td>セルに NULL をセットする</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>変更を適用するかを確認してから終了</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、<a href="https://github.com/hymkor/sqlbless/issues/new">ご連絡</a>いただけるとたすかります。</p>
+</li>
 </ul>
 </li>
 <li><code>HOST command-line</code>

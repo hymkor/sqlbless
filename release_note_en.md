@@ -2,6 +2,10 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.27.3
+-------
+Feb 6, 2026
+
 - Improved single-key input handling so that control key escape sequences (e.g. the Up Arrow `\x1B[A`) are not misinterpreted even when they are split by terminal behavior. As part of this change, the `Esc` key is now always treated as a prefix key. The following internal dependencies were updated: (#29,#30)
   - Csvi v1.20.1 → v1.21.1
   - go-multiline-ny v0.22.3 →v0.22.4

@@ -1205,43 +1205,48 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 </thead>
 <tbody>
 <tr>
-<td><code>Enter</code>, <code>Ctrl</code>-<code>M</code></td>
-<td>Insert a newline (or execute SQL if line ends with <code>;</code> or is a short command<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>)</td>
+<td><code>Enter</code>, <code>Ctrl</code>+<code>M</code></td>
+<td>Insert a newline or execute SQL if line ends with <code>;</code> or is a short command<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>Enter</code>/<code>J</code></td>
+<td><code>Ctrl</code>+<code>Enter</code>, <code>Meta</code>+<code>Enter</code>, <code>Ctrl</code>+<code>J</code></td>
 <td>Execute SQL</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>F</code>/<code>B</code></td>
-<td>Move Cursor forward or backward</td>
+<td><code>→</code>, <code>Ctrl</code>+<code>F</code></td>
+<td>Move Cursor forward</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>N</code>/<code>P</code></td>
-<td>Move Cursor or refer history</td>
+<td><code>←</code>, <code>Ctrl</code>+<code>B</code></td>
+<td>Move Cursor backward</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>C</code></td>
-<td>Exit with rollback</td>
+<td><code>↑</code>, <code>Ctrl</code>+<code>P</code></td>
+<td>Move cursor to previous line or last line of previous SQL in history</td>
 </tr>
 <tr>
-<td><code>Ctrl</code>-<code>D</code></td>
+<td><code>↓</code>, <code>Ctrl</code>+<code>N</code></td>
+<td>Move cursor to next line or first line of next SQL in history</td>
+</tr>
+<tr>
+<td><code>Ctrl</code>+<code>D</code></td>
 <td>Delete character or submit EOF (exit with rollback)</td>
 </tr>
 <tr>
-<td><code>ALT</code>-<code>P</code>, <code>Ctrl</code>-<code>Up</code>, <code>PageUp</code></td>
+<td><code>PageUp</code>, <code>Ctrl</code>+<code>↑</code>, <code>Meta</code>+<code>P</code></td>
 <td>Insert the previous SQL (history)</td>
 </tr>
 <tr>
-<td><code>ALT</code>-<code>N</code>, <code>Ctrl</code>-<code>Down</code>, <code>PageDown</code></td>
+<td><code>PageDown</code>, <code>Ctrl</code>+<code>↓</code>, <code>Meta</code>+<code>N</code></td>
 <td>Insert the next SQL (history)</td>
 </tr>
 <tr>
-<td><code>TAB</code></td>
+<td><code>Tab</code></td>
 <td>Table name and column name completion</td>
 </tr>
 </tbody>
 </table>
+<p><code>Meta</code> means either <code>Alt</code>+<code>key</code> or <code>Esc</code> followed by key.</p>
 <h2 id="supported-commands">Supported commands</h2>
 <ul>
 <li><code>SELECT</code> / <code>INSERT</code> / <code>UPDATE</code> / <code>DELETE</code> / <code>MERGE</code> ... <code>;</code>
@@ -1292,17 +1297,33 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 </li>
 <li><code>EDIT [tablename [WHERE conditions...]]</code>
 <ul>
-<li>Start an <a href="https://github.com/hymkor/csvi">editor</a> to modify the selected records of the table.</li>
-<li>In the editor, these keys are bound.
-<ul>
-<li><code>x</code> or <code>d</code>: set NULL to the current cell</li>
-<li><code>ESC</code> + <code>y</code>: Apply changes and exit</li>
-<li><code>ESC</code> + <code>n</code>: Discard changes and exit</li>
-<li><code>q</code>: Now equivalent to <code>ESC</code></li>
-<li><code>c</code>: Apply changes and exit (deprecated)</li>
-</ul>
+<li>
+<p>Start an <a href="https://github.com/hymkor/csvi">editor</a> to modify the selected records of the table.</p>
 </li>
-<li>Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could <a href="https://github.com/hymkor/sqlbless/issues/new">contact us</a>.</li>
+<li>
+<p>In the editor, these keys are bound.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Bindings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code>,<code>d</code></td>
+<td>Set NULL to the current cell</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>Quit editor with confirmation to apply or discard changes</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could <a href="https://github.com/hymkor/sqlbless/issues/new">contact us</a>.</p>
+</li>
 </ul>
 </li>
 <li><code>HOST command-line</code>

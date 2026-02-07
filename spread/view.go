@@ -95,7 +95,6 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
 		"q": quit,
 		"x": setNull,
-		"d": setNull,
 	}
 	for _, p := range viewer.OnEvents {
 		keymap[p.Key] = p.Handler

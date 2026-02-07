@@ -95,11 +95,16 @@ Supported commands
 - `EDIT [tablename [WHERE conditions...]]`
     - Start an [editor][csvi] to modify the selected records of the table.
     - In the editor, these keys are bound.
- 
-      | Key   | Bindings
-      |-------|-----------------------------
-      |`x`,`d`| Set NULL to the current cell
-      |`q`    | Quit editor with confirmation to apply or discard changes
+
+      | Key | Action |
+      | --- | --- |
+      | `r` | Replace cell value (using built-in readline) |
+      | `o` | Append a new row |
+      | `dd`, `dr` | **Delete the current row** |
+      | `x` | **Set the current cell to NULL** |
+      | `q` | Quit editor (with apply/discard confirmation) |
+
+      **Note:** The `D` key is disabled to prevent accidental execution due to terminal escape sequence delays. Please use `dd` or `dr` instead.
 
     - Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could [contact us](https://github.com/hymkor/sqlbless/issues/new).
 - `HOST command-line`

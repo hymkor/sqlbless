@@ -119,13 +119,13 @@ func doDescTables(ctx context.Context, ss *session, commandIn commandIn) error {
 	var name string
 
 	handler := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if e.CursorRow.Index() == 0 {
+		if e.CurrentRow().Index() == 0 {
 			return &csvi.CommandResult{}, nil
 		}
 		header := e.Front()
 		for i, c := range header.Cell {
 			if strings.EqualFold(c.Text(), ss.Dialect.TableNameField) {
-				name = e.CursorRow.Cell[i].Text()
+				name = e.CurrentRow().Cell[i].Text()
 				return &csvi.CommandResult{Quit: true}, nil
 			}
 		}

@@ -59,18 +59,18 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if e.CursorRow.Index() < viewer.HeaderLines {
+		if e.CurrentRow().Index() < viewer.HeaderLines {
 			return &csvi.CommandResult{}, nil
 		}
 		ce := &csvi.CellValidatedEvent{
 			Text: viewer.Null,
-			Row:  e.CursorRow.Index(),
-			Col:  e.CursorCol,
+			Row:  e.CurrentRow().Index(),
+			Col:  e.CurrentCol(),
 		}
 		if _, err := validate(ce); err != nil {
 			return &csvi.CommandResult{Message: err.Error()}, nil
 		}
-		e.CursorRow.Replace(e.CursorCol, viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
+		e.CurrentRow().Replace(e.CurrentCol(), viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
 		return &csvi.CommandResult{}, nil
 	}
 

@@ -5,8 +5,10 @@ Release notes (Japanese)
 - `edit`文: 行削除コマンド（`dd`, `dr`）の復旧  
   レコードの削除操作（`dd`, `dr`）を再び利用可能にした。以前のバージョンでは、Null設定機能を `d` キーにも割り当てていたため、Csvi側の仕様変更（`D` の廃止）に伴い、行削除が実行できない状態になっていた。今回、`d` へのNull設定機能を解除することでこの競合を解消した。※Null設定機能は、引き続き `x` キーで利用可能。 (#35)
 - `edit`文: 編集対象の CSV データ末尾に空行が生成されないようにした。([csvi#79])
+- (内部修正) 廃止予定のフィールド `csvi.KeyEventArgs.CursorRow` と `CursorCol` 使わないようにした ([csvi#80],#38)
 
 [csvi#79]: https://github.com/hymkor/csvi/pull/79
+[csvi#80]: https://github.com/hymkor/csvi/pull/80
 
 v0.27.3
 -------

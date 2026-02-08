@@ -75,6 +75,11 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	}
 
 	quit := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		if !app.IsDirty() {
+			io.WriteString(app, "\n")
+			return &csvi.CommandResult{Quit: true}, nil
+		}
+
 		ch, err := app.MessageAndGetKey(`"Y": Save&Exit  "N": Discard&Exit  <ESC>: Cancel(edit)`)
 		if err != nil {
 			return nil, err

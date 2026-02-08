@@ -6,9 +6,11 @@ Release notes (English)
   Fixed a keybinding conflict that rendered row deletion unavailable. The `d` key has been unassigned from the "Set Null" function to restore the `dd` and `dr` commands, following specification changes in Csvi. Field Null assignment remains available via the `x` key. (#35)
 - `edit` statement: Prevent creation of empty lines at the end of the editable CSV content. ([csvi#79])
 - (internal changes) Stop using deprecated fields: `csvi.KeyEventArgs.CursorRow` and `CursorCol` ([csvi#80],#38)
+- `edit` statement: Quit immediately on `q` without a prompt if there are no changes.([csvi#81],#39)
 
 [csvi#79]: https://github.com/hymkor/csvi/pull/79
 [csvi#80]: https://github.com/hymkor/csvi/pull/80
+[csvi#81]: https://github.com/hymkor/csvi/pull/81
 
 v0.27.3
 -------

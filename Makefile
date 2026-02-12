@@ -48,7 +48,7 @@ release:
 	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 docs:
-	minipage -outline-in-sidebar -readme-to-index README.md    > docs/index.html
-	minipage -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
+	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README.md    > docs/index.html
+	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
 
 .PHONY: all test dist _dist clean manifest release docs

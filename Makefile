@@ -51,4 +51,8 @@ docs:
 	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README.md    > docs/index.html
 	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
 
+readme:
+	go run github.com/hymkor/example-into-readme@latest
+	go run github.com/hymkor/example-into-readme@latest -target README_ja.md
+
 .PHONY: all test dist _dist clean manifest release docs

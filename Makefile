@@ -47,15 +47,6 @@ manifest:
 release:
 	$(GO) run github.com/hymkor/latest-notes@master | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
-get:
-	$(GO) get -u
-	$(GO) get golang.org/x/sys@v0.30.0
-#	$(GO) get golang.org/x/text@v0.22.0
-	$(GO) get golang.org/x/term@v0.29.0 
-	$(GO) get golang.org/x/exp@v0.0.0-20240531132922-fd00a4e0eefc
-	$(GO) mod tidy
-# cd "$(CURDIR)/cmd/sqlbless" && $(GO) get -u && $(GO) mod tidy
-
 docs:
 	minipage -outline-in-sidebar -readme-to-index README.md    > docs/index.html
 	minipage -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html

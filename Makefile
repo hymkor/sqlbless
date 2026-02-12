@@ -21,15 +21,15 @@ VERSION:=$(shell git describe --tags 2>$(NUL) || echo v0.0.0)
 GOOPT:=-ldflags "-s -w -X github.com/hymkor/sqlbless.Version=$(VERSION)"
 EXE=$(shell $(GO) env GOEXE)
 
-all:
+build:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)/$(NAME)$(EXE)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
 
 test:
 	$(GO) test -v ./...
 
 _dist:
-	$(MAKE) all
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:

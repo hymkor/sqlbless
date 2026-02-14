@@ -1140,11 +1140,12 @@ a.permalink:hover{
 </head><body>
 <div class="main markdown-body">
 <h1 id="sql-bless">SQL-Bless</h1>
-<!-- raw HTML omitted -->
+<!-- stdout:go run github.com/hymkor/example-into-readme/cmd/badges@latest -->
 <p><a href="https://github.com/hymkor/sqlbless/actions/workflows/go.yml"><img src="https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
 <a href="https://github.com/hymkor/sqlbless/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
-<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a></p>
-<!-- raw HTML omitted -->
+<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a>
+<a href="https://github.com/hymkor/sqlbless"><img src="https://img.shields.io/badge/github-repo-blue?logo=github" alt="GitHub" /></a></p>
+<!-- -->
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
 <p>SQL-Bless は、SQL*Plus に着想を得た、複数のデータベースエンジンに対応するコマンドライン用 SQL クライアントです。</p>
 <p>SQL-Bless は「安全性と再現性」を最優先に設計されています。
@@ -1303,21 +1304,34 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
 <table>
 <thead>
 <tr>
-<th>Key</th>
-<th>Bindings</th>
+<th>キー</th>
+<th>操作内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>x</code>,<code>d</code></td>
-<td>セルに NULL をセットする</td>
+<td><code>r</code></td>
+<td>カレントセルを組み込みの readline で編集する</td>
+</tr>
+<tr>
+<td><code>o</code></td>
+<td>新しい行を末尾に追加する</td>
+</tr>
+<tr>
+<td><code>dd</code>, <code>dr</code></td>
+<td>カレント行を削除する</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>カレントセルに NULL を設定する</td>
 </tr>
 <tr>
 <td><code>q</code></td>
-<td>変更を適用するかを確認してから終了</td>
+<td>エディタを終了する（変更の適用または破棄を確認）</td>
 </tr>
 </tbody>
 </table>
+<p><strong>※</strong> ターミナルのエスケープシーケンス遅延による誤作動を防ぐため、<code>D</code> キーによる削除は無効化された。行の削除には <code>dd</code> または <code>dr</code> を使用のこと</p>
 </li>
 <li>
 <p>EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、<a href="https://github.com/hymkor/sqlbless/issues/new">ご連絡</a>いただけるとたすかります。</p>

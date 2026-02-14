@@ -1,10 +1,11 @@
 SQL-Bless
 =========
 
-<!-- badges.cmd | -->
+<!-- stdout:go run github.com/hymkor/example-into-readme/cmd/badges@latest -->
 [![Go Test](https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/sqlbless/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/sqlbless/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg)](https://pkg.go.dev/github.com/hymkor/sqlbless)
+[![GitHub](https://img.shields.io/badge/github-repo-blue?logo=github)](https://github.com/hymkor/sqlbless)
 <!-- -->
 
 [&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
@@ -94,10 +95,16 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
     - 選択したテーブルのレコードを修正するため [エディタ][csvi] を起動します
     - エディタ中では以下のキーが拡張されます
 
-      | Key   | Bindings
-      |-------|-----------------------------
-      |`x`,`d`| セルに NULL をセットする
-      |`q`    | 変更を適用するかを確認してから終了
+      | キー | 操作内容 |
+      | --- | --- |
+      | `r` | カレントセルを組み込みの readline で編集する |
+      | `o` | 新しい行を末尾に追加する |
+      | `dd`, `dr` | カレント行を削除する |
+      | `x` | カレントセルに NULL を設定する |
+      | `q` | エディタを終了する（変更の適用または破棄を確認） |
+
+      **※** ターミナルのエスケープシーケンス遅延による誤作動を防ぐため、`D` キーによる削除は無効化された。行の削除には `dd` または `dr` を使用のこと
+
 
     - EDIT文は、エディターでの変更データから自動で SQL を生成する都合、個々のデータベース固有の特殊な型向けの SQL データをうまく表現できない場合があります。見つかりましたら、[ご連絡](https://github.com/hymkor/sqlbless/issues/new)いただけるとたすかります。
 - `HOST command-line`

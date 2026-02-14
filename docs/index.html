@@ -1140,11 +1140,12 @@ a.permalink:hover{
 </head><body>
 <div class="main markdown-body">
 <h1 id="sql-bless">SQL-Bless</h1>
-<!-- raw HTML omitted -->
+<!-- stdout:go run github.com/hymkor/example-into-readme/cmd/badges@latest -->
 <p><a href="https://github.com/hymkor/sqlbless/actions/workflows/go.yml"><img src="https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
 <a href="https://github.com/hymkor/sqlbless/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
-<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a></p>
-<!-- raw HTML omitted -->
+<a href="https://pkg.go.dev/github.com/hymkor/sqlbless"><img src="https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg" alt="Go Reference" /></a>
+<a href="https://github.com/hymkor/sqlbless"><img src="https://img.shields.io/badge/github-repo-blue?logo=github" alt="GitHub" /></a></p>
+<!-- -->
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
 <p>SQL-Bless is a command-line database client similar to SQL*Plus, supporting multiple database systems.</p>
 <p>It was designed with reliability and transparency in mind.
@@ -1306,20 +1307,33 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
 <thead>
 <tr>
 <th>Key</th>
-<th>Bindings</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>x</code>,<code>d</code></td>
-<td>Set NULL to the current cell</td>
+<td><code>r</code></td>
+<td>Replace cell value (using built-in readline)</td>
+</tr>
+<tr>
+<td><code>o</code></td>
+<td>Append a new row</td>
+</tr>
+<tr>
+<td><code>dd</code>, <code>dr</code></td>
+<td><strong>Delete the current row</strong></td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td><strong>Set the current cell to NULL</strong></td>
 </tr>
 <tr>
 <td><code>q</code></td>
-<td>Quit editor with confirmation to apply or discard changes</td>
+<td>Quit editor (with apply/discard confirmation)</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Note:</strong> The <code>D</code> key is disabled to prevent accidental execution due to terminal escape sequence delays. Please use <code>dd</code> or <code>dr</code> instead.</p>
 </li>
 <li>
 <p>Because the EDIT statement automatically generates SQL from data changed in the editor, it may not be able to properly represent SQL data for special types specific to individual databases. If you find it, we would appreciate it if you could <a href="https://github.com/hymkor/sqlbless/issues/new">contact us</a>.</p>

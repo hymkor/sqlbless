@@ -21,15 +21,15 @@ VERSION:=$(shell git describe --tags 2>$(NUL) || echo v0.0.0)
 GOOPT:=-ldflags "-s -w -X github.com/hymkor/sqlbless.Version=$(VERSION)"
 EXE=$(shell $(GO) env GOEXE)
 
-all:
+build:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)/$(NAME)$(EXE)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
 
 test:
 	$(GO) test -v ./...
 
 _dist:
-	$(MAKE) all
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
@@ -42,22 +42,17 @@ clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
 manifest:
-	make-scoop-manifest *-windows-*.zip > $(NAME).json
+	$(GO) run github.com/hymkor/make-scoop-manifest@master -all *-windows-*.zip > $(NAME).json
 
 release:
-	pwsh -Command "latest-notes.ps1" | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
-
-get:
-	$(GO) get -u
-	$(GO) get golang.org/x/sys@v0.30.0
-#	$(GO) get golang.org/x/text@v0.22.0
-	$(GO) get golang.org/x/term@v0.29.0 
-	$(GO) get golang.org/x/exp@v0.0.0-20240531132922-fd00a4e0eefc
-	$(GO) mod tidy
-# cd "$(CURDIR)/cmd/sqlbless" && $(GO) get -u && $(GO) mod tidy
+	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 docs:
-	minipage -outline-in-sidebar -readme-to-index README.md    > docs/index.html
-	minipage -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
+	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README.md    > docs/index.html
+	go run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
+
+readme:
+	go run github.com/hymkor/example-into-readme@latest
+	go run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
 .PHONY: all test dist _dist clean manifest release docs

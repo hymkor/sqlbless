@@ -59,22 +59,27 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 
 	applyChange := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if e.CursorRow.Index() < viewer.HeaderLines {
+		if e.CurrentRow().Index() < viewer.HeaderLines {
 			return &csvi.CommandResult{}, nil
 		}
 		ce := &csvi.CellValidatedEvent{
 			Text: viewer.Null,
-			Row:  e.CursorRow.Index(),
-			Col:  e.CursorCol,
+			Row:  e.CurrentRow().Index(),
+			Col:  e.CurrentCol(),
 		}
 		if _, err := validate(ce); err != nil {
 			return &csvi.CommandResult{Message: err.Error()}, nil
 		}
-		e.CursorRow.Replace(e.CursorCol, viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
+		e.CurrentRow().Replace(e.CurrentCol(), viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
 		return &csvi.CommandResult{}, nil
 	}
 
 	quit := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		if !app.IsDirty() {
+			io.WriteString(app, "\n")
+			return &csvi.CommandResult{Quit: true}, nil
+		}
+
 		ch, err := app.MessageAndGetKey(`"Y": Save&Exit  "N": Discard&Exit  <ESC>: Cancel(edit)`)
 		if err != nil {
 			return nil, err
@@ -95,7 +100,6 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
 		"q": quit,
 		"x": setNull,
-		"d": setNull,
 	}
 	for _, p := range viewer.OnEvents {
 		keymap[p.Key] = p.Handler

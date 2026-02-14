@@ -1,16 +1,16 @@
 {
-    "version": "0.27.3",
+    "version": "0.27.4",
     "description": "A safety-oriented terminal SQL client",
     "homepage": "https://github.com/hymkor/sqlbless",
     "license": "MIT License",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.27.3/sqlbless-v0.27.3-windows-386.zip",
-            "hash": "e12ae26143fcfc6c54ad98cd9b3b7e0e830999fe1dfb4124946d746530d4a002"
+            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.27.4/sqlbless-v0.27.4-windows-386.zip",
+            "hash": "058859b5fc430b55c268616f9a1ede2916881448de3ee56eeae0132ddffa50b6"
         },
         "64bit": {
-            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.27.3/sqlbless-v0.27.3-windows-amd64.zip",
-            "hash": "702b1cdb20c86430f2b4743188c18821904d20c681f4be87f0b9bb2e3c6a0d7d"
+            "url": "https://github.com/hymkor/sqlbless/releases/download/v0.27.4/sqlbless-v0.27.4-windows-amd64.zip",
+            "hash": "8213a0ac3d96a2b2c111d75af6fdf61758e1703d9f882b0d11544d1d6a893343"
         }
     },
     "bin": "sqlbless.exe",

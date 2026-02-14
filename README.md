@@ -1,10 +1,11 @@
 SQL-Bless
 ===========
 
-<!-- badges.cmd | -->
+<!-- stdout:go run github.com/hymkor/example-into-readme/cmd/badges@latest -->
 [![Go Test](https://github.com/hymkor/sqlbless/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/sqlbless/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/sqlbless/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/sqlbless.svg)](https://pkg.go.dev/github.com/hymkor/sqlbless)
+[![GitHub](https://img.shields.io/badge/github-repo-blue?logo=github)](https://github.com/hymkor/sqlbless)
 <!-- -->
 
 **&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)

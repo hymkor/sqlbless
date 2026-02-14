@@ -2,6 +2,10 @@ Release notes (English)
 =======================
 ( **English** / [Japanese](release_note_ja.md) )
 
+v0.27.4
+-------
+Feb 14, 2026
+
 - `edit` statement: Restore row deletion commands (`dd`, `dr`):  
   Fixed a keybinding conflict that rendered row deletion unavailable. The `d` key has been unassigned from the "Set Null" function to restore the `dd` and `dr` commands, following specification changes in Csvi. Field Null assignment remains available via the `x` key. (#35)
 - `edit` statement: Prevent creation of empty lines at the end of the editable CSV content. ([csvi#79])

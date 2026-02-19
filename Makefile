@@ -47,6 +47,9 @@ manifest:
 release:
 	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
+bump:
+	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc sqlbless release_note*.md > version.go
+
 docs:
 	$(GO) run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README.md    > docs/index.html
 	$(GO) run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
@@ -55,4 +58,4 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@latest
 	$(GO) run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
-.PHONY: all test dist _dist clean manifest release docs
+.PHONY: all test dist _dist clean manifest release docs bump

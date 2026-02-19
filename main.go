@@ -52,11 +52,9 @@ func (cfg *Config) Bind(fs *flag.FlagSet) *Config {
 	return cfg
 }
 
-var Version string
-
 func writeSignature(w io.Writer) {
 	fmt.Fprintf(w, "# SQL-Bless %s-%s-%s built with %s\n",
-		Version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
 func usage() {

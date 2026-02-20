@@ -1,6 +1,6 @@
-Release notes (English)
+Changelog (English)
 =======================
-( **English** / [Japanese](release_note_ja.md) )
+( **English** / [Japanese](CHANGELOG_ja.md) )
 
 - Fixed an issue where the version string was empty when built without GNU Make.  
   The version string is now updated via make bump during the release process. (#46)

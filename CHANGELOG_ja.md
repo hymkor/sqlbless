@@ -1,9 +1,10 @@
-Release notes (Japanese)
+Changelog (Japanese)
 ========================
-( [English](release_note_en.md) / **Japanese** )
+( [English](CHANGELOG.md) / **Japanese** )
 
 - GNU Make なしでビルドした場合に、バージョン文字列が空になってしまう問題を修正  
   今後、バージョンアップ時に make bump を実行する (#46)
+- リリースノートのファイルを CHANGELOG.md と CHANGELOG\_ja.md へリネーム (#47)
 
 v0.27.4
 -------

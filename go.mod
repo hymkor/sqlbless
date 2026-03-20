@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hymkor/csvi v1.22.0
+	github.com/hymkor/csvi v1.23.1
 	github.com/hymkor/go-multiline-ny v0.22.4
 	github.com/hymkor/go-shellcommand v0.0.2
 	github.com/hymkor/struct2flag v0.0.4
@@ -26,12 +26,12 @@ require (
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/hymkor/sxencode-go v0.3.0 // indirect
+	github.com/hymkor/go-safewrite v0.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
-	github.com/nyaosorg/go-inline-animation v0.3.0 // indirect
-	github.com/nyaosorg/go-readline-skk v0.6.1 // indirect
+	github.com/nyaosorg/go-inline-animation v0.3.1 // indirect
+	github.com/nyaosorg/go-readline-skk v0.6.2 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.4 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/crypto v0.29.0 // indirect

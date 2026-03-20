@@ -23,13 +23,13 @@ EXE=$(shell $(GO) env GOEXE)
 
 build:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/sqlbless"
 
 test:
 	$(GO) test -v ./...
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && $(GO) build -C "$(CURDIR)/cmd/sqlbless" -o "$(CURDIR)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/sqlbless"
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:

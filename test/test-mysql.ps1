@@ -21,7 +21,7 @@ $script = `
     " TIME '14:53:26.6') ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22.123+09:00|lr2016-07-08|lr15:54:27.345|cyy" +
+    "/10|lr2015-06-07 20:21:22.123+09:00|lr2016-07-08|lr15:54:27.345|qyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +

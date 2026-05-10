@@ -16,7 +16,7 @@ $script = `
     "(10,'2024-05-25 13:45:33')||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|cyy" +
+    "/10|lr2015-06-07 20:21:22|qyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF||" +

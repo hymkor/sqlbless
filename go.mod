@@ -12,7 +12,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.22
-	github.com/microsoft/go-mssqldb v1.7.2
+	github.com/microsoft/go-mssqldb v1.8.2
 	github.com/nyaosorg/go-box/v3 v3.1.1
 	github.com/nyaosorg/go-readline-ny v1.15.1
 	github.com/nyaosorg/go-ttyadapter v0.7.0

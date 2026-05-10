@@ -10,6 +10,8 @@ SQL-Bless
 
 [&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
 
+![image](./demo.gif)
+
 SQL-Bless は、SQL\*Plus に着想を得た、複数のデータベースエンジンに対応するコマンドライン用 SQL クライアントです。
 
 SQL-Bless は「安全性と再現性」を最優先に設計されています。
@@ -41,10 +43,6 @@ SQL-Bless は、そうした現場での教訓から生まれた、安全で再�
         - DDL 実行時に既存トランザクションが残っている場合は、警告が表示されます。
 - テーブル名・カラム名補完
     - ただし、カラム名補完はテーブル名がカーソルより左側に登場している時のみ
-
-![image](./demo.gif)
-
-[@emisjerry](https://github.com/emisjerry) さんによる [紹介動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
 
 | Key | Binding |
 |-----|---------|

@@ -30,7 +30,7 @@ $script = `
     "lr15:54:27|" +
     "lr2027-03-04 11:12:13|" +
     "lr2025-05-13 13:51:12.144|" +
-    "cyy" +
+    "qyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +

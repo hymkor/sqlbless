@@ -16,7 +16,7 @@ require (
 	github.com/nyaosorg/go-box/v3 v3.1.1
 	github.com/nyaosorg/go-readline-ny v1.15.1
 	github.com/nyaosorg/go-ttyadapter v0.7.0
-	github.com/sijms/go-ora/v2 v2.9.0
+	github.com/sijms/go-ora/v2 v2.8.22
 )
 
 require (

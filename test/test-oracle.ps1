@@ -19,7 +19,7 @@ $script = `
     " TO_TIMESTAMP('2024-07-08 17:18:19.8787','YYYY-MM-DD HH24:MI:SS.FF')) ||" +
     "COMMIT||" +
     "EDIT TESTTBL||" +
-    "/10|lr2015-06-07 20:21:22|lr2024-08-09 10:11:12.7878 +09:00|cyy" +
+    "/10|lr2015-06-07 20:21:22|lr2024-08-09 10:11:12.7878 +09:00|qyy" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +

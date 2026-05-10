@@ -99,7 +99,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 			fmt.Sprintf("%s %s%02s:%02s", m[1], m[2], m[3], m[4]))
 	}
 	if m := rxDateTime.FindStringSubmatch(s); m != nil {
-		return time.Parse(DateTimeLayout, m[1])
+		return time.ParseInLocation(DateTimeLayout, m[1], time.Local)
 	}
 	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
 		return time.Parse(DateOnlyLayout, m[1])
@@ -108,7 +108,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 		return time.Parse(TimeTzLayout, m[1])
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
-		return time.Parse(TimeOnlyLayout, m[1])
+		return time.ParseInLocation(TimeOnlyLayout, m[1], time.Local)
 	}
 	if m := rxRawLayout.FindStringSubmatch(s); m != nil {
 		return time.Parse(RawTimeLayout, m[1])

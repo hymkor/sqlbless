@@ -99,7 +99,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 			fmt.Sprintf("%s %s%02s:%02s", m[1], m[2], m[3], m[4]))
 	}
 	if m := rxDateTime.FindStringSubmatch(s); m != nil {
-		return time.Parse(DateTimeLayout, m[1])
+		return time.ParseInLocation(DateTimeLayout, m[1], time.Local)
 	}
 	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
 		return time.Parse(DateOnlyLayout, m[1])
@@ -108,7 +108,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 		return time.Parse(TimeTzLayout, m[1])
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
-		return time.Parse(TimeOnlyLayout, m[1])
+		return time.ParseInLocation(TimeOnlyLayout, m[1], time.Local)
 	}
 	if m := rxRawLayout.FindStringSubmatch(s); m != nil {
 		return time.Parse(RawTimeLayout, m[1])
@@ -202,7 +202,7 @@ type PlaceHolderName struct {
 }
 
 func (ph *PlaceHolderName) Make(v any) string {
-	ph.values = append(ph.values, v)
+	ph.values = append(ph.values, repair(v))
 	return fmt.Sprintf("%s%s%d", ph.Prefix, ph.Format, len(ph.values))
 }
 
@@ -212,4 +212,21 @@ func (ph *PlaceHolderName) Values() (result []any) {
 	}
 	ph.values = ph.values[:0]
 	return
+}
+
+func repair(v any) any {
+	if t, ok := v.(time.Time); ok {
+		if loc := t.Location(); loc != nil && loc.String() == "" {
+			return time.Date(
+				t.Year(),
+				t.Month(),
+				t.Day(),
+				t.Hour(),
+				t.Minute(),
+				t.Second(),
+				t.Nanosecond(),
+				time.Local)
+		}
+	}
+	return v
 }

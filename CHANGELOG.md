@@ -6,6 +6,8 @@ Changelog (English)
   The version string is now updated via make bump during the release process. (#46)
 - Rename release note files to CHANGELOG.md and CHANGELOG\_ja.md. (#47)
 - Update dependencies to the last versions compatible with Go 1.20.14 (#48)
+- Fixed an issue where updates to Oracle tables could affect zero rows because datetime values retrieved without timezone information failed to match in WHERE clauses. (#49)
+- go-ora v2.9.0 changed DATE/TIMESTAMP timezone handling, which broke datetime comparisons used by SQL-Bless updates. The Oracle driver version has been pinned to v2.8.22 for compatibility. (#49)
 
 v0.27.4
 -------

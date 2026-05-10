@@ -5,6 +5,7 @@ Changelog (English)
 - Fixed an issue where the version string was empty when built without GNU Make.  
   The version string is now updated via make bump during the release process. (#46)
 - Rename release note files to CHANGELOG.md and CHANGELOG\_ja.md. (#47)
+- Update dependencies to the last versions compatible with Go 1.20.14 (#48)
 
 v0.27.4
 -------

@@ -202,7 +202,7 @@ type PlaceHolderName struct {
 }
 
 func (ph *PlaceHolderName) Make(v any) string {
-	ph.values = append(ph.values, v)
+	ph.values = append(ph.values, repair(v))
 	return fmt.Sprintf("%s%s%d", ph.Prefix, ph.Format, len(ph.values))
 }
 
@@ -212,4 +212,21 @@ func (ph *PlaceHolderName) Values() (result []any) {
 	}
 	ph.values = ph.values[:0]
 	return
+}
+
+func repair(v any) any {
+	if t, ok := v.(time.Time); ok {
+		if loc := t.Location(); loc != nil && loc.String() == "" {
+			return time.Date(
+				t.Year(),
+				t.Month(),
+				t.Day(),
+				t.Hour(),
+				t.Minute(),
+				t.Second(),
+				t.Nanosecond(),
+				time.Local)
+		}
+	}
+	return v
 }

@@ -18,18 +18,18 @@ endif
 
 NAME:=$(notdir $(CURDIR))
 VERSION:=$(shell git describe --tags 2>$(NUL) || echo v0.0.0)
-GOOPT:=-ldflags "-s -w -X github.com/hymkor/sqlbless.Version=$(VERSION)"
+GOOPT:=-ldflags "-s -w -X github.com/hymkor/$(NAME).Version=$(VERSION)"
 EXE=$(shell $(GO) env GOEXE)
 
 build:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/sqlbless"
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
 
 test:
-	$(GO) test -v ./...
+	$(GO) test ./...
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/sqlbless"
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
@@ -48,7 +48,7 @@ release:
 	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 bump:
-	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc sqlbless CHANGELOG*.md > version.go
+	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc $(NAME) CHANGELOG*.md > version.go
 
 docs:
 	$(GO) run github.com/hymkor/minipage@latest -outline-in-sidebar -readme-to-index README.md    > docs/index.html
@@ -58,4 +58,4 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@latest
 	$(GO) run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
-.PHONY: all test dist _dist clean manifest release docs bump
+.PHONY: test dist _dist clean manifest release docs bump

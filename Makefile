@@ -54,4 +54,10 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@latest
 	$(GO) run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
-.PHONY: test dist _dist clean manifest release docs bump
+get:
+	$(GO) get -u
+	$(GO) get github.com/mattn/go-tty@v0.0.7
+	$(GO) get github.com/sijms/go-ora/v2@v2.8.22
+	$(GO) mod tidy
+
+.PHONY: test dist _dist clean manifest release docs bump drivers

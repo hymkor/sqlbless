@@ -2,6 +2,10 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v0.27.6
+-------
+May 11, 2026
+
 - Reverted Oracle-specific fix [#49-1] because it caused datetime comparison failures on Microsoft SQL Server. Confirmed that Oracle datetime comparisons work correctly with [#49-2] alone. (#52)
 ( This release continues to support Windows 7/8/Server 2008 R2 and Go 1.20.14.)
 

@@ -2,6 +2,12 @@ Changelog (Japanese)
 ========================
 ( [English](CHANGELOG.md) / **Japanese** )
 
+- Go 1.26.3 で `go mod tidy` を実施 (#54)
+- 既知のライブラリの問題を回避できる範囲で、依存するライブラリ・DBドライバーを可能な範囲で最新化した (#54)
+  - Upgrade MySQL driver to v1.10.0
+  - Upgrade Microsoft SQL Server driver to v1.10.0
+  - Upgrade PostgreSQL driver to v1.12.3
+
 v0.27.6
 -------
 May 11, 2026

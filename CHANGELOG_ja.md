@@ -7,6 +7,7 @@ Changelog (Japanese)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
+- sijms/go-ora でのタイムゾーンに関する比較問題を回避するため、Oracle の日時値を文字列として引き渡し、`TO_DATE`/`TO_TIMESTAMP` を使ってコンバートするようにした (#55)
 
 v0.27.6
 -------

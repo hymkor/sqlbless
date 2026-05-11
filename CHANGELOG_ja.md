@@ -2,6 +2,10 @@ Changelog (Japanese)
 ========================
 ( [English](CHANGELOG.md) / **Japanese** )
 
+v0.27.6
+-------
+May 11, 2026
+
 - SQL Server で日時の照合が失敗する問題があったため、Oracle 向けの修正 [#49-1] を Revert した。Oracle 側は [#49-2] があれば問題がないことを確認 (#52)
 ( 本バージョンは Windows 7/8/Server 2008R2 と Go 1.20.14 をサポートします )
 

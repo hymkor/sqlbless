@@ -2,6 +2,12 @@ Changelog (Japanese)
 ========================
 ( [English](CHANGELOG.md) / **Japanese** )
 
+- SQL Server で日時の照合が失敗する問題があったため、Oracle 向けの修正 [#49-1] を Revert した。Oracle 側は [#49-2] があれば問題がないことを確認 (#52)
+( 本バージョンは Windows 7/8/Server 2008R2 と Go 1.20.14 をサポートします )
+
+[#49-1]: https://github.com/hymkor/sqlbless/commit/cc90fc7deb1259861d00bec6bee408abbc59b065
+[#49-2]: https://github.com/hymkor/sqlbless/commit/449a453f240db65e4537311b7c266af14c11af83
+
 v0.27.5
 -------
 May 10, 2026
@@ -17,8 +23,8 @@ May 10, 2026
   - github.com/nyaosorg/go-ttyadapter  v0.3.0  to v0.7.0
   - github.com/hymkor/go-multiline-ny  v0.22.4 to v0.23.1
   - github.com/hymkor/csvi             v1.22.0 to v1.23.2
-- edit文で、Oracle のテーブルを更新しようとした時、timezone 情報が空で取得される日時カラムの照合失敗が原因で、更新が０件になってしまう不具合を修正 (#49)
-- github.com/sijms/go-ora は v2.9.0 で DATE/TIMESTAMP の timezone の扱いが変更され、照合に問題が発生したため、v2.8.22 へ固定 (#49)
+- edit文で、Oracle のテーブルを更新しようとした時、timezone 情報が空で取得される日時カラムの照合失敗が原因で、更新が０件になってしまう不具合を修正 (#49-1)
+- github.com/sijms/go-ora は v2.9.0 で DATE/TIMESTAMP の timezone の扱いが変更され、照合に問題が発生したため、v2.8.22 へ固定 (#49-2)
 
 v0.27.4
 -------

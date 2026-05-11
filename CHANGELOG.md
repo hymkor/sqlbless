@@ -2,6 +2,12 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Reverted Oracle-specific fix [#49-1] because it caused datetime comparison failures on Microsoft SQL Server. Confirmed that Oracle datetime comparisons work correctly with [#49-2] alone. (#52)
+( This release continues to support Windows 7/8/Server 2008 R2 and Go 1.20.14.)
+
+[#49-1]: https://github.com/hymkor/sqlbless/commit/cc90fc7deb1259861d00bec6bee408abbc59b065
+[#49-2]: https://github.com/hymkor/sqlbless/commit/449a453f240db65e4537311b7c266af14c11af83
+
 v0.27.5
 -------
 May 10, 2026
@@ -17,8 +23,8 @@ This release is the last version supporting Windows 7/8/Server 2008R2 and Go 1.2
   - github.com/nyaosorg/go-ttyadapter  v0.3.0  to v0.7.0
   - github.com/hymkor/go-multiline-ny  v0.22.4 to v0.23.1
   - github.com/hymkor/csvi             v1.22.0 to v1.23.2
-- Fixed an issue where updates to Oracle tables could affect zero rows because datetime values retrieved without timezone information failed to match in WHERE clauses. (#49)
-- github.com/sijms/go-ora v2.9.0 changed DATE/TIMESTAMP timezone handling, which broke datetime comparisons used by SQL-Bless updates. The Oracle driver version has been pinned to v2.8.22 for compatibility. (#49)
+- Fixed an issue where updates to Oracle tables could affect zero rows because datetime values retrieved without timezone information failed to match in WHERE clauses. (#49-1)
+- github.com/sijms/go-ora v2.9.0 changed DATE/TIMESTAMP timezone handling, which broke datetime comparisons used by SQL-Bless updates. The Oracle driver version has been pinned to v2.8.22 for compatibility. (#49-2)
 
 v0.27.4
 -------

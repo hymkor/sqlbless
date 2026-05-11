@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0
-	github.com/go-sql-driver/mysql v1.8.1
+	github.com/go-sql-driver/mysql v1.10.0
 	github.com/hymkor/csvi v1.23.2
 	github.com/hymkor/go-multiline-ny v0.23.1
 	github.com/hymkor/go-shellcommand v0.0.2
@@ -20,7 +20,7 @@ require (
 )
 
 require (
-	filippo.io/edwards25519 v1.1.0 // indirect
+	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect

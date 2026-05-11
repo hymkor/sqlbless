@@ -7,6 +7,7 @@ Changelog (English)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
+- Oracle datetime values are now passed as strings and converted using `TO_DATE`/`TO_TIMESTAMP` to avoid timezone-related comparison issues in sijms/go-ora. (#55)
 
 v0.27.6
 -------

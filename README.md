@@ -10,6 +10,8 @@ SQL-Bless
 
 **&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
 
+![image](./demo.gif)
+
 SQL-Bless is a command-line database client similar to SQL\*Plus, supporting multiple database systems.
 
 It was designed with reliability and transparency in mind.
@@ -43,10 +45,6 @@ SQL-Bless is the result of that lesson — a tool that values safety over conven
         - If a transaction is still active when executing DDL, a warning will be displayed
 - Table name and column name completion
     - Column name completion works only when the corresponding table name appears to the left of the cursor
-
-![image](./demo.gif)
-
-[Video](https://www.youtube.com/watch?v=_cxBQKpfUds) by [@emisjerry](https://github.com/emisjerry)
 
 | Key | Binding |
 |-----|---------|

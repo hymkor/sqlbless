@@ -2,12 +2,23 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
-- Fixed an issue where the version string was empty when built without GNU Make.  
-  The version string is now updated via make bump during the release process. (#46)
+v0.27.5
+-------
+May 10, 2026
+
+This release is the last version supporting Windows 7/8/Server 2008R2 and Go 1.20.x. Future releases will be built with newer Go toolchains in order to keep database drivers and dependencies up to date.
+
+- Fixed an issue where the version string was empty when built without GNU Make. The version string is now updated via make bump during the release process. (#46)
 - Rename release note files to CHANGELOG.md and CHANGELOG\_ja.md. (#47)
 - Update dependencies to the last versions compatible with Go 1.20.14 (#48)
+  - github.com/microsoft/go-mssqldb    v1.7.2  to v1.8.2
+  - github.com/mattn/go-isatty         v0.0.20 to v0.0.22
+  - github.com/nyaosorg/go-readline-ny v1.14.1 to v1.15.1
+  - github.com/nyaosorg/go-ttyadapter  v0.3.0  to v0.7.0
+  - github.com/hymkor/go-multiline-ny  v0.22.4 to v0.23.1
+  - github.com/hymkor/csvi             v1.22.0 to v1.23.2
 - Fixed an issue where updates to Oracle tables could affect zero rows because datetime values retrieved without timezone information failed to match in WHERE clauses. (#49)
-- go-ora v2.9.0 changed DATE/TIMESTAMP timezone handling, which broke datetime comparisons used by SQL-Bless updates. The Oracle driver version has been pinned to v2.8.22 for compatibility. (#49)
+- github.com/sijms/go-ora v2.9.0 changed DATE/TIMESTAMP timezone handling, which broke datetime comparisons used by SQL-Bless updates. The Oracle driver version has been pinned to v2.8.22 for compatibility. (#49)
 
 v0.27.4
 -------

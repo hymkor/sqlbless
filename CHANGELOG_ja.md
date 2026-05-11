@@ -2,12 +2,23 @@ Changelog (Japanese)
 ========================
 ( [English](CHANGELOG.md) / **Japanese** )
 
-- GNU Make なしでビルドした場合に、バージョン文字列が空になってしまう問題を修正  
-  今後、バージョンアップ時に make bump を実行する (#46)
+v0.27.5
+-------
+May 10, 2026
+
+本リリースは Windows 7/8/Server 2008R2 と Go 1.20.14 をサポートする最終バージョンとなります。今後のリリースはデータベースドライバーとその依存ライブラリに追随するため、より新しい Go のツールチェーンでビルドされることになります。
+
+- GNU Make なしでビルドした場合に、バージョン文字列が空になってしまう問題を修正。今後、バージョンアップ時に make bump を実行する (#46)
 - リリースノートのファイルを CHANGELOG.md と CHANGELOG\_ja.md へリネーム (#47)
 - Go 1.20.14 でビルド可能な最後のバージョンへ依存ライブラリを更新 (#48)
+  - github.com/microsoft/go-mssqldb    v1.7.2  to v1.8.2
+  - github.com/mattn/go-isatty         v0.0.20 to v0.0.22
+  - github.com/nyaosorg/go-readline-ny v1.14.1 to v1.15.1
+  - github.com/nyaosorg/go-ttyadapter  v0.3.0  to v0.7.0
+  - github.com/hymkor/go-multiline-ny  v0.22.4 to v0.23.1
+  - github.com/hymkor/csvi             v1.22.0 to v1.23.2
 - edit文で、Oracle のテーブルを更新しようとした時、timezone 情報が空で取得される日時カラムの照合失敗が原因で、更新が０件になってしまう不具合を修正 (#49)
-- go-ora v2.9.0 で DATE/TIMESTAMP の timezone の扱いが変更され、SQL-Bless で使われている日時の比較が壊れてしまった。そのため、Oracle ドライバーのバージョンを v2.8.22 へ固定した。 (#49)
+- github.com/sijms/go-ora は v2.9.0 で DATE/TIMESTAMP の timezone の扱いが変更され、照合に問題が発生したため、v2.8.22 へ固定 (#49)
 
 v0.27.4
 -------

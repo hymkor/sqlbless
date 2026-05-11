@@ -1,6 +1,6 @@
 module github.com/hymkor/sqlbless
 
-go 1.25.0
+go 1.25.7
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0
@@ -12,7 +12,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.22
-	github.com/microsoft/go-mssqldb v1.8.2
+	github.com/microsoft/go-mssqldb v1.10.0
 	github.com/nyaosorg/go-box/v3 v3.1.1
 	github.com/nyaosorg/go-readline-ny v1.15.1
 	github.com/nyaosorg/go-ttyadapter v0.7.0
@@ -34,7 +34,8 @@ require (
 	github.com/nyaosorg/go-readline-skk v0.6.2 // indirect
 	github.com/nyaosorg/go-windows-mbcs v0.4.4 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	golang.org/x/crypto v0.29.0 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
+	golang.org/x/crypto v0.50.0 // indirect
 	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc // indirect
 	golang.org/x/sys v0.44.0 // indirect
 	golang.org/x/term v0.43.0 // indirect

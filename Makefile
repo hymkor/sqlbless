@@ -11,11 +11,7 @@ else
     NUL=/dev/null
 endif
 
-ifndef GO
-    SUPPORTGO=go1.20.14
-    GO:=$(shell $(WHICH) $(SUPPORTGO) 2>$(NUL) || echo go)
-endif
-
+GO=go
 NAME:=$(notdir $(CURDIR))
 VERSION:=$(shell git describe --tags 2>$(NUL) || echo v0.0.0)
 GOOPT:=-ldflags "-s -w -X github.com/hymkor/$(NAME).Version=$(VERSION)"

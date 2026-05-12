@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	_ "github.com/sijms/go-ora/v2"
 
@@ -33,6 +34,18 @@ var oracleSpec = &dialect.Entry{
 	TableNameField:   "tname",
 	ColumnNameField:  "name",
 	PlaceHolder:      new(placeHolder),
+	FormatValue:      formatValue,
+}
+
+func formatValue(typeName string, value any) (string, bool) {
+	t, ok := value.(time.Time)
+	if !ok {
+		return "", false
+	}
+	if typeName == "DATE" {
+		return t.Format("2006-01-02 15:04:05"), true
+	}
+	return t.Format("2006-01-02 15:04:05.999999"), true
 }
 
 type withFormat struct {
@@ -45,11 +58,11 @@ func oracleTypeNameToConv(typeName string) func(string) (any, error) {
 	var layout string
 
 	if typeName == "DATE" {
-		format = "TO_DATE(:v%d,'YYYY/MM/DD HH24:MI:SS')"
-		layout = "2006/01/02 15:04:05"
+		format = "TO_DATE(:v%d,'YYYY-MM-DD HH24:MI:SS')"
+		layout = "2006-01-02 15:04:05"
 	} else if strings.HasPrefix(typeName, "TIMESTAMP") {
-		format = "TO_TIMESTAMP(:v%d,'YYYY/MM/DD HH24:MI:SS.FF')"
-		layout = "2006/01/02 15:04:05.999999"
+		format = "TO_TIMESTAMP(:v%d,'YYYY-MM-DD HH24:MI:SS.FF')"
+		layout = "2006-01-02 15:04:05.999999"
 	} else {
 		return nil
 	}

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	_ "github.com/glebarez/go-sqlite/compat"
 
@@ -29,6 +30,22 @@ var Entry = &dialect.Entry{
 		s, _ = misc.CutField(s)
 		return strings.EqualFold(s, "PRAGMA")
 	},
+	FormatValue: formatValue,
+}
+
+func formatValue(typeName string, value any) (string, bool) {
+	if t, ok := value.(time.Time); ok {
+		if typeName == "DATE" {
+			return t.Format("2006-01-02"), true
+		}
+		if typeName == "DATETIME" {
+			return t.Format("2006-01-02 15:04:05"), true
+		}
+		if typeName == "TIMESTAMP" {
+			return t.Format("2006-01-02 15:04:05.999999999"), true
+		}
+	}
+	return "", false
 }
 
 func canUseInTransaction(sql string) bool {
@@ -37,11 +54,19 @@ func canUseInTransaction(sql string) bool {
 	return !strings.EqualFold(keyword, "VACUUM")
 }
 
-var typeNameToHolder = map[string]string{
-	"TIMESTAMP": "datetime(?)", // "2006-01-02 15:04:05.999999999-07:00"
-	"TIME":      "time(?)",     // dialect.TimeOnlyLayout
-	"DATE":      "date(?)",     // dialect.DateOnlyLayout
-	"DATETIME":  "datetime(?)", // dialect.DateTimeLayout
+var typeNameToHolder = map[string][2]string{
+	"TIMESTAMP": [2]string{
+		"strftime('%Y-%m-%d %H:%M:%f',?)", // "2006-01-02 15:04:05.999999999-07:00"
+		"2006-01-02 15:04:05.999999999"},
+	"TIME": [2]string{
+		"time(?)", // dialect.TimeOnlyLayout
+		"15:04:05"},
+	"DATE": [2]string{
+		"date(?)", // dialect.DateOnlyLayout
+		"2006-01-02"},
+	"DATETIME": [2]string{
+		"datetime(?)", // dialect.DateTimeLayout
+		"2006-01-02 15:04:05"},
 }
 
 func typeNameToConv(typeName string) func(string) (any, error) {
@@ -51,7 +76,10 @@ func typeNameToConv(typeName string) func(string) (any, error) {
 			if err != nil {
 				return s, nil
 			}
-			return &withHolder{holder: holder, value: dt}, nil
+			return &withHolder{
+				holder: holder[0],
+				value:  dt.Format(holder[1]),
+			}, nil
 		}
 	}
 	return nil

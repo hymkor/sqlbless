@@ -56,6 +56,10 @@ type Entry struct {
 
 	// IdentifierEncloser encloses an identifier with dialect-specific quotes.
 	IdentifierEncloser func(name string) string
+
+	// FormatValue converts a database value into a dialect-specific string representation.
+	// Returning false means the default conversion should be used instead.
+	FormatValue func(typeName string, value any) (string, bool)
 }
 
 // EncloseIdentifier returns the given name enclosed with

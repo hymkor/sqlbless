@@ -51,6 +51,7 @@ func newViewer(ss *session) *spread.Viewer {
 		hl = 1
 	}
 	return &spread.Viewer{
+		Entry:       ss.Dialect,
 		HeaderLines: hl,
 		Comma:       ss.comma(),
 		Null:        ss.Null,
@@ -80,12 +81,12 @@ func chooseTable(ctx context.Context, tables []string, d *dialect.Entry, ttyout 
 func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) error {
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
+			Entry:       ss.Dialect,
 			HeaderLines: 1,
 			Comma:       ss.comma(),
 			Null:        ss.Null,
 		},
-		Entry: ss.Dialect,
-		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
+		Exec: (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
 		editor.Pilot = misc.AutoCsvi{GetKeyAndSize: a}

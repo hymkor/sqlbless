@@ -19,19 +19,15 @@ type Source interface {
 	Scan(dest ...any) error
 }
 
-func anyToNullString(v any) sql.NullString {
-	var ns sql.NullString
+func anyToNullString(v any) (string, bool) {
 	if stamp, ok := v.(time.Time); ok {
-		ns.String = stamp.Format("2006-01-02 15:04:05.999999999 -07:00")
-		ns.Valid = true
+		return stamp.Format("2006-01-02 15:04:05.999999999 -07:00"), true
 	} else if b, ok := v.([]byte); ok {
-		ns.String = string(b)
-		ns.Valid = true
+		return string(b), true
 	} else if v != nil {
-		ns.String = fmt.Sprint(v)
-		ns.Valid = true
+		return fmt.Sprint(v), true
 	}
-	return ns
+	return "", false
 }
 
 func makeBuffers[T any](n int) ([]any, []T) {
@@ -43,7 +39,7 @@ func makeBuffers[T any](n int) ([]any, []T) {
 	return refs, data
 }
 
-func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.NullString) string, debug bool, write func([]string) error) error {
+func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, any) (string, bool), null string, debug bool, write func([]string) error) error {
 	columns, err := rows.Columns()
 	if err != nil {
 		return fmt.Errorf("(sql.Rows) Columns: %w", err)
@@ -55,7 +51,6 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 
 	n := len(columns)
 	refs, data := makeBuffers[any](n)
-	//refs, data := makeBuffers[sql.RawBytes](n)
 	strs := make([]string, len(columns))
 
 	columnTypes, err := rows.ColumnTypes()
@@ -83,17 +78,25 @@ func dump(ctx context.Context, rows Source, conv func(int, *sql.ColumnType, sql.
 	}
 
 	for rows.Next() {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
+		if err := ctx.Err(); err != nil {
+			return err
 		}
 		if err := rows.Scan(refs...); err != nil {
 			return err
 		}
 		for i, v := range data {
-			ns := anyToNullString(v)
-			strs[i] = conv(i, columnTypes[i], ns)
+			if conv != nil {
+				s, ok := conv(i, columnTypes[i], v)
+				if ok {
+					strs[i] = s
+					continue
+				}
+			}
+			if s, ok := anyToNullString(v); ok {
+				strs[i] = s
+			} else {
+				strs[i] = null
+			}
 		}
 		if err := write(strs); err != nil {
 			return fmt.Errorf("(csv.Writer).Write: %w", err)
@@ -110,15 +113,8 @@ type Config struct {
 	UseCRLF   bool
 	Null      string
 	Debug     bool
-	Conv      func(int, *sql.ColumnType, sql.NullString) string
+	Conv      func(int, *sql.ColumnType, any) (string, bool)
 	AutoClose bool
-}
-
-func (cfg Config) defaultConv(_ int, _ *sql.ColumnType, v sql.NullString) string {
-	if v.Valid {
-		return v.String
-	}
-	return cfg.Null
 }
 
 func (cfg Config) Dump(ctx context.Context, rows Source, w io.Writer) error {
@@ -128,12 +124,8 @@ func (cfg Config) Dump(ctx context.Context, rows Source, w io.Writer) error {
 	csvw.Comma = cfg.Comma
 	csvw.UseCRLF = cfg.UseCRLF
 
-	conv := cfg.defaultConv
-	if cfg.Conv != nil {
-		conv = cfg.Conv
-	}
 	if cfg.AutoClose {
 		defer rows.Close()
 	}
-	return dump(ctx, rows, conv, cfg.Debug, csvw.Write)
+	return dump(ctx, rows, cfg.Conv, cfg.Null, cfg.Debug, csvw.Write)
 }

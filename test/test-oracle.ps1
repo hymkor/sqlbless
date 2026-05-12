@@ -53,11 +53,11 @@ ForEach-Object {
         Write-Host $field.Length
         return
     }
-    if ( $field[1] -notlike "2015-06-07 20:21:22*" ){
+    if ( $field[1] -ne "2015-06-07 20:21:22" ){
         Write-Host $field[1]
         return
     }
-    if ( $field[2] -notlike "2024-08-09 10:11:12.7878*" ){
+    if ( $field[2] -ne "2024-08-09 10:11:12.7878" ){
         Write-Host $field[2]
         return
     }

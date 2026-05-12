@@ -8,6 +8,7 @@ Changelog (Japanese)
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
 - SELECT や EDIT で表示される Oracle と SQLite の日時から冗長なタイムゾーンを除いた。日時の照合もタイムゾーンに依存しないよう変換した文字列で行うようにした (#55, #57, #58)
+- edit 文で NULL の設定のみを変更した場合、変更反映の確認が行われない不具合を修正 (#59)
 
 v0.27.6
 -------

@@ -58,6 +58,7 @@ func (viewer *Viewer) View(ctx context.Context, title string, rows rowstocsv.Sou
 func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent) (string, error), csvWriteTo func(pOut io.Writer) error, termOut io.Writer) (*csvi.Result, error) {
 
 	applyChange := false
+	myDirty := false
 	setNull := func(e *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
 		if e.CurrentRow().Index() < viewer.HeaderLines {
 			return &csvi.CommandResult{}, nil
@@ -71,11 +72,12 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 			return &csvi.CommandResult{Message: err.Error()}, nil
 		}
 		e.CurrentRow().Replace(e.CurrentCol(), viewer.Null, &uncsv.Mode{Comma: viewer.Comma})
+		myDirty = true
 		return &csvi.CommandResult{}, nil
 	}
 
 	quit := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
-		if !app.IsDirty() {
+		if !app.IsDirty() && !myDirty {
 			io.WriteString(app, "\n")
 			return &csvi.CommandResult{Quit: true}, nil
 		}

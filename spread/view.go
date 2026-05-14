@@ -2,12 +2,14 @@ package spread
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"io"
 	"strings"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
+	"github.com/hymkor/sqlbless/dialect"
 	"github.com/hymkor/sqlbless/rowstocsv"
 )
 
@@ -17,7 +19,9 @@ type KeyBinding struct {
 }
 
 type Viewer struct {
+	*dialect.Entry
 	HeaderLines int
+	Debug       bool
 	Comma       byte
 	Null        string
 	Spool       io.Writer
@@ -41,6 +45,13 @@ func (viewer *Viewer) View(ctx context.Context, title string, rows rowstocsv.Sou
 			Null:      viewer.Null,
 			Comma:     rune(viewer.Comma),
 			AutoClose: true,
+			Debug:     viewer.Debug,
+			Conv: func(_ int, ct *sql.ColumnType, v any) (string, bool) {
+				if f := viewer.Entry.FormatValue; f != nil {
+					return f(ct.DatabaseTypeName(), v)
+				}
+				return "", false
+			},
 		}.Dump(ctx, rows, w)
 	}
 

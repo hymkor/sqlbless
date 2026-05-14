@@ -11,11 +11,7 @@ else
     NUL=/dev/null
 endif
 
-ifndef GO
-    SUPPORTGO=go1.20.14
-    GO:=$(shell $(WHICH) $(SUPPORTGO) 2>$(NUL) || echo go)
-endif
-
+GO=go
 NAME:=$(notdir $(CURDIR))
 VERSION:=$(shell git describe --tags 2>$(NUL) || echo v0.0.0)
 GOOPT:=-ldflags "-s -w -X github.com/hymkor/$(NAME).Version=$(VERSION)"
@@ -23,7 +19,7 @@ EXE=$(shell $(GO) env GOEXE)
 
 build:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
+	$(SET) "CGO_ENABLED=0" && $(GO) build -tags debug $(GOOPT) "./cmd/$(NAME)"
 
 test:
 	$(GO) test ./...
@@ -58,4 +54,10 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@latest
 	$(GO) run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
-.PHONY: test dist _dist clean manifest release docs bump
+get:
+	$(GO) get -u
+	$(GO) get github.com/mattn/go-tty@v0.0.7
+	$(GO) get github.com/sijms/go-ora/v2@v2.8.22
+	$(GO) mod tidy
+
+.PHONY: test dist _dist clean manifest release docs bump drivers

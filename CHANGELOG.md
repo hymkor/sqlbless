@@ -2,6 +2,15 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Run `go mod tidy` with Go 1.26.3 (#54)
+- Update dependencies and database drivers to newer versions, while keeping compatibility workarounds for known problematic libraries. (#54)
+  - Upgrade MySQL driver to v1.10.0
+  - Upgrade Microsoft SQL Server driver to v1.10.0
+  - Upgrade PostgreSQL driver to v1.12.3
+- Oracle and SQLite datetime values displayed by select and edit no longer include redundant timezone suffixes. Datetime comparisons are now handled using timezone-independent string conversion. (#55, #57, #58)
+- Improved readability of timestamp values shown in bind variable output during edit operations. (#60)
+- Added support for Oracle TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE columns in edit mode. (#63)
+
 v0.27.7
 -------
 May 15, 2026

@@ -93,7 +93,6 @@ func doubleQuoteIfNeed(s string) string {
 
 type Editor struct {
 	*Viewer
-	*dialect.Entry
 	Query func(context.Context, string, ...any) (*sql.Rows, error)
 	Exec  func(context.Context, string, ...any) (sql.Result, error)
 }
@@ -195,6 +194,13 @@ func (editor *Editor) Edit(ctx context.Context, tableAndWhere string, termOut io
 			Null:      editor.Viewer.Null,
 			Comma:     rune(editor.Viewer.Comma),
 			AutoClose: true,
+			Debug:     editor.Viewer.Debug,
+			Conv: func(_ int, ct *sql.ColumnType, v any) (string, bool) {
+				if f := editor.Entry.FormatValue; f != nil {
+					return f(ct.DatabaseTypeName(), v)
+				}
+				return "", false
+			},
 		}.Dump(ctx, rows, w)
 		rows = nil
 		return err

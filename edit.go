@@ -7,6 +7,7 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/nyaosorg/go-box/v3"
 
@@ -46,12 +47,14 @@ func askN(msg string, getKey func() (string, error), options ...string) (int, er
 func newViewer(ss *session) *spread.Viewer {
 	var hl int
 	if ss.Debug {
-		hl = 3
+		hl = 2
 	} else {
 		hl = 1
 	}
 	return &spread.Viewer{
+		Entry:       ss.Dialect,
 		HeaderLines: hl,
+		Debug:       ss.Debug,
 		Comma:       ss.comma(),
 		Null:        ss.Null,
 		Spool:       ss.spool,
@@ -78,14 +81,21 @@ func chooseTable(ctx context.Context, tables []string, d *dialect.Entry, ttyout 
 }
 
 func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) error {
+	var hl int
+	if ss.Debug {
+		hl = 2
+	} else {
+		hl = 1
+	}
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
-			HeaderLines: 1,
+			Entry:       ss.Dialect,
+			HeaderLines: hl,
+			Debug:       ss.Debug,
 			Comma:       ss.comma(),
 			Null:        ss.Null,
 		},
-		Entry: ss.Dialect,
-		Exec:  (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
+		Exec: (&askSqlAndExecute{getKey: pilot.GetKey, session: ss}).Exec,
 	}
 	if a, ok := pilot.AutoPilotForCsvi(); ok {
 		editor.Pilot = misc.AutoCsvi{GetKeyAndSize: a}
@@ -116,10 +126,21 @@ func joinAny(args []any) string {
 	}
 	var b strings.Builder
 	for i, v := range args {
+		if i > 0 {
+			b.WriteByte('\n')
+		}
+		var val any
 		if n, ok := v.(sql.NamedArg); ok {
-			fmt.Fprintf(&b, "(%s) %#v ", n.Name, n.Value)
+			fmt.Fprintf(&b, "(%s) ", n.Name)
+			val = n.Value
 		} else {
-			fmt.Fprintf(&b, "(%d) %#v ", i+1, v)
+			fmt.Fprintf(&b, "(%d) ", i+1)
+			val = v
+		}
+		if t, ok := val.(time.Time); ok {
+			b.WriteString(t.Format("2006-01-02 15:04:05.999999999 -07:00"))
+		} else {
+			fmt.Fprintf(&b, "%#v", val)
 		}
 	}
 	return b.String()

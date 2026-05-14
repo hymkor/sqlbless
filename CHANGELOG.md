@@ -11,6 +11,7 @@ Changelog (English)
 - Fix: confirmation to apply changes to the DB was skipped when only NULL values were modified (#59)
 - Improved readability of timestamp values shown in bind variable output during edit operations. (#60)
 - Fixed missing error messages when INSERT, UPDATE, or DELETE statements failed. (#61)
+- Added support for Oracle TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE columns in edit mode. (#63)
 
 v0.27.6
 -------

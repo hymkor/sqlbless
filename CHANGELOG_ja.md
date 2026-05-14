@@ -11,6 +11,7 @@ Changelog (Japanese)
 - edit 文で NULL の設定のみを変更した場合、変更反映の確認が行われない不具合を修正 (#59)
 - edit 文でバインド変数出力の日時を読み易さを改善した (#60)
 - INSERT/UPDATE/DELETE で発生したエラーが表示されない不具合を修正 (#61)
+- edit 文で Oracle の TIMESTAMP WITH TIME ZONE, TIMESTAMP WITH LOCAL TIME ZONE 型をサポート (#63)
 
 v0.27.6
 -------

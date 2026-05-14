@@ -9,6 +9,7 @@ Changelog (English)
   - Upgrade PostgreSQL driver to v1.12.3
 - Oracle and SQLite datetime values displayed by select and edit no longer include redundant timezone suffixes. Datetime comparisons are now handled using timezone-independent string conversion. (#55, #57, #58)
 - Fix: confirmation to apply changes to the DB was skipped when only NULL values were modified (#59)
+- Improved readability of timestamp values shown in bind variable output during edit operations. (#60)
 
 v0.27.6
 -------

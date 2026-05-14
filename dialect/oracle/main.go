@@ -45,6 +45,11 @@ func formatValue(typeName string, value any) (string, bool) {
 	if typeName == "DATE" {
 		return t.Format("2006-01-02 15:04:05"), true
 	}
+	if strings.EqualFold(typeName, "TimeStampTZ_DTY") ||
+		strings.EqualFold(typeName, "TimeStampLTZ_DTY") {
+
+		return t.Format("2006-01-02 15:04:05.999999 -07:00"), true
+	}
 	return t.Format("2006-01-02 15:04:05.999999"), true
 }
 
@@ -61,8 +66,15 @@ func oracleTypeNameToConv(typeName string) func(string) (any, error) {
 		format = "TO_DATE(:v%d,'YYYY-MM-DD HH24:MI:SS')"
 		layout = "2006-01-02 15:04:05"
 	} else if strings.HasPrefix(typeName, "TIMESTAMP") {
-		format = "TO_TIMESTAMP(:v%d,'YYYY-MM-DD HH24:MI:SS.FF')"
-		layout = "2006-01-02 15:04:05.999999"
+		if strings.EqualFold(typeName, "TimeStampTZ_DTY") ||
+			strings.EqualFold(typeName, "TimeStampLTZ_DTY") {
+
+			format = "TO_TIMESTAMP_TZ(:v%d,'YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
+			layout = "2006-01-02 15:04:05.999999 -07:00"
+		} else {
+			format = "TO_TIMESTAMP(:v%d,'YYYY-MM-DD HH24:MI:SS.FF')"
+			layout = "2006-01-02 15:04:05.999999"
+		}
 	} else {
 		return nil
 	}

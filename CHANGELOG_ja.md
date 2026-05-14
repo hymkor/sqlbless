@@ -8,10 +8,16 @@ Changelog (Japanese)
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
 - SELECT や EDIT で表示される Oracle と SQLite の日時から冗長なタイムゾーンを除いた。日時の照合もタイムゾーンに依存しないよう変換した文字列で行うようにした (#55, #57, #58)
-- edit 文で NULL の設定のみを変更した場合、変更反映の確認が行われない不具合を修正 (#59)
 - edit 文でバインド変数出力の日時を読み易さを改善した (#60)
-- INSERT/UPDATE/DELETE で発生したエラーが表示されない不具合を修正 (#61)
 - edit 文で Oracle の TIMESTAMP WITH TIME ZONE, TIMESTAMP WITH LOCAL TIME ZONE 型をサポート (#63)
+
+v0.27.7
+-------
+May 15, 2026
+
+- edit 文で NULL の設定のみを変更した場合、変更反映の確認が行われない不具合を修正 (#59)
+- INSERT/UPDATE/DELETE で発生したエラーが表示されない不具合を修正 (#61)
+( 本バージョンは Windows 7/8/Server 2008R2 と Go 1.20.14 をサポートします )
 
 v0.27.6
 -------

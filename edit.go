@@ -47,13 +47,14 @@ func askN(msg string, getKey func() (string, error), options ...string) (int, er
 func newViewer(ss *session) *spread.Viewer {
 	var hl int
 	if ss.Debug {
-		hl = 3
+		hl = 2
 	} else {
 		hl = 1
 	}
 	return &spread.Viewer{
 		Entry:       ss.Dialect,
 		HeaderLines: hl,
+		Debug:       ss.Debug,
 		Comma:       ss.comma(),
 		Null:        ss.Null,
 		Spool:       ss.spool,
@@ -80,10 +81,17 @@ func chooseTable(ctx context.Context, tables []string, d *dialect.Entry, ttyout 
 }
 
 func doEdit(ctx context.Context, ss *session, command string, pilot commandIn) error {
+	var hl int
+	if ss.Debug {
+		hl = 2
+	} else {
+		hl = 1
+	}
 	editor := &spread.Editor{
 		Viewer: &spread.Viewer{
 			Entry:       ss.Dialect,
-			HeaderLines: 1,
+			HeaderLines: hl,
+			Debug:       ss.Debug,
 			Comma:       ss.comma(),
 			Null:        ss.Null,
 		},

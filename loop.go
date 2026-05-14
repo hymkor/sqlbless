@@ -190,7 +190,8 @@ func (ss *session) Loop(ctx context.Context, commandIn commandIn) error {
 			isNewTx := (ss.tx == nil)
 			err = ss.beginTx(ctx, ss.stdErr)
 			if err == nil {
-				count, err := doDML(ctx, ss.tx, query, nil, ss.stdOut)
+				var count int64
+				count, err = doDML(ctx, ss.tx, query, nil, ss.stdOut)
 				if (err != nil || count == 0) && isNewTx && ss.tx != nil {
 					ss.tx.Rollback()
 					ss.tx = nil

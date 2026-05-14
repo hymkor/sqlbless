@@ -7,6 +7,7 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/nyaosorg/go-box/v3"
 
@@ -117,10 +118,21 @@ func joinAny(args []any) string {
 	}
 	var b strings.Builder
 	for i, v := range args {
+		if i > 0 {
+			b.WriteByte('\n')
+		}
+		var val any
 		if n, ok := v.(sql.NamedArg); ok {
-			fmt.Fprintf(&b, "(%s) %#v ", n.Name, n.Value)
+			fmt.Fprintf(&b, "(%s) ", n.Name)
+			val = n.Value
 		} else {
-			fmt.Fprintf(&b, "(%d) %#v ", i+1, v)
+			fmt.Fprintf(&b, "(%d) ", i+1)
+			val = v
+		}
+		if t, ok := val.(time.Time); ok {
+			b.WriteString(t.Format("2006-01-02 15:04:05.999999999 -07:00"))
+		} else {
+			fmt.Fprintf(&b, "%#v", val)
 		}
 	}
 	return b.String()

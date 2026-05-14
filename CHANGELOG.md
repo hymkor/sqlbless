@@ -2,6 +2,14 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v0.27.7
+-------
+May 15, 2026
+
+- Fix: confirmation to apply changes to the DB was skipped when only NULL values were modified (#59)
+- Fixed missing error messages when INSERT, UPDATE, or DELETE statements failed. (#61)
+( This release continues to support Windows 7/8/Server 2008 R2 and Go 1.20.14.)
+
 v0.27.6
 -------
 May 11, 2026

@@ -2,6 +2,15 @@ Changelog (Japanese)
 ========================
 ( [English](CHANGELOG.md) / **Japanese** )
 
+v0.27.7
+-------
+May 15, 2026
+
+- edit 文で NULL の設定のみを変更した場合、変更反映の確認が行われない不具合を修正 (#59)
+- INSERT/UPDATE/DELETE で発生したエラーが表示されない不具合を修正 (#61)
+
+( 本バージョンは Windows 7/8/Server 2008R2 と Go 1.20.14 をサポートします )
+
 v0.27.6
 -------
 May 11, 2026

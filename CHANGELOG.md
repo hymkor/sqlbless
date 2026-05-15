@@ -10,6 +10,7 @@ Changelog (English)
 - Oracle and SQLite datetime values displayed by select and edit no longer include redundant timezone suffixes. Datetime comparisons are now handled using timezone-independent string conversion. (#55, #57, #58)
 - Improved readability of timestamp values shown in bind variable output during edit operations. (#60)
 - Added support for Oracle TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE columns in edit mode. (#63)
+- Improved PostgreSQL timestamp display in edit mode by hiding timezone offsets for columns without timezone information. (#65)
 
 v0.27.7
 -------

@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -15,7 +16,7 @@ var postgresTypeNameToFormat = map[string][2]string{
 	"TIMESTAMP":   [2]string{"TIMESTAMP", dialect.DateTimeLayout},
 	"DATE":        [2]string{"DATE", dialect.DateOnlyLayout},
 	"TIMETZ":      [2]string{"TIME WITH TIME ZONE", dialect.TimeTzLayout},
-	"TIME":        [2]string{"TIME", dialect.TimeTzLayout},
+	"TIME":        [2]string{"TIME", dialect.TimeOnlyLayout},
 }
 
 func postgresTypeNameToConv(typeName string) func(string) (any, error) {
@@ -73,6 +74,19 @@ var postgresSpec = &dialect.Entry{
 	TableNameField:    "table_name",
 	ColumnNameField:   "name",
 	IsTransactionSafe: canUseInTransaction,
+	FormatValue:       formatValue,
+}
+
+func formatValue(typeName string, value any) (string, bool) {
+	t, ok := value.(time.Time)
+	if !ok {
+		return "", false
+	}
+	f, ok := postgresTypeNameToFormat[typeName]
+	if !ok {
+		return "", false
+	}
+	return t.Format(f[1]), true
 }
 
 func canUseInTransaction(sql string) bool {

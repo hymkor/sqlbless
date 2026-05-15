@@ -165,7 +165,7 @@ Configuration
 
 SQL-Bless does **not** rely on any external configuration files. All settings—including database connection parameters, output format, and other options—are specified directly via command-line arguments.
 
-For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see `run-*.cmd`). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.
+For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see `examples/run-*.cmd`). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.
 
 How to start
 -------------
@@ -180,7 +180,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless sqlite3 path/to/file.db
 
 - The drivers used are https://github.com/glebarez/go-sqlite
-- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd)
+- [Example startup batch file](./examples/run-sqlite3.cmd)
 
 ### Oracle
 
@@ -188,7 +188,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - The driver used is https://github.com/sijms/go-ora
-- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd)
+- [Example startup batch file](./examples/run-oracle.cmd)
 
 ### PostgreSQL
 
@@ -197,7 +197,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
 
 - The driver used is https://github.com/lib/pq
-- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd)
+- [Example startup batch file](./examples/run-psql.cmd)
 
 ### SQL Server
 
@@ -208,7 +208,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
 
 - The driver used is https://github.com/microsoft/go-mssqldb
-- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd)
+- [Example startup batch file](./examples/run-mssql.cmd)
 
 ### MySQL
 
@@ -216,7 +216,7 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
 
 - The driver used is http://github.com/go-sql-driver/mysql
 - The `?parseTime=true&loc=Local` parameter is preset, but it can be overridden
-- [Example startup batch file](https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd)
+- [Example startup batch file](./examples/run-mysql.cmd)
 
 Common Options
 --------------

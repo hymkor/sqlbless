@@ -35,14 +35,8 @@ var Entry = &dialect.Entry{
 
 func formatValue(typeName string, value any) (string, bool) {
 	if t, ok := value.(time.Time); ok {
-		if typeName == "DATE" {
-			return t.Format("2006-01-02"), true
-		}
-		if typeName == "DATETIME" {
-			return t.Format("2006-01-02 15:04:05"), true
-		}
-		if typeName == "TIMESTAMP" {
-			return t.Format("2006-01-02 15:04:05.999999999"), true
+		if spec, ok := typeNameToHolder[typeName]; ok {
+			return t.Format(spec[1]), true
 		}
 	}
 	return "", false
@@ -56,17 +50,17 @@ func canUseInTransaction(sql string) bool {
 
 var typeNameToHolder = map[string][2]string{
 	"TIMESTAMP": [2]string{
-		"strftime('%Y-%m-%d %H:%M:%f',?)", // "2006-01-02 15:04:05.999999999-07:00"
-		"2006-01-02 15:04:05.999999999"},
+		"strftime('%Y-%m-%d %H:%M:%f',?)",
+		dialect.DateTimeLayout},
 	"TIME": [2]string{
-		"time(?)", // dialect.TimeOnlyLayout
-		"15:04:05"},
+		"time(?)",
+		dialect.TimeOnlyLayout0p},
 	"DATE": [2]string{
-		"date(?)", // dialect.DateOnlyLayout
-		"2006-01-02"},
+		"date(?)",
+		dialect.DateOnlyLayout},
 	"DATETIME": [2]string{
-		"datetime(?)", // dialect.DateTimeLayout
-		"2006-01-02 15:04:05"},
+		"datetime(?)",
+		dialect.DateTimeLayout0p},
 }
 
 func typeNameToConv(typeName string) func(string) (any, error) {
@@ -76,18 +70,13 @@ func typeNameToConv(typeName string) func(string) (any, error) {
 			if err != nil {
 				return s, nil
 			}
-			return &withHolder{
-				holder: holder[0],
-				value:  dt.Format(holder[1]),
+			return &dialect.SQLFmtAndValue{
+				Format: holder[0],
+				Value:  dt.Format(holder[1]),
 			}, nil
 		}
 	}
 	return nil
-}
-
-type withHolder struct {
-	holder string
-	value  any
 }
 
 type placeHolder struct {
@@ -95,17 +84,17 @@ type placeHolder struct {
 }
 
 func (ph *placeHolder) Make(v any) string {
-	if w, ok := v.(*withHolder); ok {
-		ph.values = append(ph.values, w.value)
-		return strings.ReplaceAll(w.holder, "?", fmt.Sprintf("$v%d", len(ph.values)))
+	if w, ok := v.(*dialect.SQLFmtAndValue); ok {
+		ph.values = append(ph.values, w.Value)
+		return strings.ReplaceAll(w.Format, "?", fmt.Sprintf("$v%d", len(ph.values)))
 	}
 	ph.values = append(ph.values, v)
 	return fmt.Sprintf("$v%d", len(ph.values))
 }
 
 func (ph *placeHolder) NormalizeColumnForWhere(value any, columnName string) string {
-	if w, ok := value.(*withHolder); ok {
-		return strings.ReplaceAll(w.holder, "?", columnName)
+	if w, ok := value.(*dialect.SQLFmtAndValue); ok {
+		return strings.ReplaceAll(w.Format, "?", columnName)
 	}
 	return columnName
 }

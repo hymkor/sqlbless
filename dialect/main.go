@@ -85,6 +85,7 @@ const (
 	DateTimeLayout0p    = "2006-01-02 15:04:05"
 	ShortDateTimeLayout = "2006-01-02 15:04"
 	DateOnlyLayout      = "2006-01-02"
+	TimeOnlyLayout0p    = "15:04:05"
 	TimeOnlyLayout      = "15:04:05.999999999"
 	TimeTzLayout        = "15:04:05.999999999 -07:00"
 	RawTimeLayout       = "2006-01-02T15:04:05Z"

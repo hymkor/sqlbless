@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"database/sql"
 )
 
 var (
@@ -80,21 +78,25 @@ func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {
 }
 
 const (
-	DateTimeTzLayout = "2006-01-02 15:04:05.999999999 -07:00"
-	DateTimeLayout   = "2006-01-02 15:04:05.999999999"
-	DateOnlyLayout   = "2006-01-02"
-	TimeOnlyLayout   = "15:04:05.999999999"
-	TimeTzLayout     = "15:04:05.999999999 -07:00"
-	RawTimeLayout    = "2006-01-02T15:04:05Z"
+	DateTimeTzLayout    = "2006-01-02 15:04:05.999999999 -07:00"
+	DateTimeLayout      = "2006-01-02 15:04:05.999999999"
+	DateTimeLayout7p    = "2006-01-02 15:04:05.0000000"
+	DateTimeLayout3p    = "2006-01-02 15:04:05.000"
+	ShortDateTimeLayout = "2006-01-02 15:04"
+	DateOnlyLayout      = "2006-01-02"
+	TimeOnlyLayout      = "15:04:05.999999999"
+	TimeTzLayout        = "15:04:05.999999999 -07:00"
+	RawTimeLayout       = "2006-01-02T15:04:05Z"
 )
 
 var (
-	rxDateTimeTz = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*([\-\+]?)(\d\d?):(\d\d)\s*$`)
-	rxDateTime   = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
-	rxDateOnly   = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
-	rxTimeTz     = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)? [-\+]\d\d:\d\d)\s*$`)
-	rxTimeOnly   = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
-	rxRawLayout  = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ)\s*$`)
+	rxDateTimeTz    = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*([\-\+]?)(\d\d?):(\d\d)\s*$`)
+	rxDateTime      = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
+	rxShortDateTime = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d \d\d:\d\d)\s*$`)
+	rxDateOnly      = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\d)\s*$`)
+	rxTimeTz        = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)? [-\+]\d\d:\d\d)\s*$`)
+	rxTimeOnly      = regexp.MustCompile(`^\s*(?:\d{4}-\d\d-\d\d )?(\d\d:\d\d:\d\d(?:\.\d+)?)\s*$`)
+	rxRawLayout     = regexp.MustCompile(`^\s*(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ)\s*$`)
 )
 
 func ParseAnyDateTime(s string) (time.Time, error) {
@@ -108,6 +110,9 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
 		return time.Parse(DateOnlyLayout, m[1])
 	}
+	if m := rxShortDateTime.FindStringSubmatch(s); m != nil {
+		return time.ParseInLocation(ShortDateTimeLayout, m[1], time.Local)
+	}
 	if m := rxTimeTz.FindStringSubmatch(s); m != nil {
 		return time.Parse(TimeTzLayout, m[1])
 	}
@@ -117,7 +122,7 @@ func ParseAnyDateTime(s string) (time.Time, error) {
 	if m := rxRawLayout.FindStringSubmatch(s); m != nil {
 		return time.Parse(RawTimeLayout, m[1])
 	}
-	return time.Time{}, ErrNotTimeFormat
+	return time.Time{}, fmt.Errorf("%w: %s", ErrNotTimeFormat, s)
 }
 
 var registry = map[string]*Entry{}
@@ -195,25 +200,6 @@ func (ph *PlaceHolderQuestion) Make(v any) string {
 
 func (ph *PlaceHolderQuestion) Values() (result []any) {
 	result = ph.values
-	ph.values = ph.values[:0]
-	return
-}
-
-type PlaceHolderName struct {
-	Prefix string
-	Format string
-	values []any
-}
-
-func (ph *PlaceHolderName) Make(v any) string {
-	ph.values = append(ph.values, v)
-	return fmt.Sprintf("%s%s%d", ph.Prefix, ph.Format, len(ph.values))
-}
-
-func (ph *PlaceHolderName) Values() (result []any) {
-	for i, v := range ph.values {
-		result = append(result, sql.Named(fmt.Sprintf("%s%d", ph.Format, i+1), v))
-	}
 	ph.values = ph.values[:0]
 	return
 }

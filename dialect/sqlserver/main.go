@@ -1,6 +1,8 @@
 package sqlserver
 
 import (
+	"time"
+
 	_ "github.com/microsoft/go-mssqldb"
 	_ "github.com/microsoft/go-mssqldb/namedpipe"
 	_ "github.com/microsoft/go-mssqldb/sharedmemory"
@@ -8,16 +10,54 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
-func sqlServerTypeNameToConv(typeName string) func(string) (any, error) {
-	switch typeName {
-	case "SMALLDATETIME", "DATETIME", "DATETIME2":
-		// SMALLDATETIME: YYYY-MM-DD hh:mm:ss
-		// 120: yyyy-mm-dd hh:mi:ss
-		return func(s string) (any, error) {
-			return dialect.ParseAnyDateTime(s)
-		}
+var typeSpec = map[string][2]string{
+	"DATE": {
+		"CAST(@v%d AS DATE)",
+		dialect.DateOnlyLayout},
+	"SMALLDATETIME": {
+		"CAST(@v%d AS SMALLDATETIME)",
+		dialect.ShortDateTimeLayout},
+	"DATETIME": {
+		"CAST(@v%d AS DATETIME)",
+		dialect.DateTimeLayout3p},
+	"DATETIME2": {
+		"CAST(@v%d AS DATETIME2)",
+		dialect.DateTimeLayout7p},
+	"DATETIMEOFFSET": {
+		"CAST(@v%d AS DATETIMEOFFSET)",
+		dialect.DateTimeTzLayout},
+	"TIME": {
+		"CAST(@v%d AS TIME)",
+		dialect.TimeOnlyLayout},
+}
+
+func typeNameToConv(typeName string) func(string) (any, error) {
+	spec, ok := typeSpec[typeName]
+	if !ok {
+		return nil
 	}
-	return nil
+	return func(s string) (any, error) {
+		dt, err := dialect.ParseAnyDateTime(s)
+		if err != nil {
+			return nil, err
+		}
+		return &dialect.SQLFmtAndValue{
+			Format: spec[0],
+			Value:  dt.Format(spec[1]),
+		}, nil
+	}
+}
+
+func formatValue(typeName string, value any) (string, bool) {
+	t, ok := value.(time.Time)
+	if !ok {
+		return "", false
+	}
+	spec, ok := typeSpec[typeName]
+	if !ok {
+		return "", false
+	}
+	return t.Format(spec[1]), true
 }
 
 var sqlServerSpec = &dialect.Entry{
@@ -43,10 +83,11 @@ var sqlServerSpec = &dialect.Entry{
 	   and c.user_type_id = t.user_type_id
 	 order by c.column_id`,
 	SQLForTables:     `select * from sys.tables`,
-	TypeConverterFor: sqlServerTypeNameToConv,
-	PlaceHolder:      &dialect.PlaceHolderName{Prefix: "@", Format: "v"},
+	TypeConverterFor: typeNameToConv,
+	PlaceHolder:      &dialect.PlaceHolderName{Mark: "@", Prefix: "v"},
 	TableNameField:   "name",
 	ColumnNameField:  "name",
+	FormatValue:      formatValue,
 }
 
 func init() {

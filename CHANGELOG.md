@@ -7,10 +7,9 @@ Changelog (English)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
-- Oracle and SQLite datetime values displayed by select and edit no longer include redundant timezone suffixes. Datetime comparisons are now handled using timezone-independent string conversion. (#55, #57, #58)
-- Improved readability of timestamp values shown in bind variable output during edit operations. (#60)
-- Added support for Oracle TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE columns in edit mode. (#63)
-- Improved PostgreSQL timestamp display in edit mode by hiding timezone offsets for columns without timezone information. (#65)
+- Improved datetime handling in SELECT and EDIT operations. Columns without timezone information no longer display redundant timezone offsets, and fields without certain precision (such as seconds) no longer show unnecessary components. Datetime comparison and update matching are now performed using string representations appropriate for each column type. Supported for Oracle, PostgreSQL, SQLite, and SQL Server. (#55, #57, #58, #65, #66)
+- Improved readability of datetime values shown in bind variable output during edit operations. (#60)
+- Added support for Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE and SQL Server DATETIMEOFFSET columns in edit mode. (#63, #66)
 
 v0.27.7
 -------

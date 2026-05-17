@@ -76,7 +76,7 @@ ForEach-Object {
         Write-Host $field[3]
         return
     }
-    if ( $field[4] -notlike "2027-03-04 11:12:00*" ){
+    if ( $field[4] -notlike "2027-03-04 11:12*" ){
         # SMALLDATETIME does not contain SECOND
         Write-Host $field[4]
         return

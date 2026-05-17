@@ -7,10 +7,9 @@ Changelog (Japanese)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
-- SELECT や EDIT で表示される Oracle と SQLite の日時から冗長なタイムゾーンを除いた。日時の照合もタイムゾーンに依存しないよう変換した文字列で行うようにした (#55, #57, #58)
-- edit 文でバインド変数出力の日時を読み易さを改善した (#60)
-- edit 文で Oracle の TIMESTAMP WITH TIME ZONE, TIMESTAMP WITH LOCAL TIME ZONE 型をサポート (#63)
-- PostgreSQL でタイムゾーン情報がないカラムでは edit 文でタイムゾーンのオフセットを表示させないようにした (#65)
+- SELECT / EDIT における日時表示を改善。タイムゾーン情報を持たないカラムでは不要なタイムゾーン表示を行わないようにし、精度を持たない項目（例: 秒）も表示しないようにした。日時比較や更新時の照合も、各カラム型に応じた文字列形式で行うよう改善した。Oracle / PostgreSQL / SQLite / SQL Server に対応。 (#55, #57, #58, #65, #66)
+- edit 文のバインド変数出力における日時表示の読み易さを改善した。 (#60)
+- edit 文で Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE および SQL Server DATETIMEOFFSET 型をサポートした。 (#63, #66)
 
 v0.27.7
 -------

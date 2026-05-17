@@ -82,6 +82,7 @@ const (
 	DateTimeLayout      = "2006-01-02 15:04:05.999999999"
 	DateTimeLayout7p    = "2006-01-02 15:04:05.0000000"
 	DateTimeLayout3p    = "2006-01-02 15:04:05.000"
+	DateTimeLayout0p    = "2006-01-02 15:04:05"
 	ShortDateTimeLayout = "2006-01-02 15:04"
 	DateOnlyLayout      = "2006-01-02"
 	TimeOnlyLayout      = "15:04:05.999999999"

@@ -1,8 +1,6 @@
 package sqlbless
 
 import (
-	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 
@@ -30,12 +28,17 @@ var oracleSpec = &dialect.Entry{
    where table_name = UPPER(:1)
    order by column_id`,
 	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
-	TypeConverterFor: oracleTypeNameToConv,
+	TypeConverterFor: typeNameToConv,
 	TableNameField:   "tname",
 	ColumnNameField:  "name",
-	PlaceHolder:      new(placeHolder),
+	PlaceHolder:      &dialect.PlaceHolderName{Mark: ":", Prefix: "v"},
 	FormatValue:      formatValue,
 }
+
+const (
+	timeStampTz  = "TimeStampTZ_DTY"
+	timeStampLtz = "TimeStampLTZ_DTY"
+)
 
 func formatValue(typeName string, value any) (string, bool) {
 	t, ok := value.(time.Time)
@@ -43,31 +46,26 @@ func formatValue(typeName string, value any) (string, bool) {
 		return "", false
 	}
 	if typeName == "DATE" {
-		return t.Format("2006-01-02 15:04:05"), true
+		return t.Format(dialect.DateTimeLayout0p), true
 	}
-	if strings.EqualFold(typeName, "TimeStampTZ_DTY") ||
-		strings.EqualFold(typeName, "TimeStampLTZ_DTY") {
+	if strings.EqualFold(typeName, timeStampTz) ||
+		strings.EqualFold(typeName, timeStampLtz) {
 
 		return t.Format("2006-01-02 15:04:05.999999 -07:00"), true
 	}
 	return t.Format("2006-01-02 15:04:05.999999"), true
 }
 
-type withFormat struct {
-	format string
-	value  any
-}
-
-func oracleTypeNameToConv(typeName string) func(string) (any, error) {
+func typeNameToConv(typeName string) func(string) (any, error) {
 	var format string
 	var layout string
 
 	if typeName == "DATE" {
 		format = "TO_DATE(:v%d,'YYYY-MM-DD HH24:MI:SS')"
-		layout = "2006-01-02 15:04:05"
+		layout = dialect.DateTimeLayout0p
 	} else if strings.HasPrefix(typeName, "TIMESTAMP") {
-		if strings.EqualFold(typeName, "TimeStampTZ_DTY") ||
-			strings.EqualFold(typeName, "TimeStampLTZ_DTY") {
+		if strings.EqualFold(typeName, timeStampTz) ||
+			strings.EqualFold(typeName, timeStampLtz) {
 
 			format = "TO_TIMESTAMP_TZ(:v%d,'YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')"
 			layout = "2006-01-02 15:04:05.999999 -07:00"
@@ -83,36 +81,11 @@ func oracleTypeNameToConv(typeName string) func(string) (any, error) {
 		if err != nil {
 			return s, nil
 		}
-		return &withFormat{
-			format: format,
-			value:  dt.Format(layout),
+		return &dialect.SQLFmtAndValue{
+			Format: format,
+			Value:  dt.Format(layout),
 		}, nil
 	}
-}
-
-type placeHolder struct {
-	values []any
-}
-
-func (ph *placeHolder) Make(v any) string {
-	if w, ok := v.(*withFormat); ok {
-		ph.values = append(ph.values, w.value)
-		return fmt.Sprintf(w.format, len(ph.values))
-	}
-	ph.values = append(ph.values, v)
-	return fmt.Sprintf(":v%d", len(ph.values))
-}
-
-func (ph *placeHolder) NormalizeColumnForWhere(value any, columnName string) string {
-	return columnName
-}
-
-func (ph *placeHolder) Values() (result []any) {
-	for i, v := range ph.values {
-		result = append(result, sql.Named(fmt.Sprintf("v%d", i+1), v))
-	}
-	ph.values = ph.values[:0]
-	return
 }
 
 func init() {

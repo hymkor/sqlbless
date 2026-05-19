@@ -10,6 +10,7 @@ Changelog (Japanese)
 - SELECT / EDIT における日時表示を改善。タイムゾーン情報を持たないカラムでは不要なタイムゾーン表示を行わないようにし、精度を持たない項目（例: 秒）も表示しないようにした。日時比較や更新時の照合も、各カラム型に応じた文字列形式で行うよう改善した。Oracle / PostgreSQL / SQLite / SQL Server に対応。 (#55, #57, #58, #65, #66)
 - edit 文のバインド変数出力における日時表示の読み易さを改善した。 (#60)
 - edit 文で Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE および SQL Server DATETIMEOFFSET 型をサポートした。 (#63, #66)
+- MySQL の desc 文で `desc {スキーマ名}.{テーブル名}` をサポート (#68)
 
 v0.27.7
 -------

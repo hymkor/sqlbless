@@ -80,21 +80,29 @@ var mySqlSpec = &dialect.Entry{
                  else 'NOT NULL'
                end as "NULL?"
           from information_schema.columns
-         where table_name = ?
+          join (select ? as x) v
+         where table_name   = REGEXP_REPLACE(v.x,'^[^\\.]*\\.','')
+           and table_schema =
+               case
+                 when instr(v.x,'.') >= 1 then
+                      regexp_replace(v.x,'\\.[^\\.]*$','')
+                 else database()
+               end
          order by ordinal_position`,
 	SQLForTables: `
-        select * from information_schema.tables
+        select concat(table_schema,'.',table_name) as FULL_NAME,
+               tables.* from information_schema.tables
          where table_type = 'BASE TABLE'
            and table_schema 
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
 	TypeConverterFor: mySQLTypeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
 	DSNFilter:        mySQLDSNFilter,
-	TableNameField:   "TABLE_NAME",
+	TableNameField:   "FULL_NAME",
 	ColumnNameField:  "NAME",
 
 	IdentifierEncloser: func(s string) string {
-		return "`" + s + "`"
+		return "`" + strings.ReplaceAll(s, ".", "`.`") + "`"
 	},
 }
 

@@ -3,6 +3,7 @@ package sqlbless
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -11,27 +12,23 @@ import (
 
 var mySQLTypeNameToFormat = map[string]string{
 	"DATETIME":  dialect.DateTimeLayout,
-	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00",
+	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00", // no space before tz
 	"TIME":      dialect.TimeOnlyLayout,
 	"DATE":      dialect.DateOnlyLayout,
 }
 
-func mySQLTypeNameToConv(typeName string) func(string) (any, error) {
-	if typeName == "TIME" {
-		return func(s string) (any, error) {
-			tm, err := dialect.ParseAnyDateTime(s)
-			if err != nil {
-				return nil, err
-			}
-			return tm.Format("15:04:05.999999999"), nil
-		}
+func typeNameToConv(typeName string) func(string) (any, error) {
+	f, ok := mySQLTypeNameToFormat[typeName]
+	if !ok {
+		return nil
 	}
-	if _, ok := mySQLTypeNameToFormat[typeName]; ok {
-		return func(s string) (any, error) {
-			return dialect.ParseAnyDateTime(s)
+	return func(s string) (any, error) {
+		t, err := dialect.ParseAnyDateTime(s)
+		if err != nil {
+			return nil, err
 		}
+		return t.Format(f), nil
 	}
-	return nil
 }
 
 func mySQLDSNFilter(dsn string) (string, error) {
@@ -61,6 +58,23 @@ func mySQLDSNFilter(dsn string) (string, error) {
 		}
 	}
 	return newdsn.String(), nil
+}
+
+func formatValue(typeName string, value any) (string, bool) {
+	t, ok := value.(time.Time)
+	if !ok {
+		return "", false
+	}
+	switch typeName {
+	case "DATE":
+		return t.Format(dialect.DateOnlyLayout), true
+	case "TIME":
+		return t.Format(dialect.TimeOnlyLayout), true
+	case "DATETIME", "TIMESTAMP":
+		return t.Format(dialect.DateTimeLayout), true
+	default:
+		return "", false
+	}
 }
 
 var mySqlSpec = &dialect.Entry{
@@ -95,7 +109,7 @@ var mySqlSpec = &dialect.Entry{
          where table_type = 'BASE TABLE'
            and table_schema 
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
-	TypeConverterFor: mySQLTypeNameToConv,
+	TypeConverterFor: typeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
 	DSNFilter:        mySQLDSNFilter,
 	TableNameField:   "FULL_NAME",
@@ -104,6 +118,7 @@ var mySqlSpec = &dialect.Entry{
 	IdentifierEncloser: func(s string) string {
 		return "`" + strings.ReplaceAll(s, ".", "`.`") + "`"
 	},
+	FormatValue: formatValue,
 }
 
 func init() {

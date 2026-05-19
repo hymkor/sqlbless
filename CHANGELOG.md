@@ -7,7 +7,7 @@ Changelog (English)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0
   - Upgrade PostgreSQL driver to v1.12.3
-- Improved datetime handling in SELECT and EDIT operations. Columns without timezone information no longer display redundant timezone offsets, and fields without certain precision (such as seconds) no longer show unnecessary components. Datetime comparison and update matching are now performed using string representations appropriate for each column type. Supported for Oracle, PostgreSQL, SQLite, and SQL Server. (#55, #57, #58, #65, #66)
+- Improved datetime handling in SELECT and EDIT operations. Columns without timezone information no longer display redundant timezone offsets, and fields without certain precision (such as seconds) no longer show unnecessary components. Datetime comparison and update matching are now performed using string representations appropriate for each column type. (#55, #57, #58, #65, #66, #69)
 - Improved readability of datetime values shown in bind variable output during edit operations. (#60)
 - Added support for Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE and SQL Server DATETIMEOFFSET columns in edit mode. (#63, #66)
 - In MySQL, `desc` supports `desc {schema}.{table}` syntax now (#68)

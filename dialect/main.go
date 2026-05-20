@@ -43,9 +43,6 @@ type Entry struct {
 	// The returned function converts a string literal to the corresponding Go value.
 	TypeConverterFor func(typeName string) func(literal string) (any, error)
 
-	// DSNFilter adjusts or validates a given DSN string before use.
-	DSNFilter func(dsn string) (string, error)
-
 	// IsTransactionSafe reports whether the given SQL statement is safe to run in a transaction.
 	IsTransactionSafe func(sql string) bool
 
@@ -194,11 +191,6 @@ func ReadDBInfoFromArgs(args []string) (*DBInfo, error) {
 		Driver:     args[0],
 		DataSource: args[1],
 		Dialect:    entry,
-	}
-	if entry.DSNFilter != nil {
-		if d.DataSource, err = entry.DSNFilter(d.DataSource); err != nil {
-			return nil, err
-		}
 	}
 	return d, nil
 }

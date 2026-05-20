@@ -1,7 +1,6 @@
 package sqlbless
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -10,9 +9,13 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
+const (
+	mySQLDateTimeTzLayout = "2006-01-02 15:04:05.999999999-07:00"
+)
+
 var mySQLTypeNameToFormat = map[string]string{
 	"DATETIME":  dialect.DateTimeLayout,
-	"TIMESTAMP": "2006-01-02 15:04:05.999999999-07:00", // no space before tz
+	"TIMESTAMP": dialect.DateTimeLayout,
 	"TIME":      dialect.TimeOnlyLayout,
 	"DATE":      dialect.DateOnlyLayout,
 }
@@ -23,41 +26,16 @@ func typeNameToConv(typeName string) func(string) (any, error) {
 		return nil
 	}
 	return func(s string) (any, error) {
-		t, err := dialect.ParseAnyDateTime(s)
+		typ, t, err := dialect.ParseAnyDateTimeX(s)
 		if err != nil {
 			return nil, err
 		}
+		if typ == dialect.DateTimeTzLayout {
+			// for parseTime=true
+			return t.Format(mySQLDateTimeTzLayout), nil
+		}
 		return t.Format(f), nil
 	}
-}
-
-func mySQLDSNFilter(dsn string) (string, error) {
-	base, param, ok := strings.Cut(dsn, "?")
-	hash := make(map[string][]string)
-	if ok {
-		for _, pair := range strings.Split(param, "&") {
-			left, right, ok := strings.Cut(pair, "=")
-			if ok {
-				hash[left] = append(hash[left], right)
-			}
-		}
-	}
-	if _, ok := hash["parseTime"]; !ok {
-		hash["parseTime"] = []string{"true"}
-	}
-	if _, ok := hash["loc"]; !ok {
-		hash["loc"] = []string{"Local"}
-	}
-	var newdsn strings.Builder
-	newdsn.WriteString(base)
-	delimiter := '?'
-	for key, values := range hash {
-		for _, v := range values {
-			fmt.Fprintf(&newdsn, "%c%s=%s", delimiter, key, v)
-			delimiter = '&'
-		}
-	}
-	return newdsn.String(), nil
 }
 
 func formatValue(typeName string, value any) (string, bool) {
@@ -111,7 +89,6 @@ var mySqlSpec = &dialect.Entry{
         not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
 	TypeConverterFor: typeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
-	DSNFilter:        mySQLDSNFilter,
 	TableNameField:   "FULL_NAME",
 	ColumnNameField:  "NAME",
 

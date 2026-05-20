@@ -11,6 +11,7 @@ Changelog (English)
 - Improved readability of datetime values shown in bind variable output during edit operations. (#60)
 - Added support for Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE and SQL Server DATETIMEOFFSET columns in edit mode. (#63, #66)
 - In MySQL, `desc` supports `desc {schema}.{table}` syntax now (#68)
+- Since the `edit` command now handles date/time values primarily as strings, SQL-Bless no longer needs to force MySQL drivers to return `time.Time` values. As a result, SQL-Bless no longer appends `&parseTime=true&loc=Local` to MySQL DSNs. (#71)
 
 v0.27.7
 -------

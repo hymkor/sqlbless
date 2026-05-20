@@ -11,6 +11,7 @@ Changelog (Japanese)
 - edit 文のバインド変数出力における日時表示の読み易さを改善した。 (#60)
 - edit 文で Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE および SQL Server DATETIMEOFFSET 型をサポートした。 (#63, #66)
 - MySQL の desc 文で `desc {スキーマ名}.{テーブル名}` をサポート (#68)
+- `edit` 文で日時をあくまで文字列ベースで扱うようにした結果、time.Time の使用を MySQL ドライバーパッケージに指定する必要がなくなったため、`&parseTime=True&loc=Local` を DSN 文字列に追記するのをやめた (#71)
 
 v0.27.7
 -------

@@ -43,9 +43,6 @@ type Entry struct {
 	// The returned function converts a string literal to the corresponding Go value.
 	TypeConverterFor func(typeName string) func(literal string) (any, error)
 
-	// DSNFilter adjusts or validates a given DSN string before use.
-	DSNFilter func(dsn string) (string, error)
-
 	// IsTransactionSafe reports whether the given SQL statement is safe to run in a transaction.
 	IsTransactionSafe func(sql string) bool
 
@@ -102,29 +99,41 @@ var (
 )
 
 func ParseAnyDateTime(s string) (time.Time, error) {
+	_, t, err := ParseAnyDateTimeX(s)
+	return t, err
+}
+
+func ParseAnyDateTimeX(s string) (string, time.Time, error) {
 	if m := rxDateTimeTz.FindStringSubmatch(s); m != nil {
-		return time.Parse(DateTimeTzLayout,
+		t, err := time.Parse(DateTimeTzLayout,
 			fmt.Sprintf("%s %s%02s:%02s", m[1], m[2], m[3], m[4]))
+		return DateTimeTzLayout, t, err
 	}
 	if m := rxDateTime.FindStringSubmatch(s); m != nil {
-		return time.ParseInLocation(DateTimeLayout, m[1], time.Local)
+		t, err := time.ParseInLocation(DateTimeLayout, m[1], time.Local)
+		return DateTimeLayout, t, err
 	}
 	if m := rxDateOnly.FindStringSubmatch(s); m != nil {
-		return time.Parse(DateOnlyLayout, m[1])
+		t, err := time.Parse(DateOnlyLayout, m[1])
+		return DateOnlyLayout, t, err
 	}
 	if m := rxShortDateTime.FindStringSubmatch(s); m != nil {
-		return time.ParseInLocation(ShortDateTimeLayout, m[1], time.Local)
+		t, err := time.ParseInLocation(ShortDateTimeLayout, m[1], time.Local)
+		return ShortDateTimeLayout, t, err
 	}
 	if m := rxTimeTz.FindStringSubmatch(s); m != nil {
-		return time.Parse(TimeTzLayout, m[1])
+		t, err := time.Parse(TimeTzLayout, m[1])
+		return TimeTzLayout, t, err
 	}
 	if m := rxTimeOnly.FindStringSubmatch(s); m != nil {
-		return time.ParseInLocation(TimeOnlyLayout, m[1], time.Local)
+		t, err := time.ParseInLocation(TimeOnlyLayout, m[1], time.Local)
+		return TimeOnlyLayout, t, err
 	}
 	if m := rxRawLayout.FindStringSubmatch(s); m != nil {
-		return time.Parse(RawTimeLayout, m[1])
+		t, err := time.Parse(RawTimeLayout, m[1])
+		return RawTimeLayout, t, err
 	}
-	return time.Time{}, fmt.Errorf("%w: %s", ErrNotTimeFormat, s)
+	return "", time.Time{}, fmt.Errorf("%w: %s", ErrNotTimeFormat, s)
 }
 
 var registry = map[string]*Entry{}
@@ -182,11 +191,6 @@ func ReadDBInfoFromArgs(args []string) (*DBInfo, error) {
 		Driver:     args[0],
 		DataSource: args[1],
 		Dialect:    entry,
-	}
-	if entry.DSNFilter != nil {
-		if d.DataSource, err = entry.DSNFilter(d.DataSource); err != nil {
-			return nil, err
-		}
 	}
 	return d, nil
 }

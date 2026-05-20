@@ -22,6 +22,7 @@ $script = `
     "COMMIT||" +
     "EDIT TESTTBL||" +
     "/10|lr2015-06-07 20:21:22.123+09:00|lr2016-07-08|lr15:54:27.345|qyy" +
+    "SET TIME_ZONE='+09:00'||" +
     "SPOOL $testLst||" +
     "SELECT * FROM TESTTBL||" +
     "SPOOL OFF ||" +
@@ -55,15 +56,15 @@ ForEach-Object {
         Write-Host "NG:" $field.Length
         return
     }
-    if ( $field[1] -ne "2015-06-07 20:21:22.123 +09:00" ){
+    if ( $field[1] -ne "2015-06-07 20:21:22.123" ){
         Write-Host "NG:" $field[1]
         return
     }
-    if ( $field[2] -notlike "2016-07-08*" ){
+    if ( $field[2] -ne "2016-07-08" ){
         Write-Host "NG:" $field[2]
         return
     }
-    if ( $field[3] -notlike "*15:54:27.345" ){
+    if ( $field[3] -ne "15:54:27.345" ){
         Write-Host "NG:" $field[3]
         return
     }

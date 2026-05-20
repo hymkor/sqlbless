@@ -215,7 +215,6 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless.exe mysql user:password@/database
 
 - The driver used is http://github.com/go-sql-driver/mysql
-- The `?parseTime=true&loc=Local` parameter is preset, but it can be overridden
 - [Example startup batch file](./examples/run-mysql.cmd)
 
 Common Options

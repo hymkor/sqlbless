@@ -65,13 +65,16 @@ var postgresSpec = &dialect.Entry{
          and a.attisdropped is false
        order by a.attnum`,
 	SQLForTables: `
-      select *
+      select tables.table_schema || '.' || table_name as full_name,tables.*
         from information_schema.tables
        where table_type = 'BASE TABLE'
-         and table_schema not in ('pg_catalog', 'information_schema')`,
+	   order by case table_schema
+	    when 'pg_catalog' then 9
+		when 'information_schema' then 8
+		else 0 end`,
 	TypeConverterFor:  postgresTypeNameToConv,
 	PlaceHolder:       &placeHolder{},
-	TableNameField:    "table_name",
+	TableNameField:    "full_name",
 	ColumnNameField:   "name",
 	IsTransactionSafe: canUseInTransaction,
 	FormatValue:       formatValue,

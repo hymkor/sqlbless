@@ -64,7 +64,7 @@ func (D *Entry) EncloseIdentifier(name string) string {
 	if f := D.IdentifierEncloser; f != nil {
 		return f(name)
 	}
-	return `"` + name + `"`
+	return `"` + strings.ReplaceAll(name, `.`, `"."`) + `"`
 }
 
 func (D *Entry) LookupConverter(typeName string) func(string) (any, error) {

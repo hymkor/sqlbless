@@ -46,32 +46,53 @@ func (ph *placeHolder) Values() (result []any) {
 var postgresSpec = &dialect.Entry{
 	Usage: "sqlbless postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DBNAME>?sslmode=disable",
 	SQLForColumns: `
-      select a.attnum as "ID",
-             a.attname as "NAME",
-             case
-               when t.typname = 'varchar' then 'varchar(' || ( a.atttypmod - 4 )  || ')'
-               when a.atttypmod >= 0 then t.typname || '(' || a.atttypmod || ')'
-               else t.typname
-             end as "TYPE",
-             case
-               when a.attnotnull then 'NOT NULL'
-               else 'NULL'
-             end as "NULL?"
-        from pg_attribute a, pg_class c, pg_type t
-       where a.attrelid = c.oid
-         and c.relname = $1
-         and a.attnum > 0
-         and t.oid = a.atttypid
-         and a.attisdropped is false
-       order by a.attnum`,
+		with target as (
+			select to_regclass($1)::oid as oid
+		)
+		select
+			a.attname as "NAME",
+			case a.attnotnull
+				when true then 'NOT NULL'
+				else 'NULL'
+			end as "NULL?",
+			format_type(a.atttypid, a.atttypmod) as "TYPE"
+		from target t
+		join pg_attribute a
+		  on a.attrelid = t.oid
+		where a.attnum > 0
+		  and not a.attisdropped
+		order by a.attnum`,
 	SQLForTables: `
-      select tables.table_schema || '.' || table_name as full_name,tables.*
-        from information_schema.tables
-       where table_type = 'BASE TABLE'
-	   order by case table_schema
-	    when 'pg_catalog' then 9
-		when 'information_schema' then 8
-		else 0 end`,
+		select
+			n.nspname || '.' || c.relname as full_name,
+			n.nspname as table_schema,
+			c.relname as table_name,
+			case c.relkind
+				when 'r' then 'BASE TABLE'
+				when 'p' then 'PARTITIONED TABLE'
+				when 'v' then 'VIEW'
+				when 'm' then 'MATERIALIZED VIEW'
+				when 'f' then 'FOREIGN TABLE'
+			end as table_type,
+			c.reltuples::bigint as estimated_rows,
+			obj_description(c.oid,'pg_class') as remarks
+		from pg_class c
+		join pg_namespace n
+		  on n.oid = c.relnamespace
+		where c.relkind in ('r','p','v','m','f')
+		order by
+			case n.nspname
+				when 'pg_catalog' then 9
+				when 'information_schema' then 8
+				else 0
+			end,
+			case c.relkind
+				when 'r' then 0
+				when 'p' then 1
+				else 9
+			end,
+			n.nspname,
+			c.relname`,
 	TypeConverterFor:  postgresTypeNameToConv,
 	PlaceHolder:       &placeHolder{},
 	TableNameField:    "full_name",

@@ -12,6 +12,7 @@ Changelog (Japanese)
 - edit 文で Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE および SQL Server DATETIMEOFFSET 型をサポートした。 (#63, #66)
 - MySQL の desc 文で `desc {スキーマ名}.{テーブル名}` をサポート (#68)
 - `edit` 文で日時をあくまで文字列ベースで扱うようにした結果、time.Time の使用を MySQL ドライバーパッケージに指定する必要がなくなったため、`&parseTime=True&loc=Local` を DSN 文字列に追記するのをやめた (#71)
+- PostgreSQL で edit コマンドでのテーブル選択を改善した。`pg_catalog` と `information_schema` も含め、アクセスできる全テーブルを候補にできるようにした。システムテーブルはユーザテーブルの後でリストするようにし、あいまいにならないようにスキーマ修飾子(schema.table)も表示するようにした (#72)
 
 v0.27.7
 -------

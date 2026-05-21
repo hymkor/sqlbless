@@ -13,6 +13,7 @@ Changelog (English)
 - In MySQL, `desc` supports `desc {schema}.{table}` syntax now (#68)
 - Since the `edit` command now handles date/time values primarily as strings, SQL-Bless no longer needs to force MySQL drivers to return `time.Time` values. As a result, SQL-Bless no longer appends `&parseTime=true&loc=Local` to MySQL DSNs. (#71)
 - PostgreSQL: Improved table selection for the edit command. All accessible tables are now available as candidates, including those in `pg_catalog` and `information_schema`. System tables are listed after user tables, and schema-qualified names (schema.table) are displayed to avoid ambiguity. (#72)
+- Improve output of `desc` on PostgreSQL (#73)
 
 v0.27.7
 -------

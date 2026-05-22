@@ -1,6 +1,7 @@
 package sqlbless
 
 import (
+	_ "embed"
 	"strings"
 	"time"
 
@@ -9,24 +10,12 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
+//go:embed columns.sql
+var columnsSql string
+
 var oracleSpec = &dialect.Entry{
-	Usage: "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
-	SQLForColumns: `
-  select column_id as "ID",
-		 column_name as "NAME",
-		 case 
-		   when data_type = 'NUMBER' then data_type
-		   when data_type = 'DATE' then data_type
-		   when data_type like 'TIMESTAMP%' then data_type
-		   else data_type || '(' || data_length || ')'
-		 end as "TYPE",
-		 case
-		   when nullable = 'Y' THEN 'NULL'
-		   else 'NOT NULL'
-		 end as "NULL?"
-	from all_tab_columns
-   where table_name = UPPER(:1)
-   order by column_id`,
+	Usage:            "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
+	SQLForColumns:    columnsSql,
 	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
 	TypeConverterFor: typeNameToConv,
 	TableNameField:   "tname",

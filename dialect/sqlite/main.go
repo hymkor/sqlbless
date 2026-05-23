@@ -22,7 +22,7 @@ var Entry = &dialect.Entry{
 	where type = 'table'`,
 	TypeConverterFor:  typeNameToConv,
 	PlaceHolder:       &placeHolder{},
-	SQLForColumns:     `PRAGMA table_info({table_name})`,
+	SQLForColumns:     `PRAGMA {schema.}table_info({table})`,
 	TableNameField:    "name",
 	ColumnNameField:   "name",
 	IsTransactionSafe: canUseInTransaction,

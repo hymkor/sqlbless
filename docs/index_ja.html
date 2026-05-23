@@ -1385,49 +1385,40 @@ scoop install sqlbless
 <h2 id="%E8%B5%B7%E5%8B%95%E6%96%B9%E6%B3%95">起動方法</h2>
 <pre><code>$ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 </code></pre>
-<p>DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能です。</p>
+<p>DRIVERNAME は DATASOURCENAME の中に含まれている場合は省略可能です。</p>
 <h3 id="sqlite3">SQLite3</h3>
 <pre><code>$ sqlbless sqlite3 :memory:
 $ sqlbless sqlite3 path/to/file.db
 </code></pre>
 <ul>
 <li>使用ドライバ : <a href="https://github.com/glebarez/go-sqlite">https://github.com/glebarez/go-sqlite</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="oracle">Oracle</h3>
-<pre><code>$ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
-$ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
+<pre><code>$ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 </code></pre>
 <ul>
 <li>使用ドライバー: <a href="https://github.com/sijms/go-ora">https://github.com/sijms/go-ora</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="postgresql">PostgreSQL</h3>
-<pre><code>$ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
-$ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
-$ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+<pre><code>$ sqlbless postgres://USERNAME:PASSWORD@HOSTNAME:PORT/DBNAME
 </code></pre>
 <ul>
 <li>使用ドライバー <a href="https://github.com/lib/pq">https://github.com/lib/pq</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="sql-server">SQL Server</h3>
-<pre><code>$ sqlbless sqlserver sqlserver://@localhost?database=master
-</code></pre>
-<p>( Windows authentication )</p>
-<pre><code>$ sqlbless sqlserver &quot;Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc&quot;
+<pre><code>$ sqlbless sqlserver://USERNAME:PASSWORD@HOST/INSTANCE
+
+( Windows authentication )
+$ sqlbless &quot;sqlserver://@HOST/INSTANCE?Database=master&amp;protocol=lpc&quot;
 </code></pre>
 <ul>
 <li>使用ドライバー <a href="https://github.com/microsoft/go-mssqldb">https://github.com/microsoft/go-mssqldb</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h3 id="mysql">MySQL</h3>
-<pre><code>$ sqlbless.exe mysql user:password@/database
+<pre><code>$ sqlbless mysql USERNAME:PASSWORD@/DBNAME
 </code></pre>
 <ul>
 <li>使用ドライバー <a href="http://github.com/go-sql-driver/mysql">http://github.com/go-sql-driver/mysql</a></li>
-<li>パラメータ <code>?parseTime=true&amp;loc=Local</code> が予め設定されていますが、上書き可能です</li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd">起動バッチファイル例</a></li>
 </ul>
 <h2 id="%E5%85%B1%E9%80%9A%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3">共通オプション</h2>
 <ul>

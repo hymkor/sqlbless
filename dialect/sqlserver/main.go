@@ -1,6 +1,7 @@
 package sqlserver
 
 import (
+	_ "embed"
 	"time"
 
 	_ "github.com/microsoft/go-mssqldb"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/hymkor/sqlbless/dialect"
 )
+
+//go:embed columns.sql
+var columnSql string
 
 var typeSpec = map[string][2]string{
 	"DATE": {
@@ -61,27 +65,8 @@ func formatValue(typeName string, value any) (string, bool) {
 }
 
 var sqlServerSpec = &dialect.Entry{
-	Usage: "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
-	SQLForColumns: `
-	select c.column_id as "ID",
-		   c.name as "NAME",
-		   case
-			 when c.max_length > 0 then
-			   t.name + '(' + convert(varchar,c.max_length) + ')'
-			 else
-			   t.name
-		   end as "TYPE",
-		   case c.is_nullable
-			 when 1 then 'NULL'
-			 else 'NOT NULL'
-		   end as "NULL?"
-	  from sys.columns c,
-		   sys.objects o,
-		   sys.types t
-	 where c.object_id = o.object_id
-	   and o.name = @p1
-	   and c.user_type_id = t.user_type_id
-	 order by c.column_id`,
+	Usage:            "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
+	SQLForColumns:    columnSql,
 	SQLForTables:     `select * from sys.tables`,
 	TypeConverterFor: typeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderName{Mark: "@", Prefix: "v"},

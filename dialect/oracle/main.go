@@ -10,13 +10,16 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
+//go:embed tables.sql
+var tablesSql string
+
 //go:embed columns.sql
 var columnsSql string
 
 var oracleSpec = &dialect.Entry{
 	Usage:            "sqlbless oracle://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<SERVICE>",
 	SQLForColumns:    columnsSql,
-	SQLForTables:     `select * from tab where tname not like 'BIN$%'`,
+	SQLForTables:     tablesSql,
 	TypeConverterFor: typeNameToConv,
 	TableNameField:   "tname",
 	ColumnNameField:  "name",

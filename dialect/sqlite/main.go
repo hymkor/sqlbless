@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	_ "embed"
 	"fmt"
 	"strings"
 	"time"
@@ -12,17 +13,18 @@ import (
 	"github.com/hymkor/sqlbless/internal/misc"
 )
 
+//go:embed tables.sql
+var tablesSql string
+
+//go:embed columns.sql
+var columnsSql string
+
 var Entry = &dialect.Entry{
-	Usage: "sqlbless sqlite3 :memory: OR <FILEPATH>",
-	SQLForTables: `
-	select 'main' as schema,name,rootpage,sql from sqlite_master
-	where type = 'table'
-	union all
-	select 'temp' as schema,name,rootpage,sql from sqlite_temp_master
-	where type = 'table'`,
+	Usage:             "sqlbless sqlite3 :memory: OR <FILEPATH>",
+	SQLForTables:      tablesSql,
 	TypeConverterFor:  typeNameToConv,
 	PlaceHolder:       &placeHolder{},
-	SQLForColumns:     `PRAGMA {schema.}table_info({table})`,
+	SQLForColumns:     columnsSql,
 	TableNameField:    "name",
 	ColumnNameField:   "name",
 	IsTransactionSafe: canUseInTransaction,

@@ -1,6 +1,7 @@
 package sqlbless
 
 import (
+	_ "embed"
 	"strings"
 	"time"
 
@@ -12,6 +13,12 @@ import (
 const (
 	mySQLDateTimeTzLayout = "2006-01-02 15:04:05.999999999-07:00"
 )
+
+//go:embed tables.sql
+var tablesSql string
+
+//go:embed columns.sql
+var columnsSql string
 
 var mySQLTypeNameToFormat = map[string]string{
 	"DATETIME":  dialect.DateTimeLayout,
@@ -56,37 +63,9 @@ func formatValue(typeName string, value any) (string, bool) {
 }
 
 var mySqlSpec = &dialect.Entry{
-	Usage: `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
-	SQLForColumns: `
-        select ordinal_position as "ID",
-               column_name as "NAME",
-               case
-                 when character_maximum_length is not null then 
-                      concat(data_type,'(',character_maximum_length,')')
-                 when datetime_precision is not null then
-                      concat(data_type,'(',datetime_precision,')')
-                 else data_type
-               end as "TYPE",
-               case is_nullable
-                 when "YES" then 'NULL'
-                 else 'NOT NULL'
-               end as "NULL?"
-          from information_schema.columns
-          join (select ? as x) v
-         where table_name   = REGEXP_REPLACE(v.x,'^[^\\.]*\\.','')
-           and table_schema =
-               case
-                 when instr(v.x,'.') >= 1 then
-                      regexp_replace(v.x,'\\.[^\\.]*$','')
-                 else database()
-               end
-         order by ordinal_position`,
-	SQLForTables: `
-        select concat(table_schema,'.',table_name) as FULL_NAME,
-               tables.* from information_schema.tables
-         where table_type = 'BASE TABLE'
-           and table_schema 
-        not in ('mysql', 'information_schema', 'performance_schema', 'sys')`,
+	Usage:            `sqlbless mysql <USERNAME>:<PASSWORD>@/<DBNAME>`,
+	SQLForColumns:    columnsSql,
+	SQLForTables:     tablesSql,
 	TypeConverterFor: typeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderQuestion{},
 	TableNameField:   "FULL_NAME",

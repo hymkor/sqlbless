@@ -11,8 +11,11 @@ import (
 	"github.com/hymkor/sqlbless/dialect"
 )
 
+//go:embed tables.sql
+var tablesSql string
+
 //go:embed columns.sql
-var columnSql string
+var columnsSql string
 
 var typeSpec = map[string][2]string{
 	"DATE": {
@@ -66,8 +69,8 @@ func formatValue(typeName string, value any) (string, bool) {
 
 var sqlServerSpec = &dialect.Entry{
 	Usage:            "sqlbless sqlserver://@<HOSTNAME>?database=<DBNAME>",
-	SQLForColumns:    columnSql,
-	SQLForTables:     `select * from sys.tables`,
+	SQLForColumns:    columnsSql,
+	SQLForTables:     tablesSql,
 	TypeConverterFor: typeNameToConv,
 	PlaceHolder:      &dialect.PlaceHolderName{Mark: "@", Prefix: "v"},
 	TableNameField:   "name",

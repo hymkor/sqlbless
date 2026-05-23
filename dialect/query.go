@@ -72,9 +72,20 @@ func (e *Entry) BuildSQLForTables() string {
 }
 
 // BuildSQLForColumns returns the SQL statement used to retrieve the list of columns
-// for the given table name. The placeholder "{table_name}" in the template will be replaced.
+// for the given table name. The placeholder "{table}" in the template will be replaced.
 func (e *Entry) BuildSQLForColumns(table string) string {
-	return strings.ReplaceAll(e.SQLForColumns, "{table_name}", table)
+	var schema string
+	var schemaDot string
+	if dotPos := strings.IndexByte(table, '.'); dotPos >= 0 {
+		schema = table[:dotPos]
+		schemaDot = table[:dotPos+1]
+		table = table[dotPos+1:]
+	}
+	sql := e.SQLForColumns
+	sql = strings.ReplaceAll(sql, "{table}", table)
+	sql = strings.ReplaceAll(sql, "{schema}", schema)
+	sql = strings.ReplaceAll(sql, "{schema.}", schemaDot)
+	return sql
 }
 
 // Tables executes the SQL to list all table names defined by the dialect.

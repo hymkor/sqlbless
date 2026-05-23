@@ -180,42 +180,33 @@ DRIVERNAME can be omitted when DATASOURCENAME contains DRIVERNAME.
     $ sqlbless sqlite3 path/to/file.db
 
 - The drivers used are https://github.com/glebarez/go-sqlite
-- [Example startup batch file](./examples/run-sqlite3.cmd)
 
 ### Oracle
 
-    $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
     $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - The driver used is https://github.com/sijms/go-ora
-- [Example startup batch file](./examples/run-oracle.cmd)
 
 ### PostgreSQL
 
-    $ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
-    $ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
-    $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+    $ sqlbless postgres://USERNAME:PASSWORD@HOSTNAME:PORT/DBNAME
 
 - The driver used is https://github.com/lib/pq
-- [Example startup batch file](./examples/run-psql.cmd)
 
-### SQL Server
+### Microsoft SQL Server
 
-    $ sqlbless sqlserver sqlserver://@localhost?database=master
+    $ sqlbless sqlserver://USERNAME:PASSWORD@HOST/INSTANCE
 
-( Windows authentication )
-
-    $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
+    ( Windows authentication )
+    $ sqlbless "sqlserver://@HOST/INSTANCE?Database=master&protocol=lpc"
 
 - The driver used is https://github.com/microsoft/go-mssqldb
-- [Example startup batch file](./examples/run-mssql.cmd)
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database
+    $ sqlbless mysql USERNAME:PASSWOR@/DBNAME
 
 - The driver used is http://github.com/go-sql-driver/mysql
-- [Example startup batch file](./examples/run-mysql.cmd)
 
 Common Options
 --------------

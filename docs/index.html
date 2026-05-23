@@ -1382,7 +1382,7 @@ scoop install sqlbless
 </code></pre>
 <h2 id="configuration">Configuration</h2>
 <p>SQL-Bless does <strong>not</strong> rely on any external configuration files. All settings—including database connection parameters, output format, and other options—are specified directly via command-line arguments.</p>
-<p>For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see <code>run-*.cmd</code>). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.</p>
+<p>For convenience, you can wrap frequently used connection settings in a shell script or batch file. Sample scripts for various databases are provided in this repository (see <code>examples/run-*.cmd</code>). This approach ensures predictable, repeatable startup behavior without relying on hidden configuration files.</p>
 <h2 id="how-to-start">How to start</h2>
 <pre><code>$ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 </code></pre>
@@ -1393,42 +1393,33 @@ $ sqlbless sqlite3 path/to/file.db
 </code></pre>
 <ul>
 <li>The drivers used are <a href="https://github.com/glebarez/go-sqlite">https://github.com/glebarez/go-sqlite</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-sqlite3.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="oracle">Oracle</h3>
-<pre><code>$ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
-$ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
+<pre><code>$ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/sijms/go-ora">https://github.com/sijms/go-ora</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-oracle.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="postgresql">PostgreSQL</h3>
-<pre><code>$ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
-$ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
-$ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+<pre><code>$ sqlbless postgres://USERNAME:PASSWORD@HOSTNAME:PORT/DBNAME
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/lib/pq">https://github.com/lib/pq</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-psql.cmd">Example startup batch file</a></li>
 </ul>
-<h3 id="sql-server">SQL Server</h3>
-<pre><code>$ sqlbless sqlserver sqlserver://@localhost?database=master
-</code></pre>
-<p>( Windows authentication )</p>
-<pre><code>$ sqlbless sqlserver &quot;Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc&quot;
+<h3 id="microsoft-sql-server">Microsoft SQL Server</h3>
+<pre><code>$ sqlbless sqlserver://USERNAME:PASSWORD@HOST/INSTANCE
+
+( Windows authentication )
+$ sqlbless &quot;sqlserver://@HOST/INSTANCE?Database=master&amp;protocol=lpc&quot;
 </code></pre>
 <ul>
 <li>The driver used is <a href="https://github.com/microsoft/go-mssqldb">https://github.com/microsoft/go-mssqldb</a></li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mssql.cmd">Example startup batch file</a></li>
 </ul>
 <h3 id="mysql">MySQL</h3>
-<pre><code>$ sqlbless.exe mysql user:password@/database
+<pre><code>$ sqlbless mysql USERNAME:PASSWOR@/DBNAME
 </code></pre>
 <ul>
 <li>The driver used is <a href="http://github.com/go-sql-driver/mysql">http://github.com/go-sql-driver/mysql</a></li>
-<li>The <code>?parseTime=true&amp;loc=Local</code> parameter is preset, but it can be overridden</li>
-<li><a href="https://github.com/hymkor/sqlbless/blob/master/run-mysql.cmd">Example startup batch file</a></li>
 </ul>
 <h2 id="common-options">Common Options</h2>
 <ul>
@@ -1541,7 +1532,7 @@ $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-ful
 <li><a href="#sqlite3">SQLite3</a></li>
 <li><a href="#oracle">Oracle</a></li>
 <li><a href="#postgresql">PostgreSQL</a></li>
-<li><a href="#sql-server">SQL Server</a></li>
+<li><a href="#microsoft-sql-server">Microsoft SQL Server</a></li>
 <li><a href="#mysql">MySQL</a></li>
 </ul>
 </li>

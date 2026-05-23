@@ -173,7 +173,7 @@ SQL-Bless は設定ファイルを必要とせず、すべてコマンドライ�
 
     $ sqlbless {options} [DRIVERNAME] DATASOURCENAME
 
-DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能です。
+DRIVERNAME は DATASOURCENAME の中に含まれている場合は省略可能です。
 
 ### SQLite3
 
@@ -181,42 +181,33 @@ DRIVERNAME は、DATASOURCENAME の中に含まれている場合は省略可能
     $ sqlbless sqlite3 path/to/file.db
 
 - 使用ドライバ : https://github.com/glebarez/go-sqlite
-- [起動バッチファイル例](./examples/run-sqlite3.cmd)
 
 ### Oracle
 
-    $ sqlbless oracle oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
     $ sqlbless oracle://USERNAME:PASSWORD@HOSTNAME:PORT/SERVICE
 
 - 使用ドライバー: https://github.com/sijms/go-ora
-- [起動バッチファイル例](./examples/run-oracle.cmd)
 
 ### PostgreSQL
 
-    $ sqlbless postgres host=127.0.0.1 port=5555 user=USERNAME password=PASSWORD dbname=DBNAME sslmode=disable
-    $ sqlbless postgres postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
-    $ sqlbless postgres://USERNAME:PASSWORD@127.0.0.1:5555/DBNAME?sslmode=verify-full
+    $ sqlbless postgres://USERNAME:PASSWORD@HOSTNAME:PORT/DBNAME
 
 - 使用ドライバー https://github.com/lib/pq
-- [起動バッチファイル例](./examples/run-psql.cmd)
 
 ### SQL Server
 
-    $ sqlbless sqlserver sqlserver://@localhost?database=master
+    $ sqlbless sqlserver://USERNAME:PASSWORD@HOST/INSTANCE
 
-( Windows authentication )
-
-    $ sqlbless sqlserver "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;protocol=lpc"
+    ( Windows authentication )
+    $ sqlbless "sqlserver://@HOST/INSTANCE?Database=master&protocol=lpc"
 
 - 使用ドライバー https://github.com/microsoft/go-mssqldb
-- [起動バッチファイル例](./examples/run-mssql.cmd)
 
 ### MySQL
 
-    $ sqlbless.exe mysql user:password@/database
+    $ sqlbless mysql USERNAME:PASSWORD@/DBNAME
 
 - 使用ドライバー http://github.com/go-sql-driver/mysql
-- [起動バッチファイル例](./examples/run-mysql.cmd)
 
 共通オプション
 -------------

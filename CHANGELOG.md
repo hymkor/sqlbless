@@ -2,7 +2,11 @@ Changelog (English)
 =======================
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
-- Run `go mod tidy` with Go 1.26.3 (#54)
+v0.28.0
+-------
+May 23, 2026
+
+- Build with Go 1.26.3; support Windows 10 or later and Linux (#54)
 - Update dependencies and database drivers to newer versions, while keeping compatibility workarounds for known problematic libraries. (#54)
   - Upgrade MySQL driver to v1.10.0
   - Upgrade Microsoft SQL Server driver to v1.10.0

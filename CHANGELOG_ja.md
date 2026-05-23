@@ -6,18 +6,40 @@ v0.28.0
 -------
 May 23, 2026
 
-- Go 1.26.3 でビルドし、サポート範囲を Windows 10以降と Linux へ (#54)
-- 既知のライブラリの問題を回避できる範囲で、依存するライブラリ・DBドライバーを可能な範囲で最新化した (#54)
-  - Upgrade MySQL driver to v1.10.0
-  - Upgrade Microsoft SQL Server driver to v1.10.0
-  - Upgrade PostgreSQL driver to v1.12.3
-- SELECT / EDIT における日時表示を改善。タイムゾーン情報を持たないカラムでは不要なタイムゾーン表示を行わないようにし、精度を持たない項目（例: 秒）も表示しないようにした。日時比較や更新時の照合も、各カラム型に応じた文字列形式で行うよう改善した。(#55, #57, #58, #65, #66, #69)
-- edit 文のバインド変数出力における日時表示の読み易さを改善した。 (#60)
-- edit 文で Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE および SQL Server DATETIMEOFFSET 型をサポートした。 (#63, #66)
-- desc 文で `desc {スキーマ名}.{テーブル名}` をサポート (#68, #73, #74, #75, #76)
-- `edit` 文で日時をあくまで文字列ベースで扱うようにした結果、time.Time の使用を MySQL ドライバーパッケージに指定する必要がなくなったため、`&parseTime=True&loc=Local` を DSN 文字列に追記するのをやめた (#71)
-- PostgreSQL で edit コマンドでのテーブル選択を改善した。`pg_catalog` と `information_schema` も含め、アクセスできる全テーブルを候補にできるようにした。システムテーブルはユーザテーブルの後でリストするようにし、あいまいにならないようにスキーマ修飾子(schema.table)も表示するようにした (#72)
-- PostgreSQL の desc コマンドの出力を改善 (#73)
+### ビルド環境とDBドライバーを更新
+
+SQL-Bless を Go 1.26.3 でビルドするようにしました。これに伴い、サポート対象OSを Windows 10以降および Linux とし、Windows 7/8 系のサポートを終了しました。また、既知の問題を回避できる範囲で、依存ライブラリおよびDBドライバーを最新の安定版へ更新しました。 (#54)
+
+* MySQL ドライバー v1.10.0
+* Microsoft SQL Server ドライバー v1.10.0
+* PostgreSQL ドライバー v1.12.3
+
+### SELECT / EDIT における日時型の取り扱いを大幅改善
+
+日時値の表示・比較・編集処理を見直し、各データベースの日時型が実際に保持できる情報だけを扱うようにしました。型がサポートしない精度（例: 秒を持たない型の秒表示）や不要なタイムゾーンオフセットを表示しないようになり、可読性と更新時の一致判定の正確性を向上させています。 (#55, #57, #58, #60, #63, #65, #66, #69)
+
+主な改善点:
+
+* Oracle `TIMESTAMP WITH TIME ZONE` をサポート
+* Oracle `TIMESTAMP WITH LOCAL TIME ZONE` をサポート
+* SQL Server `DATETIMEOFFSET` をサポート
+* edit 文のバインド変数出力における日時表示を改善
+
+また、日時値を型ごとの文字列表現として扱うようになったため、MySQL ドライバーに `time.Time` を要求する必要がなくなり、DSN への `&parseTime=true&loc=Local` の自動付加を廃止しました。 (#71)
+
+### スキーマ対応を含む desc コマンドの強化
+
+`desc` コマンドでスキーマ修飾名を指定できるようになりました。
+
+```text
+desc schema.table
+```
+
+さらに PostgreSQL ではテーブル選択機能を改善し、`pg_catalog` や `information_schema` を含むアクセス可能な全テーブルを候補として表示できるようにしました。スキーマ修飾名 (`schema.table`) を表示して同名テーブルを区別し、システムテーブルはユーザーテーブルの後ろに並ぶようにしています。 (#68, #72, #73, #74, #75, #76)
+
+### その他
+
+* PostgreSQL における `desc` コマンドの出力を改善 (#73)
 
 v0.27.7
 -------

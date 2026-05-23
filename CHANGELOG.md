@@ -6,18 +6,40 @@ v0.28.0
 -------
 May 23, 2026
 
-- Build with Go 1.26.3; support Windows 10 or later and Linux (#54)
-- Update dependencies and database drivers to newer versions, while keeping compatibility workarounds for known problematic libraries. (#54)
-  - Upgrade MySQL driver to v1.10.0
-  - Upgrade Microsoft SQL Server driver to v1.10.0
-  - Upgrade PostgreSQL driver to v1.12.3
-- Improved datetime handling in SELECT and EDIT operations. Columns without timezone information no longer display redundant timezone offsets, and fields without certain precision (such as seconds) no longer show unnecessary components. Datetime comparison and update matching are now performed using string representations appropriate for each column type. (#55, #57, #58, #65, #66, #69)
-- Improved readability of datetime values shown in bind variable output during edit operations. (#60)
-- Added support for Oracle TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE and SQL Server DATETIMEOFFSET columns in edit mode. (#63, #66)
-- `desc` supports `desc {schema}.{table}` syntax now (#68, #73, #74, #75, #76)
-- Since the `edit` command now handles date/time values primarily as strings, SQL-Bless no longer needs to force MySQL drivers to return `time.Time` values. As a result, SQL-Bless no longer appends `&parseTime=true&loc=Local` to MySQL DSNs. (#71)
-- PostgreSQL: Improved table selection for the edit command. All accessible tables are now available as candidates, including those in `pg_catalog` and `information_schema`. System tables are listed after user tables, and schema-qualified names (schema.table) are displayed to avoid ambiguity. (#72)
-- Improve output of `desc` on PostgreSQL (#73)
+### Updated build environment and database drivers
+
+SQL-Bless is now built with Go 1.26.3. As a result, support for legacy Windows versions has been dropped; supported platforms are now Windows 10 or later and Linux. Database drivers and related dependencies have also been updated to recent stable versions while retaining workarounds for known upstream issues. (#54)
+
+* MySQL driver → v1.10.0
+* Microsoft SQL Server driver → v1.10.0
+* PostgreSQL driver → v1.12.3
+
+### Major improvements to date/time handling in EDIT and SELECT
+
+Date/time values are now displayed, compared, and edited according to the actual capabilities of each database column type. Unsupported precision fields (such as seconds for minute-precision columns) and unnecessary timezone offsets are no longer shown. This improves readability and avoids mismatches during UPDATE operations. (#55, #57, #58, #60, #63, #65, #66, #69)
+
+Additional improvements include:
+
+* Support for Oracle `TIMESTAMP WITH TIME ZONE`
+* Support for Oracle `TIMESTAMP WITH LOCAL TIME ZONE`
+* Support for SQL Server `DATETIMEOFFSET`
+* Improved readability of date/time values shown in bind variable output during edit operations
+
+Because date/time values are now handled primarily as type-specific strings, SQL-Bless no longer requires MySQL drivers to return `time.Time` values and therefore no longer appends `&parseTime=true&loc=Local` to MySQL DSNs. (#71)
+
+### Improved schema-aware table inspection
+
+The `desc` command now supports schema-qualified names such as:
+
+```text
+desc schema.table
+```
+
+PostgreSQL table selection has also been improved. All accessible tables, including those in `pg_catalog` and `information_schema`, can now be selected. Schema-qualified names are displayed to avoid ambiguity, and system tables are listed after user tables. (#68, #72, #73, #74, #75, #76)
+
+### Other improvements
+
+* Improved output formatting of `desc` on PostgreSQL (#73)
 
 v0.27.7
 -------

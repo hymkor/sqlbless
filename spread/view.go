@@ -87,6 +87,10 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 		return &csvi.CommandResult{}, nil
 	}
 
+	noOpe := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
+		return &csvi.CommandResult{Message: "Sort is disabled"}, nil
+	}
+
 	quit := func(app *csvi.KeyEventArgs) (*csvi.CommandResult, error) {
 		if !app.IsDirty() && !myDirty {
 			io.WriteString(app, "\n")
@@ -113,6 +117,8 @@ func (viewer *Viewer) edit(title string, validate func(*csvi.CellValidatedEvent)
 	keymap := map[string]func(*csvi.KeyEventArgs) (*csvi.CommandResult, error){
 		"q": quit,
 		"x": setNull,
+		"s": noOpe,
+		"S": noOpe,
 	}
 	for _, p := range viewer.OnEvents {
 		keymap[p.Key] = p.Handler

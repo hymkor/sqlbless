@@ -5,7 +5,7 @@ go 1.25.7
 require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-sql-driver/mysql v1.10.0
-	github.com/hymkor/csvi v1.23.2
+	github.com/hymkor/csvi v1.24.0
 	github.com/hymkor/go-multiline-ny v0.23.1
 	github.com/hymkor/go-shellcommand v0.0.2
 	github.com/hymkor/struct2flag v0.0.4
@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-isatty v0.0.22
 	github.com/microsoft/go-mssqldb v1.10.0
 	github.com/nyaosorg/go-box/v3 v3.1.1
-	github.com/nyaosorg/go-readline-ny v1.15.1
+	github.com/nyaosorg/go-readline-ny v1.16.1
 	github.com/nyaosorg/go-ttyadapter v0.7.0
 	github.com/nyaosorg/go-windows-dbg v0.1.0
 	github.com/sijms/go-ora/v2 v2.8.22
